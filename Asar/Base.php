@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * TODO: Exception handling
+ */
 class Asar_Base {
 
   /*
