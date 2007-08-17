@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once 'Asar/Asar.php';
+require_once 'Asar.php';
  
 class AsarTest extends PHPUnit_Framework_TestCase {
   

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TODO: Exception handling
  */
@@ -32,7 +33,6 @@ class Asar_Base {
   */
   
   
-  
   static function underscore($str) {
     // @todo: Improve regular expression
     return strtolower(preg_replace('/(.)([A-Z])/e', "'\\1'.'_'.strtolower('\\2')", $str));
@@ -49,7 +49,13 @@ class Asar_Base {
     $str[0] = strtolower($str[0]);
     return $str;
   }
+  
+  function exception($msg) {
+    Asar::exception($this, $msg);
+  }
 
 }
+
+class Asar_BaseException extends Exception {}
 
 ?>

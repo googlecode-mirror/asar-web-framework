@@ -7,7 +7,12 @@ class Asar_Request extends Asar_Base {
   private $address;
   private $contents;
   private $request_type;
+  private $request_headers;
   
+  const GET    = 1;
+  const POST   = 2;
+  const PUT    = 3;
+  const DELETE = 4;
   
   
   
@@ -26,10 +31,10 @@ class Asar_Request extends Asar_Base {
   function setRequestMethod($method = 'GET') {
     // @todo maybe implement this as class constants for method values
     switch ($method) {
-      case 'GET':
-      case 'POST':
-      case 'PUT':
-      case 'DELETE':
+      case self::GET:
+      case self::POST:
+      case self::PUT:
+      case self::DELETE:
         $this->request_method = $method;
         return TRUE;
         break;

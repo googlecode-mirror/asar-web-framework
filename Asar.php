@@ -1,5 +1,10 @@
 <?php
 
+if (!class_exists('Asar_Base', false)) {
+    require_once 'Asar/Base.php';
+}
+
+
 class Asar {
   private static $version  = '0.0.1pa';
   private static $asarpath = NULL;
@@ -19,5 +24,7 @@ class Asar {
   static function load($class) {
     
   }
+  
+  
 }
 ?>

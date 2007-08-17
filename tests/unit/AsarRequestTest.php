@@ -41,7 +41,8 @@ class AsarRequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSetAndGetRequestMethod() {
-    $this->markTestIncomplete('Not yet implemented');
+    $this->req->setMethod(Asar_Request::GET);
+    
   }
   
 }
