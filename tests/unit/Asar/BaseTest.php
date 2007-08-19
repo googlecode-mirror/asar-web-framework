@@ -24,7 +24,7 @@ class Asar_Base_Child_Temp extends Asar_Base {
   
 }
 
-class AsarBaseTest extends PHPUnit_Framework_TestCase {
+class Asar_BaseTest extends PHPUnit_Framework_TestCase {
   
   public static function main()
   {
@@ -39,6 +39,12 @@ class AsarBaseTest extends PHPUnit_Framework_TestCase {
     $teststr = 'IAmQuiteAware';
     $expected = 'i_am_quite_aware';
     $this->assertEquals($expected, Asar_Base::underscore($teststr), 'Was unable to underscore test string');
+  }
+  
+  function testDash() {
+    $teststr = 'IAmQuiteAware';
+    $expected = 'i-am-quite-aware';
+    $this->assertEquals($expected, Asar_Base::dash($teststr), 'Was unable to dash test string');
   }
   
   function testCamelCase() {

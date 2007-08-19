@@ -25,6 +25,28 @@ class Asar {
     
   }
   
+  static function createException($classname, $msg) {
+  	$exception = $classname.'Exception';
+  	if (class_exists($exception)) {
+  	  $ref = new ReflectionClass($exception);
+  	  throw $ref->newInstance($msg);
+  	} else {
+  	  return FALSE;
+  	}
+  }
+  
+  static function exception($obj, $msg) {
+    $classname = get_class($obj);
+    while (FALSE === self::createException($classname, $msg)) {
+      $classname = get_parent_class($classname);
+      if (!$classname) {
+      	break;
+      }
+    }
+    // Resort to throwing Exception by default
+    throw new Exception ($msg);
+  }
+  
   
 }
 ?>

@@ -34,8 +34,11 @@ class Asar_Base {
   
   
   static function underscore($str) {
-    // @todo: Improve regular expression
-    return strtolower(preg_replace('/(.)([A-Z])/e', "'\\1'.'_'.strtolower('\\2')", $str));
+    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $str));
+  }
+  
+  static function dash($str) {
+    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '-\\1', $str));
   }
   
   static function camelCase($str) {

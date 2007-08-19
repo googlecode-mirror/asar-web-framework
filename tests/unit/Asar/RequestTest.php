@@ -2,7 +2,7 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar/Request.php';
  
-class AsarRequestTest extends PHPUnit_Framework_TestCase {
+class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 
   protected function setUp() {
     $this->req = new Asar_Request();

@@ -28,7 +28,7 @@ class Asar_Request extends Asar_Base {
   }
   
   
-  function setRequestMethod($method = 'GET') {
+  function setMethod($method = 'GET') {
     // @todo maybe implement this as class constants for method values
     switch ($method) {
       case self::GET:
@@ -45,7 +45,7 @@ class Asar_Request extends Asar_Base {
   }
   
   
-  function getRequestMethod() {
+  function getMethod() {
     $this->request_method;
   }
   

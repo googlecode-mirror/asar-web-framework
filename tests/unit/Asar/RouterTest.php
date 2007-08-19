@@ -3,7 +3,7 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar/Router.php';
  
-class AsarRouterTest extends PHPUnit_Framework_TestCase {
+class Asar_RouterTest extends PHPUnit_Framework_TestCase {
   
   protected function setUp() {
     //$this->asar = new Asar();
