@@ -26,7 +26,7 @@ class Asar {
   }
   
   static function createException($classname, $msg) {
-  	$exception = $classname.'Exception';
+  	$exception = $classname.'_Exception';
   	if (class_exists($exception)) {
   	  $ref = new ReflectionClass($exception);
   	  throw $ref->newInstance($msg);

@@ -11,8 +11,8 @@ class Test_Parent_Class {
 class Test_Child_Class extends Test_Parent_Class {}
 class Test_2Child_Class extends Test_Parent_Class {}
 class Test_GrandChild_Class extends Test_Child_Class {}
-class Test_Parent_ClassException extends Exception {}
-class Test_Child_ClassException extends Test_Parent_ClassException {} 
+class Test_Parent_Class_Exception extends Exception {}
+class Test_Child_Class_Exception extends Test_Parent_Class_Exception {} 
 class Test_Class_With_No_Exception {
   function throwException() {
   	Asar::exception($this, 'Throwing exception for '.get_class($this));
@@ -43,7 +43,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $obj->throwException();
       $this->assertTrue(false, 'Exception not thrown');
     } catch (Exception $e) {
-      $this->assertEquals('Test_Parent_ClassException', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Test_Parent_Class_Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals('Throwing exception for Test_Parent_Class', $e->getMessage(), 'Exception message mismatch');
     }
   }
@@ -54,7 +54,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $obj->throwException();
       $this->assertTrue(false, 'Exception not thrown');
     } catch (Exception $e) {
-      $this->assertEquals('Test_Child_ClassException', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Test_Child_Class_Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals('Throwing exception for Test_Child_Class', $e->getMessage(), 'Exception message mismatch');
     }
   }
@@ -65,7 +65,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $obj->throwException();
       $this->assertTrue(false, 'Exception not thrown');
     } catch (Exception $e) {
-      $this->assertEquals('Test_Parent_ClassException', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Test_Parent_Class_Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals('Throwing exception for Test_2Child_Class', $e->getMessage(), 'Exception message mismatch');
     }
   }
@@ -76,7 +76,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $obj->throwException();
       $this->assertTrue(false, 'Exception not thrown');
     } catch (Exception $e) {
-      $this->assertEquals('Test_Child_ClassException', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Test_Child_Class_Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals('Throwing exception for Test_GrandChild_Class', $e->getMessage(), 'Exception message mismatch');
     }
   }
