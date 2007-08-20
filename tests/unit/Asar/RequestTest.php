@@ -37,7 +37,10 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSetAndGetRequestType() {
-    $this->markTestIncomplete('Not yet implemented');
+    $reqtype = 'html';
+    $this->req->setType($reqtype);
+    
+    $this->assertEquals($reqtype, $this->req->getType(), 'Request type did not match');
   }
   
   function testSetAndGetRequestMethod() {

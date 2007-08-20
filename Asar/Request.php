@@ -28,8 +28,7 @@ class Asar_Request extends Asar_Base {
   }
   
   
-  function setMethod($method = 'GET') {
-    // @todo maybe implement this as class constants for method values
+  function setMethod($method) {
     switch ($method) {
       case self::GET:
       case self::POST:
@@ -39,8 +38,7 @@ class Asar_Request extends Asar_Base {
         return TRUE;
         break;
       default:
-        // @todo Raise exception
-        return FALSE;
+        $this->exception('Unknown method passed.');
     }
   }
   
@@ -54,7 +52,7 @@ class Asar_Request extends Asar_Base {
     if (is_array($contents)) {
       $this->contents = $contents;
     } else {
-      // @todo Raise Exception
+      $this->exception('Contents must be an associative array');
     }
   }
   
@@ -62,6 +60,17 @@ class Asar_Request extends Asar_Base {
     return $this->contents;
   }
   
+  
+  function setType($type) {
+    $this->request_type = $type;
+  }
+  
+  
+  function getType() {
+    return $this->request_type;
+  }
+  
 }
 
+class Asar_Request_Exeption extends Asar_Base_Exception {}
 ?>

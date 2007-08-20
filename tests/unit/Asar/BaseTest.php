@@ -1,6 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
+require_once 'Asar.php';
 require_once 'Asar/Base.php';
 
 class Asar_Base_Child_Temp extends Asar_Base {
@@ -20,8 +21,9 @@ class Asar_Base_Child_Temp extends Asar_Base {
   protected static $attr_writer   = array('fourth', 'fifth', 'sixth');
   protected static $attr_accessor = array('seventh', 'eighth', 'ninth');
   
-  
-  
+  function throwException() {
+  	$this->exception('Exception thrown from Asar_Base_Child_Temp');
+  }
 }
 
 class Asar_BaseTest extends PHPUnit_Framework_TestCase {
@@ -57,6 +59,16 @@ class Asar_BaseTest extends PHPUnit_Framework_TestCase {
     $teststr = 'i_am_quite_aware';
     $expected = 'iAmQuiteAware';
     $this->assertEquals($expected, Asar_Base::lowerCamelCase($teststr), 'Was unable to lowerCamelCase test string');
+  }
+  
+  function testThrowingException() {
+    try {
+      $this->ABC->throwException();
+      $this->assertTrue(false, 'Exception not thrown');
+    } catch (Exception $e) {
+      $this->assertEquals('Asar_Base_Exception', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Exception thrown from Asar_Base_Child_Temp', $e->getMessage(), 'Exception message mismatch');
+    }
   }
   
   /*

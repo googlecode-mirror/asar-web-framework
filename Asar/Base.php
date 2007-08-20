@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TODO: Exception handling
+ * 
  */
 class Asar_Base {
 
@@ -42,9 +42,7 @@ class Asar_Base {
   }
   
   static function camelCase($str) {
-    // @todo: Needs Improvement
     return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $str)));
-    // str_replace('_', '-', $str);
   }
   
   static function lowerCamelCase($str) {
