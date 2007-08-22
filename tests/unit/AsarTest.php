@@ -37,6 +37,10 @@ class AsarTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue( strpos(get_include_path(), $testpath) !== FALSE, 'Path setting not found');
   }
   
+  function testLoadClass() {
+    $this->markTestIncomplete('NotImplemented');
+  }
+  
   function testSimpleException() {
     $obj = new Test_Parent_Class();
     try {

@@ -37,6 +37,7 @@
  * 
  * @author     Wayne Duran
  * @todo       Changing File Mode (chmod?)
+ * @todo       Making sure we point to the right file
  */
 
 require_once 'Base.php';
@@ -71,8 +72,8 @@ class Asar_File extends Asar_Base {
 	}
 	
 	public static function unlink ($filename) {
-		if (file_exists((string) $filename)) {
-			return unlink($filename);
+    if (file_exists((string) $filename)) {
+        return unlink($filename);
 		} else {
 			return true;
 		}
@@ -175,7 +176,9 @@ class Asar_File extends Asar_Base {
 	}
 	
 	public function delete() {
-		return self::unlink($this->getFileName(), $this->getResource());
+    $this->unsetResource();
+    return unlink($this->getFileName());
+    //return self::unlink($this->getFileName(), $this->getResource());
 	}
 	
 	public function __destruct() {
