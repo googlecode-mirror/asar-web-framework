@@ -51,10 +51,10 @@ class Asar_Base {
     return $str;
   }
   
-  /**
+  
   function exception($msg) {
     Asar::exception($this, $msg);
-  }*/
+  }
 
 }
 

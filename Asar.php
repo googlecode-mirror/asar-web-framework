@@ -1,7 +1,7 @@
 <?php
 
 if (!class_exists('Asar_Base', false)) {
-    require_once 'Asar/Base.php';
+  require_once 'Asar/Base.php';
 }
 
 
@@ -21,8 +21,14 @@ class Asar {
    * Asar Loader
    * argument must follow naming convention
    */
-  static function load($class) {
-    
+  static function loadClass($class) {
+    $file = str_replace('_', '/', $class) . '.php';
+    if (!file_exists($file)) {
+      self::exception('Asar', "Class definition file for the class $class does not exist.");
+    } else {
+      include_once($file);
+      return true;
+    }
   }
   
   static function createException($classname, $msg) {
@@ -36,7 +42,11 @@ class Asar {
   }
   
   static function exception($obj, $msg) {
-    $classname = get_class($obj);
+    if (!is_object($obj) && is_string($obj)) {
+      $classname = $obj;
+    } else {
+      $classname = get_class($obj);
+    }
     while (FALSE === self::createException($classname, $msg)) {
       $classname = get_parent_class($classname);
       if (!$classname) {
@@ -49,4 +59,6 @@ class Asar {
   
   
 }
+
+class Asar_Exception extends Exception {}
 ?>

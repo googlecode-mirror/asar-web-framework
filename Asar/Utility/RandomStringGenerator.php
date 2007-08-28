@@ -18,10 +18,9 @@ class Asar_Utility_RandomStringGenerator {
 	private static $uscore; 
 	
 	
-	public static function instance()
- 	{
+	public static function instance()	{
  		if (self::$instance == null ) {
- 			self::$instance = new Asar_Utility_RandomStringGenerator();
+ 			self::$instance = new self();
  			
 	 		//self::$characters    = str_split('_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
 	 		self::$characters    = str_split('_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
@@ -37,8 +36,7 @@ class Asar_Utility_RandomStringGenerator {
  		return self::$instance;	
  	}
  	
- 	private function __contstruct() {
- 	}
+ 	private function __contstruct() {}
  	
  	private function __clone() {}
  	

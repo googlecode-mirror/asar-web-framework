@@ -54,7 +54,7 @@ class Asar_File extends Asar_Base {
 	public static function create ($filename) {
 		
 		if (file_exists($filename)) {
-			throw(new Asar_File_Exception("The file '$filename' already exists!"));
+			$this->exception("The file '$filename' already exists!");
 			return false;
 		}
 		$f = new self($filename, 'w+b');
@@ -64,7 +64,7 @@ class Asar_File extends Asar_Base {
 	
 	public static function open ($filename) {
 		if (!file_exists((string) $filename)) {
-			throw (new Asar_File_Exception('Attempting to open a file that does not exist.'));
+			$this->exception('Attempting to open a file that does not exist.');
 		} else {
 			$f = new self($filename, 'r+b');
 			return $f;
@@ -106,7 +106,7 @@ class Asar_File extends Asar_Base {
 		if (!is_resource($this->resource)) {
 			// Attempt to create a resource using filename
 			if (!$this->getFileName()) {
-				throw(new Asar_File_Exception('No filename was specified when attempting to create file resource'));
+				$this->exception('No filename was specified when attempting to create file resource');
 			}
 			$this->resource = fopen($this->filename, $this->mode);
 		}
@@ -121,7 +121,7 @@ class Asar_File extends Asar_Base {
 	
 	public function setFileName($filename) {
 		if (!is_string($filename) || $filename === '') {
-			throw(new Asar_File_Exception('Filename should be a non-empty string'));
+			$this->exception('Filename should be a non-empty string');
 		}
 		$this->filename = $filename;
 	}
@@ -171,7 +171,7 @@ class Asar_File extends Asar_Base {
 			}
 			return $this;
 		} else {
-			throw new Asar_File_Exception('Unable to save file');
+			$this->exception('Unable to save file');
 		}
 	}
 	
@@ -186,6 +186,6 @@ class Asar_File extends Asar_Base {
 	}
 }
 
-class Asar_File_Exception extends Exception {}
+class Asar_File_Exception extends Asar_Base_Exception {}
 
 ?>
