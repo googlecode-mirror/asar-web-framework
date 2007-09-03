@@ -1,22 +1,48 @@
 <?php
-
+/**
+ * @todo: Application, Controller, & Action names validation
+ */
 require_once 'Base.php';
 
 class Asar_Request extends Asar_Base {
   private $request_method;
-  private $address;
-  private $contents;
+  private $address = NULL;
+  private $action = NULL;
+  private $contents = NULL;
+  private $params = array();
   private $request_type;
   private $request_headers;
+  private $uri = NULL;
   
-  const GET    = 1;
-  const POST   = 2;
-  const PUT    = 3;
-  const DELETE = 4;
+  const GET    = 'GET';
+  const POST   = 'POST';
+  const PUT    = 'PUT';
+  const DELETE = 'DELETE';
+  /*
+  static function createFromEnvironment($arguments) {
+    $R = new self();
+    return $R;
+  }*/
   
+  function setUri($uri) {
+    $this->uri = $uri;
+  }
   
+  function getUri() {
+    return $this->uri;
+  }
   
-  function setAddress($application_name, $controller_name) {
+  function setHeaders($headers) {
+    if (is_array($headers)) {
+      $this->request_headers = $headers;
+    }
+  }
+  
+  function getHeaders() {
+    return $this->request_headers;
+  }
+  
+  function setAddress($application_name, $controller_name = NULL) {
     $this->address = array(
       'application' => $application_name,
       'controller'  => $controller_name);
@@ -25,6 +51,14 @@ class Asar_Request extends Asar_Base {
   
   function getAddress() {
     return $this->address;
+  }
+  
+  function setAction($action) {
+    $this->action = $action;
+  }
+  
+  function getAction() {
+    return $this->action;
   }
   
   
@@ -44,7 +78,7 @@ class Asar_Request extends Asar_Base {
   
   
   function getMethod() {
-    $this->request_method;
+    return $this->request_method;
   }
   
   
@@ -60,7 +94,29 @@ class Asar_Request extends Asar_Base {
     return $this->contents;
   }
   
+  // For query strings
+  function setParams($params) {
+    if (is_array($params)) {
+      $this->params = array_merge($this->params, $params);
+    } else {
+      $this->exception('Params must be an associative array');
+    }
+  }
   
+  function getParams() {
+    return $this->params;
+  }
+  
+  function setParam($key, $value) {
+    $this->params[$key] = $value;
+  }
+  
+  function getParam($key) {
+    return $this->params[$key];
+  }
+  
+  
+  // @todo: Better mime-type setting ('text/plain', 'text/html', etc.)
   function setType($type) {
     $this->request_type = $type;
   }

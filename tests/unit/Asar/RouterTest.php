@@ -10,8 +10,7 @@ class Asar_RouterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testBasicTranslateNativeRequest() {
-    $test_req = 'basic/enactment/var1/val1/var2/val2.txt';
-    
+    $test_req = 'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful';    
     $expected_params = array(
       'var1' => 'val1',
       'var2' => 'val2');
@@ -24,8 +23,8 @@ class Asar_RouterTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('txt', $result['type'], 'Unable to get type');
   }
   
+  
   function testCreateRequest() {
-    $this->markTestIncomplete('Not yet implemented');
   }
 }
 

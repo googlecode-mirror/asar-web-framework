@@ -4,7 +4,7 @@
  * 
  * @author     Wayne Duran
  */
-require_once 'Base.php';
+require_once 'Asar.php';
 
 class Asar_Router extends Asar_Base {
   
@@ -21,10 +21,7 @@ class Asar_Router extends Asar_Base {
   
   private function __clone() {}
   
-  private function __construct() {
-    // Default rule to use
-    //$this->d = ;  
-  }
+  private function __construct() {}
   
   /**
    * @todo: Better way to do this
@@ -32,12 +29,19 @@ class Asar_Router extends Asar_Base {
   private function parse($instruction, $raw_req_str) {
     $result = array();
     
+    // Get the query string and remove the the part after '?'
+    $q_start = strrpos($raw_req_str, '?');
+    if ($q_start > -1) {
+      $raw_req_str = substr($raw_req_str, 0, $q_start);
+    }
+    
     // Get the 'file extension' (.html, .xml, .rss, .js)
     $type_start = strrpos($raw_req_str, '.');
     if ($type_start > 0) {
       $result['type'] = substr($raw_req_str, $type_start + 1);
       $raw_req_str = substr($raw_req_str, 0, $type_start);
     }
+    
     
     $req_items = explode('/', $raw_req_str);
     $length = count($req_items);
@@ -82,6 +86,9 @@ class Asar_Router extends Asar_Base {
     return $result;
   }
   
+  function importRequest($raw_req_str) {
+    $this->translate($_SERVER['REQUEST_URI']);
+  }
   
 }
 

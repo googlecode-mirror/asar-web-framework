@@ -1,7 +1,8 @@
 <?php
 require_once 'Asar.php';
+require_once 'Asar/Request/ProcessorInterface.php';
 
-class Asar_Application extends Asar_Base {
+abstract class Asar_Application extends Asar_Base implements Asar_Request_ProcessorInterface {
   /*
   private static $instance = NULL;
   
@@ -17,6 +18,10 @@ class Asar_Application extends Asar_Base {
   private function __clone() {}
   */
   
+  function processRequest(Asar_Request $request) {
+    // send to controller
+  }
+  
   protected function getAppName() {
     return str_replace('_Application', '', get_class($this));
   }
@@ -24,11 +29,6 @@ class Asar_Application extends Asar_Base {
   protected function loadClassResource($type, $name) {
     return Asar::loadClass($this->getAppName().'_'.$type.'_'.$name);
   }
-  
-  /*
-  protected function loadStaticResource($type, $name) {
-    //$this->getAppName().'_'
-  }*/
   
   function loadController($name) {
     return $this->loadClassResource('Controller', $this->camelCase($name));

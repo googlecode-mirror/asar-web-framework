@@ -1,5 +1,7 @@
 <?php
 
+spl_autoload_register(array('Asar', 'loadClass'));
+
 if (!class_exists('Asar_Base', false)) {
   require_once 'Asar/Base.php';
 }
@@ -23,9 +25,13 @@ class Asar {
    */
   static function loadClass($class) {
     $file = str_replace('_', '/', $class) . '.php';
+    print $file;
     if (!file_exists($file)) {
+      print 'xaxxxxxx';
       self::exception('Asar', "Class definition file for the class $class does not exist.");
+      return false;
     } else {
+      print 'yoyoyoy';
       include_once($file);
       return true;
     }

@@ -12,19 +12,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testApplicationStart() {
+    // Router mock object
+    //$router
     $this->markTestIncomplete('Not yet implemented');
   }
-  
-  /*
-  function testGetResourcePath() {
-    $this->assertEquals('test_path/', $this->app->getResourcePath(), 'Path set did not match');
-    $this->assertEquals('test_path/models/', $this->app->getModelsPath(), 'Path set did not match');
-    $this->assertEquals('test_path/controllers/', $this->app->getControllersPath(), 'Path set did not match');
-    $this->assertEquals('test_path/views/', $this->app->getViewsPath(), 'Path set did not match');
-    $this->assertEquals('test_path/helpers/', $this->app->getHelpersPath(), 'Path set did not match');
-    $this->assertEquals('test_path/filters/', $this->app->getFiltersPath(), 'Path set did not match');
-  }
-  */
   
   function testLoadingController() {
     $test     = 'cheap';
