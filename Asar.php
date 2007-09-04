@@ -24,8 +24,10 @@ class Asar {
    * argument must follow naming convention
    */
   static function loadClass($class) {
+    if (class_exists($class, false)) {
+      return true;
+    }
     $file = str_replace('_', '/', $class) . '.php';
-    print $file;
     if (!self::fileExists($file)) {
       self::exception('Asar', "Class definition file for the class $class does not exist.");
       return false;
@@ -66,7 +68,7 @@ class Asar {
   
   static function createException($classname, $msg) {
   	$exception = $classname.'_Exception';
-  	if (class_exists($exception)) {
+  	if (class_exists($exception, false)) {
   	  $ref = new ReflectionClass($exception);
   	  throw $ref->newInstance($msg);
   	} else {
