@@ -37,6 +37,20 @@ class Asar {
     }
   }
   
+  static function instantiate($class_name, array $arguments = array()) {
+    $reflector = new ReflectionClass($class_name);
+    if ($reflector->isInstantiable()) {
+      if (count($arguments)) {
+        $obj = $reflector->newInstanceArgs($arguments);
+      } else {
+        $obj = $reflector->newInstance();
+      }
+      return $obj;
+    } else {
+      self::exception('Asar', 'Trying to instantiate the uninstantiable class '.$class_name);
+    }
+  }
+  
   static function fileExists($file) {
       // no file requested?
       $file = trim($file);
@@ -64,7 +78,7 @@ class Asar {
         
         // never found it
         return false;
-    }
+  }
   
   static function createException($classname, $msg) {
   	$exception = $classname.'_Exception';

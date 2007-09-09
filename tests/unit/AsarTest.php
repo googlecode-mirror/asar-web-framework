@@ -8,7 +8,23 @@ class Test_Parent_Class {
   	Asar::exception($this, 'Throwing exception for '.get_class($this));
   }
 }
-class Test_Child_Class extends Test_Parent_Class {}
+class Test_Child_Class extends Test_Parent_Class {
+  private $attr1 = '';
+  private $attr2 = '';
+  
+  function __construct($arg1 = NULL, $arg2 = NULL) {
+    $this->attr1 = $arg1;
+    $this->attr2 = $arg2;
+  }
+  
+  function getAttr1() {
+    return $this->attr1;
+  }
+  
+  function getAttr2() {
+    return $this->attr2;
+  }
+}
 class Test_2Child_Class extends Test_Parent_Class {}
 class Test_GrandChild_Class extends Test_Child_Class {}
 class Test_Parent_Class_Exception extends Exception {}
@@ -18,6 +34,8 @@ class Test_Class_With_No_Exception {
   	Asar::exception($this, 'Throwing exception for '.get_class($this));
   }
 }
+
+abstract class Uninstantiable_Class {}
  
 class AsarTest extends PHPUnit_Framework_TestCase {
   
@@ -37,8 +55,15 @@ class AsarTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue( strpos(get_include_path(), $testpath) !== FALSE, 'Path setting not found');
   }
   
+  // @todo: Create test for the part of the code that includes the file
   function testLoadClass() {
-    $this->markTestIncomplete('NotImplemented');
+    try {
+      Asar::loadClass('Test_Dummy_Class');
+      $this->assertTrue(false, 'Must not reach this part');
+    } catch (Exception $e) {
+      $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Class definition file for the class Test_Dummy_Class does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
+    }
   }
   
   function testSimpleException() {
@@ -93,6 +118,45 @@ class AsarTest extends PHPUnit_Framework_TestCase {
     } catch (Exception $e) {
       $this->assertEquals('Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals('Throwing exception for Test_Class_With_No_Exception', $e->getMessage(), 'Exception message mismatch');
+    }
+  }
+  
+  function testInstantiate() {
+    $testclass = 'Non_Existent_Class';
+    try {
+      $obj = Asar::instantiate($testclass);
+      $this->assertTrue(false, 'Must not reach this part');
+    } catch (Exception $e) {
+      $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Class definition file for the class '.$testclass.' does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
+    }
+  }
+  
+  function testInstantiateProper() {
+    $testclass = 'Test_Parent_Class';
+    $obj = Asar::instantiate($testclass);
+    $this->assertEquals($testclass, get_class($obj), 'Wrong class');
+  }
+  
+  function testInstantiateWithArguments() {
+    $testclass = 'Test_Child_Class';
+    $testvar1 = 'The quick brown fox';
+    $testvar2 = 50;
+    $obj = Asar::instantiate($testclass, array($testvar1, $testvar2));
+    $this->assertEquals($testclass, get_class($obj), 'Wrong class');
+    $this->assertEquals($testvar1, $obj->getAttr1(), 'First argument was not passed properly');
+    $this->assertEquals($testvar2, $obj->getAttr2(), 'Second argument was not passed properly');
+  }
+  
+  function testUnInstantiableClass() {
+    $testclass = 'Uninstantiable_Class';
+    try {
+      $obj = Asar::instantiate($testclass);
+      $this->assertTrue(false, 'Must not reach this part');
+    } catch (Exception $e) {
+      $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception class found');
+      $msg = 'Trying to instantiate the uninstantiable class '.$testclass;
+      $this->assertEquals($msg, $e->getMessage(), 'Wrong message passed');
     }
   }
 }

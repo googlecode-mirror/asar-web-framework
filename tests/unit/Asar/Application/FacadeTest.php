@@ -2,6 +2,10 @@
 
 require_once 'Asar/Application/Facade.php';
 
+class Damp_Application extends Asar_Application {
+  
+}
+
 class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
@@ -47,7 +51,15 @@ class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
     $this->markTestIncomplete('To implement default Facade::sendRequest()');
   }
   
-  function testDefaultGetResponse() {
+  function testRegisterApplication() {
+    $this->F->registerApplication('Damp');
+    $app = $this->F->getRegisteredApplication();
+    
+    $this->assertEquals('Damp_Application', get_class($app), 'Wrong class of application');
+    $this->assertTrue($app instanceof Asar_Application, 'Application not an instance of "Asar_Application"');
+  }
+  
+  function testCreateRequestWhenThereAreNoArgumentsPassed() {
     $this->markTestIncomplete('To implement default Facade::getResponse()');
     // Setup the environment
     $_SERVER['REQUEST_URI'] = 'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful';
@@ -66,9 +78,9 @@ class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
       'crazy'  => 'beautiful'
     );
     
-    $request = Asar_Request::createRequestFromEnvironment();
-    
-    $this->assertEquals('Asar_Request', get_class($request), 'Invalid object type. Must be \'Asar_Request\'');
+    $request = $this->F->getRequest();
+    $req_class = get_class($request);
+    $this->assertEquals('Asar_Request', $req_class, 'Invalid object type. Must be \'Asar_Request\'. Returned '.$req_class);
     $this->assertEquals('basic', $request->address['controller'], 'Unable to find controller');
     $this->assertEquals('enactment', $request->address['action'], 'Unable to find action');
     $this->assertEquals($expected_params, $request->params, 'Unable to get params');
