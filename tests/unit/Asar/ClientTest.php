@@ -1,15 +1,16 @@
 <?php
 
-require_once 'Asar/Application/Facade.php';
+require_once 'Asar.php';
 
-class Damp_Application extends Asar_Application {
+class Test_Client extends Asar_Client {
   
 }
 
-class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
+class Asar_ClientTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->F = new Asar_Application_Facade();
+    $this->DC = new Asar_Client();
+    $this->TC = new Test_Client();
   }
   
   function arrayMatch($arr1, $arr2) {
@@ -41,27 +42,14 @@ class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
         'crazy'  => 'beautiful'
       )
     );
-    $r = $this->F->createRequest($address, $arguments);
+    $r = $this->DC->createRequest($address, $arguments);
     $this->assertEquals($arguments['method'], $r->getMethod(), 'Method mismatch');
     $this->assertEquals($address, $r->getUri(), 'Address mismatch');
     $this->assertTrue($this->arrayMatch($arguments['params'], $r->getParams()), 'Parameters did not match');
   }
   
   function testSendRequest() {
-    $this->markTestIncomplete('To implement default Facade::sendRequest()');
-  }
-  
-  function testRegisterApplication() {
-    $this->F->registerApplication('Damp');
-    $app = $this->F->getRegisteredApplication();
-    
-    $this->assertEquals('Damp_Application', get_class($app), 'Wrong class of application');
-    $this->assertTrue($app instanceof Asar_Application, 'Application not an instance of "Asar_Application"');
-  }
-  
-  function testCreateRequestWhenThereAreNoArgumentsPassed() {
-    $this->markTestIncomplete('To implement default Facade::getResponse()');
-    // Setup the environment
+    $this->markTestIncomplete('Send Request not implemented');
     $_SERVER['REQUEST_URI'] = 'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful';
     $_SERVER['REQUEST_METHOD'] = 'GET';
     $_GET['enter']  = 'true';
@@ -78,7 +66,7 @@ class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
       'crazy'  => 'beautiful'
     );
     
-    $request = $this->F->getRequest();
+    $request = $this->TC->createRequest();
     $req_class = get_class($request);
     $this->assertEquals('Asar_Request', $req_class, 'Invalid object type. Must be \'Asar_Request\'. Returned '.$req_class);
     $this->assertEquals('basic', $request->address['controller'], 'Unable to find controller');
@@ -87,8 +75,10 @@ class Asar_Application_FacadeTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('txt', $result['type'], 'Unable to get type');
   }
   
-  function testGetResponseWithArguments() {
-    $this->markTestIncomplete('To implement Facade::getResponse() with arguments');
+  function testSetAndGetName() {
+    $testname = 'A really cool name for a client';
+    $this->DC->setName($testname);
+    $this->assertEquals($testname, $this->DC->getName(), 'Client name did not match expected value');
   }
   
 }

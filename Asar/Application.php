@@ -1,8 +1,7 @@
 <?php
 require_once 'Asar.php';
-require_once 'Asar/Request/ProcessorInterface.php';
 
-abstract class Asar_Application extends Asar_Base implements Asar_Request_ProcessorInterface {
+abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
   /*
   private static $instance = NULL;
   

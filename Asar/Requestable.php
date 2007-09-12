@@ -1,7 +1,5 @@
 <?php
-
-interface Asar_Request_ProcessorInterface {
+interface Asar_Requestable {
   function processRequest(Asar_Request $request);
 }
-
 ?>

@@ -35,12 +35,19 @@ class Test_Class_With_No_Exception {
   }
 }
 
+class Test_Application extends Asar_Application {}
+class Test_Client extends Asar_Client {}
+
 abstract class Uninstantiable_Class {}
  
 class AsarTest extends PHPUnit_Framework_TestCase {
   
   protected function setUp() {
-    //$this->asar = new Asar();
+    
+  }
+  
+  protected function tearDown() {
+    Asar::reset();
   }
   
   function testGetVersion() {
@@ -48,7 +55,6 @@ class AsarTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSetAsarPath() {
-    
     $testpath = '/testpathxyz';
     Asar::setAsarPath($testpath);
     
@@ -59,11 +65,59 @@ class AsarTest extends PHPUnit_Framework_TestCase {
   function testLoadClass() {
     try {
       Asar::loadClass('Test_Dummy_Class');
-      $this->assertTrue(false, 'Must not reach this part');
+      $this->assertTrue(false, 'Must not reach this point');
     } catch (Exception $e) {
       $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals('Class definition file for the class Test_Dummy_Class does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
     }
+  }
+  
+  function testLoadingExistingClass() {
+    
+  }
+  
+  function testStartWithNonExistentApp() {
+    $dummyapp = 'DummyApp';
+    try {
+      Asar::start('DummyApp');
+    } catch (Exception $e) {
+      // must attempt to load application class
+      $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Class definition file for the class DummyApp_Application does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
+      
+    }
+  }
+  
+  function testStartWithTestApplication() {
+    $testapp = 'Test';
+    try {
+      Asar::start('Test');
+      // Test if we get the right client
+      // Client must default to 'Asar_Client'
+      $client = Asar::getLastClientLoaded();
+      $app    = Asar::getAppWithClient($client->getName());
+    } catch (Exception $e) {
+      $this->assertTrue(false, 'Exception thrown: '. get_class($e) . ' , '. $e->getMessage());
+    }
+    $this->assertEquals('Asar_Client', get_class($client), 'Wrong Client loaded');
+    $this->assertEquals('Test_Application', get_class($app), 'Wrong application loaded');
+  }
+  
+  function testStartWithCustomClient() {
+    $testapp = 'Test';
+    $client_name = 'What a wonderful world';
+    $client = new Test_Client();
+    $client->setName($client_name);
+    try {
+      Asar::start('Test', $client);
+    } catch (Exception $e) {
+      $this->assertTrue(false, 'Exception thrown: '. get_class($e) . ' , '. $e->getMessage());
+    }
+    $testClient = Asar::getClient($client->getName());
+    $app = Asar::getAppWithClient($client->getName());
+    $this->assertSame($client, $testClient, 'Client passed was not found');
+    $this->assertEquals('Test_Client', get_class($testClient), 'Wrong Client loaded');
+    $this->assertEquals('Test_Application', get_class($app), 'Wrong application loaded');
   }
   
   function testSimpleException() {
@@ -116,7 +170,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $obj->throwException();
       $this->assertTrue(false, 'Exception not thrown');
     } catch (Exception $e) {
-      $this->assertEquals('Exception', get_class($e), 'Wrong exception thrown');
+      $this->assertEquals('Exception', get_class($e), 'Wrong exception thrown. Message: '.$e->getMessage());
       $this->assertEquals('Throwing exception for Test_Class_With_No_Exception', $e->getMessage(), 'Exception message mismatch');
     }
   }
