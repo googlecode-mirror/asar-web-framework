@@ -2,6 +2,7 @@
 require_once 'Asar.php';
 
 abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
+  private $router;
   /*
   private static $instance = NULL;
   
@@ -17,7 +18,11 @@ abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
   private function __clone() {}
   */
   
-  function processRequest(Asar_Request $request) {
+  function __construct() {
+    $this->router = Asar::instantiate($this->getAppName().'_Router');
+  }
+  
+  function processRequest(Asar_Request $request, array $arguments) {
     // send to controller
   }
   

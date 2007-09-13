@@ -36,7 +36,10 @@ class Test_Class_With_No_Exception {
 }
 
 class Test_Application extends Asar_Application {}
-class Test_Client extends Asar_Client {}
+class Test_Router extends Asar_Router{}
+if (!class_exists('Test_Client', false)) {
+  class Test_Client extends Asar_Client {}
+}
 
 abstract class Uninstantiable_Class {}
  
@@ -68,12 +71,37 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $this->assertTrue(false, 'Must not reach this point');
     } catch (Exception $e) {
       $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
-      $this->assertEquals('Class definition file for the class Test_Dummy_Class does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
+      $this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class Test_Dummy_Class does not exist.'), 'Did not attempt to load the class definition');
     }
   }
   
   function testLoadingExistingClass() {
+    $class_name = 'Temp_Class_Test';    
     
+    // Test first if class exists. It must not.
+    $this->assertFalse(class_exists($class_name, false), 'Class definition was loaded already!');
+    
+    // Create a file that follows naming convention
+    mkdir('Temp/Class', 0777, true);
+    $file = Asar_File::create('Temp/Class/Test.php');
+    
+    // In its content, add a String for class definition
+    $file->write('
+      <?php
+      class Temp_Class_Test {}
+      ?>
+    ')->save();
+    
+    // Test loading that class
+    Asar::loadClass($class_name);
+    
+    // See if that class exists already
+    
+    $this->assertTrue(class_exists($class_name, false), 'Failed to load class definition');
+    // Cleanup
+    $file->delete();
+    rmdir('Temp/Class');
+    rmdir('Temp');
   }
   
   function testStartWithNonExistentApp() {
@@ -83,7 +111,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
     } catch (Exception $e) {
       // must attempt to load application class
       $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
-      $this->assertEquals('Class definition file for the class DummyApp_Application does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
+      $this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class DummyApp_Application does not exist.'), 'Did not attempt to load the class definition');
       
     }
   }
@@ -182,7 +210,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
       $this->assertTrue(false, 'Must not reach this part');
     } catch (Exception $e) {
       $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
-      $this->assertEquals('Class definition file for the class '.$testclass.' does not exist.', $e->getMessage(), 'Did not attempt to load the class definition');
+      $this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class '.$testclass.' does not exist.'), 'Did not attempt to load the class definition');
     }
   }
   

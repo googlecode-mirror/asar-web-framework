@@ -63,6 +63,7 @@ class Asar {
     }
   }
   
+  
   static function start($application_name, Asar_Client $client = NULL) {
     /**
       * @todo: Remove dependency on existing classes
@@ -87,6 +88,7 @@ class Asar {
     self::$clients_to_apps[$client_name] = $application_name;
   }
   
+  
   static function getLastClientLoaded() {
     if (is_null(self::$last_client)) {
       self::exception('Asar', 'No client was loaded');
@@ -94,6 +96,7 @@ class Asar {
       return self::$last_client;
     }
   }
+  
   
   static function getClient($client_name) {
     if (self::isClientExists($client_name)) {
@@ -103,6 +106,7 @@ class Asar {
     }
   }
   
+  
   static function getAppWithClient($client_name) {
     if (self::isClientExists($client_name)) {
       return self::$apps[self::$clients_to_apps[$client_name]];
@@ -110,6 +114,7 @@ class Asar {
       self::exception('Asar', "The client name $client_name passed to Asar::getAppWithClient() does not exist");
     }
   }
+  
   
   private static function isClientExists($client_name) {
     if (array_key_exists($client_name, self::$clients)) {
@@ -119,6 +124,7 @@ class Asar {
     }
   }
   
+  
   static function instantiate($class_name, array $arguments = array()) {
     $reflector = new ReflectionClass($class_name);
     if ($reflector->isInstantiable()) {
@@ -127,11 +133,17 @@ class Asar {
       } else {
         $obj = $reflector->newInstance();
       }
-      return $obj;
+    } elseif ($reflector->hasMethod('instance')) {
+      // We're assuming this is Singleton by convention
+      // @todo: what if we class didn't follow that convention?
+      $instanceMethod = $reflector->getMethod('instance');
+      $obj = $instanceMethod->invoke(NULL);
     } else {
       self::exception('Asar', 'Trying to instantiate the uninstantiable class '.$class_name);
     }
+    return $obj;
   }
+  
   
   static function fileExists($file) {
     // no file requested?
@@ -139,7 +151,6 @@ class Asar {
       if (! $file) {
           return false;
       }
-      
       // using an absolute path for the file?
       // dual check for Unix '/' and Windows '\',
       // or Windows drive letter and a ':'.

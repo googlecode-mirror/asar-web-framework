@@ -3,23 +3,22 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar/Application.php';
 
-class Test_Application extends Asar_Application {}
+
+class Test2_Application extends Asar_Application {}
+
+class Test2_Router extends Asar_Router {}
+
 
 class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   protected function setUp() {
-    $this->app = new Test_Application();
+    $this->app = new Test2_Application();
   }
   
-  function testApplicationStart() {
-    // Router mock object
-    //$router
-    $this->markTestIncomplete('Not yet implemented');
-  }
   
   function testLoadingController() {
     $test     = 'cheap';
-    $expected = 'Test_Controller_Cheap';
+    $expected = 'Test2_Controller_Cheap';
     try {
       $this->app->loadController($test);
       $this->assertTrue(False, 'Must not reach execution');
@@ -31,9 +30,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     }
   }
   
+  
   function testLoadingModel() {
     $test     = 'cheap';
-    $expected = 'Test_Model_Cheap';
+    $expected = 'Test2_Model_Cheap';
     try {
       $this->app->loadModel($test);
       $this->assertTrue(False, 'Must not reach execution');
@@ -45,9 +45,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     }
   }
   
+  
   function testLoadingFilter() {
     $test     = 'cheap';
-    $expected = 'Test_Filter_Cheap';
+    $expected = 'Test2_Filter_Cheap';
     try {
       $this->app->loadFilter($test);
       $this->assertTrue(False, 'Must not reach execution');
@@ -59,9 +60,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     }
   }
   
+  
   function testLoadingHelper() {
     $test     = 'cheap';
-    $expected = 'Test_Helper_Cheap';
+    $expected = 'Test2_Helper_Cheap';
     try {
       $this->app->loadHelper($test);
       $this->assertTrue(False, 'Must not reach execution');
@@ -73,19 +75,32 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     }
   }
   
+  
   function testLoadingViewWithoutAction() {
     $test     = 'cheap';
-    $expected = 'Test/View/cheap.php';
+    $expected = 'Test2/View/cheap.php';
     $this->assertEquals($expected, $this->app->loadView($test), 'Returned view file is wrong');
   }
+  
   
   function testLoadingViewWithAction() {
     $test_controller     = 'cheap';
     $test_action         = 'shot';
-    $expected            = 'Test/View/cheap/shot.php';
+    $expected            = 'Test2/View/cheap/shot.php';
     $this->assertEquals($expected, $this->app->loadView($test_controller, $test_action), 'Returned view file is wrong');
   }
   
+  
+  function testGetRouter() {
+    $expected = 'Test2_Router';
+    
+  }
+  
+  
+  function testProcessingRequest() {
+    //$req = 
+    $this->markTestIncomplete('not ready');
+  }
 }
 
 ?>
