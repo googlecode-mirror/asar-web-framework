@@ -4,9 +4,25 @@ require_once 'PHPUnit/Framework.php';
 require_once 'Asar/Application.php';
 
 
-class Test2_Application extends Asar_Application {}
+class Test2_Application extends Asar_Application {
+  function getRouter() {
+    return $this->router;
+  }
+}
 
-class Test2_Router extends Asar_Router {}
+class Test2_Router extends Asar_Router {
+  
+  function processRequest(Asar_Request $request, array $arguments = NULL) {
+    $response = new Asar_Response();
+    $contents = $request->getContent();
+    $val = '';
+    foreach ($contents as $content => $value) {
+      $val .= "$content => $value, ";
+    }
+    $response->setContent($val);
+    return $response;
+  }
+}
 
 
 class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
@@ -90,16 +106,24 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expected, $this->app->loadView($test_controller, $test_action), 'Returned view file is wrong');
   }
   
-  
+  /*
   function testGetRouter() {
     $expected = 'Test2_Router';
     
-  }
-  
+  }*/
   
   function testProcessingRequest() {
-    //$req = 
-    $this->markTestIncomplete('not ready');
+    $req = new Asar_Request();
+    $req->setContent( array(
+                        'dirt' => 'cheap',
+                        'suck' => 'lick',
+                        'sup'  => 'Stupid Utility Padyaks',
+                        'ban'  => 1
+                      )
+    );
+    $response = $req->sendTo($this->app);
+    $this->assertTrue($response instanceof Asar_Response, 'Returned value is not an instance of Asar_Response');
+    $this->assertEquals('dirt => cheap, suck => lick, sup => Stupid Utility Padyaks, ban => 1, ', $response->getContent(), 'Unexpected value for content');
   }
 }
 

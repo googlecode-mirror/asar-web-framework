@@ -11,7 +11,7 @@ class Asar_Router extends Asar_Base implements Asar_Requestable {
   private $rules = array();
   private $default_instruction = array('controller', 'action');
   
-  private static $instance = NULL; // For Singleton
+  protected static $instance = NULL; // For Singleton
   
   static function instance() {
     if (is_null(self::$instance)) {
@@ -91,7 +91,7 @@ class Asar_Router extends Asar_Base implements Asar_Requestable {
     $this->translate($_SERVER['REQUEST_URI']);
   }
   
-  function processRequest(Asar_Request $request, array $arguments) {
+  function processRequest(Asar_Request $request, array $arguments = NULL) {
   }
   
 }

@@ -5,18 +5,12 @@
 require_once 'Asar.php';
 
 abstract class Asar_Message extends Asar_Base {
-  private $method     = NULL;
   private $address    = NULL;
   private $contents   = NULL;
   private $params     = array();
   private $type       = NULL;
   private $headers    = array();
   private $context    = array();
-  
-  const GET    = 'GET';
-  const POST   = 'POST';
-  const PUT    = 'PUT';
-  const DELETE = 'DELETE';
   
   function setHeaders($headers) {
     if (is_array($headers)) {
@@ -43,30 +37,6 @@ abstract class Asar_Message extends Asar_Base {
       return $this->address;
     }
   }
-  
-  function setMethod($method) {
-    switch ($method) {
-      case self::GET:
-      case self::POST:
-      case self::PUT:
-      case self::DELETE:
-        $this->method = $method;
-        return TRUE;
-        break;
-      default:
-        $this->exception('Unknown method passed.');
-    }
-  }
-  
-  
-  function getMethod() {
-    if (is_null($this->method)) {
-      $this->exception('Method is not set');
-    } else {
-      return $this->method;
-    }
-  }
-  
   
   function setContent($contents) {
       $this->contents = $contents;

@@ -48,19 +48,6 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($requestVars, $test, 'Request params did not match');
   }
   
-  function testSetAndGetRequestType() {
-    $reqtype = 'html';
-    $this->req->setType($reqtype);
-    
-    $this->assertEquals($reqtype, $this->req->getType(), 'Request type did not match');
-  }
-  
-  function testSetAndGetRequestMethod() {
-    $this->req->setMethod(Asar_Message::GET);
-    
-    $this->assertEquals(Asar_Message::GET, $this->req->getMethod(), 'Request method did not match');
-  }
-  
   function testSetAndGetAParam() {
     $testval = 'The quick brown fox jumps over the lazy dog';
     $key = 'test_key';
@@ -68,6 +55,13 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     $this->req->setParam($key, $testval);
     
     $this->assertEquals($testval, $this->req->getParam($key), 'Parameter was not set');
+  }
+  
+  function testSetAndGetRequestType() {
+    $reqtype = 'html';
+    $this->req->setType($reqtype);
+    
+    $this->assertEquals($reqtype, $this->req->getType(), 'Request type did not match');
   }
   
   function testAddParams() {

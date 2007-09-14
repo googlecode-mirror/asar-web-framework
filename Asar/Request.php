@@ -5,9 +5,13 @@
 require_once 'Asar.php';
 
 class Asar_Request extends Asar_Message {
-  private $controller = NULL;
-  private $action     = NULL;
   private $uri        = NULL;
+  private $method     = NULL;
+  
+  const GET    = 'GET';
+  const POST   = 'POST';
+  const PUT    = 'PUT';
+  const DELETE = 'DELETE';
   
   function setUri($uri) {
     $this->uri = $uri;
@@ -17,42 +21,27 @@ class Asar_Request extends Asar_Message {
     return $this->uri;
   }
   
-  function setHeaders($headers) {
-    if (is_array($headers)) {
-      $this->headers = $headers;
+  function setMethod($method) {
+    switch ($method) {
+      case self::GET:
+      case self::POST:
+      case self::PUT:
+      case self::DELETE:
+        $this->method = $method;
+        return TRUE;
+        break;
+      default:
+        $this->exception('Unknown method passed.');
     }
   }
   
-  function getHeaders() {
-    return $this->headers;
-  }
-  
-  function setAddress($application_name, $controller_name = NULL) {
-    parent::setAddress($application_name);
-    if (!is_null($controller_name)) {
-      $this->setController($controller_name);
+  function getMethod() {
+    if (is_null($this->method)) {
+      $this->exception('Method is not set');
+    } else {
+      return $this->method;
     }
   }
-  
-  function setController($controller_name) {
-    $this->controller = $controller_name;
-  }
-  
-  
-  function getController() {
-    return $this->controller;
-  }
-  
-  
-  function setAction($action) {
-    $this->action = $action;
-  }
-  
-  
-  function getAction() {
-    return $this->action;
-  }
-  
   
   function setContent($contents) {
     if (is_array($contents)) {
@@ -62,9 +51,9 @@ class Asar_Request extends Asar_Message {
     }
   }
   
-  function sendTo(Asar_Requestable $processor) {
+  function sendTo(Asar_Requestable $processor, array $arguments = NULL) {
     $this->setContext($processor);
-    $processor->processRequest($this);
+    $processor->processRequest($this, $arguments);
   }
   
 }
