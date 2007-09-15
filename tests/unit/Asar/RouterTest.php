@@ -6,7 +6,7 @@ require_once 'Asar/Router.php';
 class Asar_RouterTest extends PHPUnit_Framework_TestCase {
   
   protected function setUp() {
-    $this->R = Asar_Router::instance();
+    $this->R = new Asar_Router();
   }
   
   function testBasicTranslateNativeRequest() {

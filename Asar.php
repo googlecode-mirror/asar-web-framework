@@ -138,7 +138,6 @@ class Asar {
       // @todo: what if we class didn't follow that convention?
       $instanceMethod = $reflector->getMethod('instance');
       $obj = $instanceMethod->invoke(NULL);
-      echo '**::xx', get_class($obj), "\n";
     } else {
       self::exception('Asar', 'Trying to instantiate the uninstantiable class '.$class_name);
     }

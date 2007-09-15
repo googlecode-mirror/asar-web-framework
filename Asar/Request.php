@@ -53,7 +53,7 @@ class Asar_Request extends Asar_Message {
   
   function sendTo(Asar_Requestable $processor, array $arguments = NULL) {
     $this->setContext($processor);
-    $processor->processRequest($this, $arguments);
+    return $processor->processRequest($this, $arguments);
   }
   
 }

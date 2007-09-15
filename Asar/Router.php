@@ -13,17 +13,6 @@ class Asar_Router extends Asar_Base implements Asar_Requestable {
   
   protected static $instance = NULL; // For Singleton
   
-  static function instance() {
-    if (is_null(self::$instance)) {
-      self::$instance = new self();
-    }
-    return self::$instance;
-  }
-  
-  private function __clone() {}
-  
-  private function __construct() {}
-  
   /**
    * @todo: Better way to do this
    */

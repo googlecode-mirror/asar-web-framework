@@ -21,8 +21,6 @@ abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
   function __construct() {
     $router_class_name = $this->getAppName().'_Router';
     $this->router = Asar::instantiate($router_class_name);
-    echo $router_class_name,"\n";
-    echo get_class($this->router), "--- \n";
   }
   
   function processRequest(Asar_Request $request, array $arguments = NULL) {
