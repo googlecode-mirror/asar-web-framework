@@ -6,7 +6,7 @@ class Asar_Client extends Asar_Base {
   private $app  = NULL;
   private $name = NULL;
   
-  function createRequest($address, $arguments = NULL) {
+  function createRequest($address = '', $arguments = NULL) {
     $req = new Asar_Request();    
     $req->setUri($address);
     

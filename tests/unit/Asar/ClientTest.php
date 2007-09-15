@@ -13,6 +13,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
     $this->TC = new Test_Client();
   }
   
+  
   function arrayMatch($arr1, $arr2) {
     if (count($arr1) !== count($arr2)) {
       return false;
@@ -49,7 +50,6 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSendRequest() {
-    $this->markTestIncomplete('Send Request not implemented');
     $_SERVER['REQUEST_URI'] = 'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful';
     $_SERVER['REQUEST_METHOD'] = 'GET';
     $_GET['enter']  = 'true';
@@ -66,7 +66,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
       'crazy'  => 'beautiful'
     );
     
-    $request = $this->TC->createRequest();
+    $request = $this->TC->createRequest($_SERVER['REQUEST_URI']);
     $req_class = get_class($request);
     $this->assertEquals('Asar_Request', $req_class, 'Invalid object type. Must be \'Asar_Request\'. Returned '.$req_class);
     $this->assertEquals('basic', $request->address['controller'], 'Unable to find controller');
