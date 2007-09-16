@@ -3,7 +3,8 @@ require_once 'PHPUnit/Framework.php';
 require_once 'Asar/Request.php';
  
 class Asar_RequestTest extends PHPUnit_Framework_TestCase {
-
+  
+	
   protected function setUp() {
     $this->req = new Asar_Request();
   }
@@ -73,6 +74,72 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
                ->with($this->req, $arguments);
     $this->req->sendTo($respondent, $arguments);
     
+  }
+  
+  function testSetAndGetType() {
+    $uri = 'test/testing/stupid.txt';
+    $this->req->setUri($uri);
+    $this->assertEquals('txt', $this->req->getType(), 'Type did not match');
+  }
+  
+  function testSetAndGetRequestTypeTxt() {
+    $uri = 'test/testing/stupid.txt';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeDefault() {
+    $uri = 'test/testing/interesting';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeDefaultSlash() {
+    $uri = 'test/testing/interesting/';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypePhp() {
+    $uri = 'test/testing/cool.php';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeHtml() {
+    $uri = 'test/testing/cool.html';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeHtm() {
+    $uri = 'test/testing/cool.htm';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeRss() {
+    $uri = 'test/testing/cool.rss';
+    $this->req->setUri($uri);
+    $this->assertEquals('application/xml', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeXhtml() {
+    $uri = 'test/testing/cool.xhtml';
+    $this->req->setUri($uri);
+    $this->assertEquals('application/xhtml+xml', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeXhr() {
+    $uri = 'test/testing/cool.xhr';
+    $this->req->setUri($uri);
+    $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
+  }
+  
+  function testSetAndGetRequestTypeJson() {
+    $uri = 'test/testing/cool.json';
+    $this->req->setUri($uri);
+    $this->assertEquals('application/json', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
 }

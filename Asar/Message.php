@@ -11,6 +11,19 @@ abstract class Asar_Message extends Asar_Base {
   private $type       = NULL;
   private $headers    = array();
   private $context    = array();
+  private $mime_types = array(
+    'html'   => 'text/html',
+    'htm'    => 'text/html',
+    'php'    => 'text/html',
+    'rss'    => 'application/xml',
+    'xml'    => 'application/xml',
+    'xhtml'  => 'application/xhtml+xml',
+    'txt'    => 'text/plain',
+    'xhr'    => 'text/plain',
+    'css'    => 'text/css',
+    'js'     => 'text/javascript',
+    'json'   => 'application/json',
+  );
   
   function setHeaders($headers) {
     if (is_array($headers)) {
@@ -77,13 +90,20 @@ abstract class Asar_Message extends Asar_Base {
     $this->type = $type;
   }
   
-  
   function getType() {
     if (is_null($this->type)) {
       $this->exception('Type not set');
     } else {
       return $this->type;
     }
+  }
+  
+  function getMimeType() {
+  	if (@ array_key_exists($this->type, $this->mime_types)) {
+  		return $this->mime_types[$this->type];
+  	} else {
+      return 'text/html';
+  	}
   }
   
   protected function setContext($processor) {

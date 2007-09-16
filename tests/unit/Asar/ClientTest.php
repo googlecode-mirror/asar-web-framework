@@ -7,10 +7,35 @@ class Test_Client extends Asar_Client {
 }
 
 class Asar_ClientTest extends PHPUnit_Framework_TestCase {
-  
+  private $temporary_storage = array();
+	
+	
   function setUp() {
     $this->DC = new Asar_Client();
     $this->TC = new Test_Client();
+    
+    // REFRESH PREDEFINED VALUES
+    if (!array_key_exists('GET', $this->temporary_storage)) {
+    	$this->temporary_storage['GET'] = array();
+    	$this->arrayCopy($_GET, $this->temporary_storage['GET']);
+    } else {
+    	$this->arrayCopy( $this->temporary_storage['GET'], $_GET);
+    }
+    
+    if (!array_key_exists('SERVER',  $this->temporary_storage)) {
+    	$this->temporary_storage['SERVER'] = array();
+      $this->arrayCopy($_SERVER, $this->temporary_storage['SERVER']);
+    } else {
+      $this->arrayCopy( $this->temporary_storage['SERVER'], $_SERVER);
+    }
+  }
+  
+  private function arrayCopy(&$from, &$to) {
+  	// clear destination array first
+  	$to = array();
+  	foreach ($from as $key => $value) {
+  		$to[$key] = $value;
+  	}
   }
   
   
@@ -66,13 +91,17 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
       'crazy'  => 'beautiful'
     );
     
-    $request = $this->TC->createRequest($_SERVER['REQUEST_URI']);
+    $request = $this->TC->createRequest($_SERVER['REQUEST_URI'],
+      array(
+        'params' => $expected_params,
+        'method' => $_SERVER['REQUEST_METHOD'],
+        'type'   => 'txt'
+      )
+    );
     $req_class = get_class($request);
     $this->assertEquals('Asar_Request', $req_class, 'Invalid object type. Must be \'Asar_Request\'. Returned '.$req_class);
-    $this->assertEquals('basic', $request->address['controller'], 'Unable to find controller');
-    $this->assertEquals('enactment', $request->address['action'], 'Unable to find action');
-    $this->assertEquals($expected_params, $request->params, 'Unable to get params');
-    $this->assertEquals('txt', $result['type'], 'Unable to get type');
+    $this->assertEquals($expected_params, $request->getParams(), 'Unable to get params');
+    $this->assertEquals('txt', $request->getType(), 'Unable to get type');
   }
   
   function testSetAndGetName() {

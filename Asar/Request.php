@@ -13,8 +13,23 @@ class Asar_Request extends Asar_Message {
   const PUT    = 'PUT';
   const DELETE = 'DELETE';
   
+  
   function setUri($uri) {
     $this->uri = $uri;
+    $this->setType($this->getTypeFromUri($uri));
+  }
+  
+  protected function getTypeFromUri($uri) {
+    // Remove the string after the '?'
+    if (strpos($uri, '?')) {
+      $uri = substr($uri, 0, strpos($uri,'?'));
+    }
+    
+    // Remove the all string before the last occurrence of the '/'
+    $fname = substr($uri, strrpos($uri, '/') + 1);
+    
+    // Get the file extension
+    return substr($fname, strrpos($fname, '.')+1);
   }
   
   function getUri() {
