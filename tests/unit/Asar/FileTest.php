@@ -40,6 +40,10 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		$this->cleanupList = array();
 	}
 	
+	public function __destruct() {
+		$this->cleanUp();
+	}
+	
 	public function testSettingFileName() {
 		
 		$testFileName = 'AAAAARD';
@@ -47,10 +51,6 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		$file = new Asar_File();
 		$file->setFileName($testFileName);
 		$this->assertEquals($testFileName, $file->getFileName(), 'Filename returned is not the same');
-	}
-	
-	public function __destruct() {
-		$this->cleanUp();
 	}
 	
 	public function testSimpleCreateFile() {
@@ -196,8 +196,7 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertTrue(file_exists($testFileName), 'Unable to create or save file');
 		$this->assertEquals($testString, file_get_contents($testFileName), 'Unable to write successfully');
-		
-		
 	}
+  
 }
 ?>

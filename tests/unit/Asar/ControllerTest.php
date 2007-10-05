@@ -20,6 +20,10 @@ class Test_Controller extends Asar_Controller {
   function action1() {
   	$this->response->setContent($this->params);
   }
+  
+  function action2() {
+    $this->forwardTo('action1');
+  }
 }
 
 class Test_Controller_Without_Index extends Asar_Controller {}
@@ -71,6 +75,17 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
     );
     $req->setParams($testcontent);
     $response = $req->sendTo($this->C, array('action' => 'action1'));
+    $this->assertEquals($testcontent, $response->getContent(), 'Unexpected Result');
+  }
+  
+  function testForwardingToInternalAction() {
+    $req = new Asar_Request();
+    $testcontent = array(
+     'bull' => 'cram',
+     'cat' => 'fits'
+    );
+    $req->setParams($testcontent);
+    $response = $req->sendTo($this->C, array('action' => 'action2'));
     $this->assertEquals($testcontent, $response->getContent(), 'Unexpected Result');
   }
   

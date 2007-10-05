@@ -15,14 +15,18 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	function processRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
 		$this->params  = $this->request->getParams();
-		if ($arguments && array_key_exists('action', $arguments)) {
+		$this->callActionSafelyFromArguments($arguments);
+    // @todo: Make sure we reset the object's response for cleanup
+		return $this->response;
+	}
+  
+  protected function callActionSafelyFromArguments($arguments) {
+    if ($arguments && array_key_exists('action', $arguments)) {
 			$this->callAction($arguments['action']);
 		} else {
 			$this->callAction('index');
 		}
-    // @todo: Make sure we reset the object's response for cleanup
-		return $this->response;
-	}
+  }
 	
 	protected function getReflection() {
 		if (!$this->reflection) {
@@ -55,6 +59,10 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 			throw new Asar_Controller_ActionNotFound_Exception("The action '$action' was not found in controller '". get_class($this)."'");
 		}
 	}
+  
+  protected function forwardTo($action_address) {
+    $this->callActionSafelyFromArguments(array('action'=> $action_address));
+  }
 }
 
 class Asar_Controller_Exception extends Asar_Base_Exception {}

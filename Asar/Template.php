@@ -1,10 +1,4 @@
 <?php
-/**
- * Created on Jul 3, 2007
- * 
- * @author     Wayne Duran
- */
-
 class Asar_Template implements ArrayAccess {
 	protected $vars = array(); // Holds all the template variables
 	protected $path; // Path to the templates
@@ -174,5 +168,5 @@ class Asar_Template implements ArrayAccess {
 	}
 }
 
-class Asar_TemplateException extends Exception {}
+class Asar_Template_Exception extends Exception {}
 ?>
