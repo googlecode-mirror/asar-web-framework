@@ -119,32 +119,12 @@ class AsarTest extends PHPUnit_Framework_TestCase {
 	function testStartWithTestApplication() {
 		$testapp = 'Test';
 		try {
-			Asar::start('Test');
+			$app = Asar::start('Test');
 			// Test if we get the right client
-			// Client must default to 'Asar_Client'
-			$client = Asar::getLastClientLoaded();
-			$app    = Asar::getAppWithClient($client->getName());
+			//$app    = Asar::getAppWithClient($client->getName());
 		} catch (Exception $e) {
 			$this->assertTrue(false, 'Exception thrown: '. get_class($e) . ' , '. $e->getMessage());
 		}
-		$this->assertEquals('Asar_Client', get_class($client), 'Wrong Client loaded');
-		$this->assertEquals('Test_Application', get_class($app), 'Wrong application loaded');
-	}
-	
-	function testStartWithCustomClient() {
-		$testapp = 'Test';
-		$client_name = 'What a wonderful world';
-		$client = new Test_Client();
-		$client->setName($client_name);
-		try {
-			Asar::start('Test', $client);
-		} catch (Exception $e) {
-			$this->assertTrue(false, 'Exception thrown: '. get_class($e) . ' , '. $e->getMessage());
-		}
-		$testClient = Asar::getClient($client->getName());
-		$app = Asar::getAppWithClient($client->getName());
-		$this->assertSame($client, $testClient, 'Client passed was not found');
-		$this->assertEquals('Test_Client', get_class($testClient), 'Wrong Client loaded');
 		$this->assertEquals('Test_Application', get_class($app), 'Wrong application loaded');
 	}
 	

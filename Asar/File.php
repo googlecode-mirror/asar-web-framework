@@ -1,9 +1,6 @@
 <?php
 /**
- * Asar_File
  * A wrapper class for simplifying file creation and access
- * 
- * 
  * 
  * EXAMPLE - File Creation 
  * The following code creates a file named 'filename.ext'

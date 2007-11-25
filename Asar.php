@@ -12,9 +12,6 @@ class Asar {
   private static $asarpath = NULL;
   private static $instance = NULL;
   private static $apps            = array();
-  private static $clients         = array();
-  private static $clients_to_apps = array();
-  private static $last_client = NULL;
   
   
   /*
@@ -33,8 +30,6 @@ class Asar {
   
   static function reset() {
     self::$apps            = array();
-    self::$clients         = array();
-    self::$clients_to_apps = array();
   }
   
   static function getVersion() {
@@ -72,56 +67,7 @@ class Asar {
     // using naming convention
     self::$apps[$application_name] = self::instantiate($application_name.'_Application');
     
-    if (!$client) {
-      // Create a default client if no client is provided
-      $client = self::instantiate('Asar_Client');
-    }
-    
-    try {
-      $client_name = $client->getName();
-    } catch (Asar_Client_Exception $e) {
-      $client->setName(time() . substr(md5(microtime()), 0, rand(5, 12)));
-      $client_name = $client->getName();
-    }
-    self::$clients[$client_name] = $client;
-    self::$last_client = $client;
-    self::$clients_to_apps[$client_name] = $application_name;
-  }
-  
-  
-  static function getLastClientLoaded() {
-    if (is_null(self::$last_client)) {
-      self::exception('Asar', 'No client was loaded');
-    } else {
-      return self::$last_client;
-    }
-  }
-  
-  
-  static function getClient($client_name) {
-    if (self::isClientExists($client_name)) {
-      return self::$clients[$client_name];
-    } else {
-      self::exception('Asar', "The client name $client_name passed to Asar::getClient() does not exist");
-    }
-  }
-  
-  
-  static function getAppWithClient($client_name) {
-    if (self::isClientExists($client_name)) {
-      return self::$apps[self::$clients_to_apps[$client_name]];
-    } else {
-      self::exception('Asar', "The client name $client_name passed to Asar::getAppWithClient() does not exist");
-    }
-  }
-  
-  
-  private static function isClientExists($client_name) {
-    if (array_key_exists($client_name, self::$clients)) {
-      return true;
-    } else {
-      return false;
-    }
+	return self::$apps[$application_name];
   }
   
   
