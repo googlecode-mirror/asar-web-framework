@@ -282,38 +282,25 @@ class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
     }
     
     
-    
-    public function testCallingUnregisteredMethod() {
-    	$testf = 'temp/regtest.php';
-    	$testf_content = '<h4><?= $this->upperCase($psst) ?></h4>';
-    	$this->createTestFile($testf, $testf_content);
-    	
-    	$teststring = 'Karasa';
-      
-      
-      
-      error_reporting(0);
-      // user defined error handling function
-      function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars) {
-        $handlers = ob_list_handlers();
-        while ( ! empty($handlers) )    {
-            ob_end_clean();
-            $handlers = ob_list_handlers();
-        }
-      }
-      $old_error_handler = set_error_handler("userErrorHandler");
-    	
-    	$this->T['psst'] = $teststring;
-    	try {
-    		ob_start();
-        $b = $this->T->fetch($testf);
-        ob_end_clean();
-    	} catch (Exception $e) {
-    		$this->assertTrue($e instanceof Asar_Template_Exception, 'Unable to throw proper exception');
-    		$this->assertEquals('Undefined method "upperCase" or the helper method was not registered', $e->getMessage(), 'Unexpected message');
-    	}
-      set_error_handler($old_error_handler);
-    }
+	/**
+	 * Test for calling unregistered Method
+	 * 
+	 * @todo How to get the message from exception
+	 */
+	public function testCallingUnregisteredMethod() {
+		$testf = 'temp/regtest.php';
+		$testf_content = '<h4><?= $this->upperCase($psst) ?></h4>';
+		$this->createTestFile($testf, $testf_content);
+		$teststring = 'Karasa';
+		
+		$this->T['psst'] = $teststring;
+		
+		$this->setExpectedException('Asar_Template_Exception');
+		ob_start();
+		$b = $this->T->fetch($testf);
+		ob_end_clean();
+		
+	}
     
     public function testRegisterManyHelpers() {
     	Asar_Template::registerHelper('Asar_TemplateTest_TestHelper');

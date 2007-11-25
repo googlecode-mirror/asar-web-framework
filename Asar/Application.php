@@ -42,19 +42,19 @@ abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
   }
   
   function loadController($name) {
-    return $this->loadClassResource('Controller', $this->camelCase($name));
+    return $this->loadClassResource('Controller', Asar::camelCase($name));
   }
   
   function loadModel($name) {
-    return $this->loadClassResource('Model', $this->camelCase($name));
+    return $this->loadClassResource('Model', Asar::camelCase($name));
   }
   
   function loadFilter($name) {
-    return $this->loadClassResource('Filter', $this->camelCase($name));
+    return $this->loadClassResource('Filter', Asar::camelCase($name));
   }
   
   function loadHelper($name) {
-    return $this->loadClassResource('Helper', $this->camelCase($name));
+    return $this->loadClassResource('Helper', Asar::camelCase($name));
   }
   
   function loadView($controller, $action = '') {

@@ -37,30 +37,6 @@ class Asar_BaseTest extends PHPUnit_Framework_TestCase {
     $this->ABC = new Asar_Base_Child_Temp();
   }
   
-  function testUnderscore() {
-    $teststr = 'IAmQuiteAware';
-    $expected = 'i_am_quite_aware';
-    $this->assertEquals($expected, Asar_Base::underscore($teststr), 'Was unable to underscore test string');
-  }
-  
-  function testDash() {
-    $teststr = 'IAmQuiteAware';
-    $expected = 'i-am-quite-aware';
-    $this->assertEquals($expected, Asar_Base::dash($teststr), 'Was unable to dash test string');
-  }
-  
-  function testCamelCase() {
-    $teststr = 'i_am_quite_aware';
-    $expected = 'IAmQuiteAware';
-    $this->assertEquals($expected, Asar_Base::camelCase($teststr), 'Was unable to CamelCase test string');
-  }
-  
-  function testLowerCamelCase() {
-    $teststr = 'i_am_quite_aware';
-    $expected = 'iAmQuiteAware';
-    $this->assertEquals($expected, Asar_Base::lowerCamelCase($teststr), 'Was unable to lowerCamelCase test string');
-  }
-  
   function testThrowingException() {
     try {
       $this->ABC->throwException();

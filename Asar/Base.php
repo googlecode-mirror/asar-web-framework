@@ -31,26 +31,8 @@ class Asar_Base {
       }
     }
   }
+  
   */
-  
-  
-  static function underscore($str) {
-    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $str));
-  }
-  
-  static function dash($str) {
-    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '-\\1', $str));
-  }
-  
-  static function camelCase($str) {
-    return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $str)));
-  }
-  
-  static function lowerCamelCase($str) {
-    $str = self::camelCase($str);
-    $str[0] = strtolower($str[0]);
-    return $str;
-  }
   
   
   function exception($msg) {

@@ -173,31 +173,49 @@ class Asar {
       return false;
   }
   
-  static function createException($classname, $msg) {
-  	$exception = $classname.'_Exception';
-  	if (class_exists($exception, false)) {
-  	  $ref = new ReflectionClass($exception);
-  	  throw $ref->newInstance($msg);
-  	} else {
-  	  return FALSE;
-  	}
-  }
+	static function createException($classname, $msg) {
+		$exception = $classname.'_Exception';
+		if (class_exists($exception, false)) {
+			$ref = new ReflectionClass($exception);
+			throw $ref->newInstance($msg);
+		} else {
+			return FALSE;
+		}
+	}
   
-  static function exception($obj, $msg) {
-    if (!is_object($obj) && is_string($obj)) {
-      $classname = $obj;
-    } else {
-      $classname = get_class($obj);
-    }
-    while (FALSE === self::createException($classname, $msg)) {
-      $classname = get_parent_class($classname);
-      if (!$classname) {
-      	break;
-      }
-    }
-    // Resort to throwing Exception by default
-    throw new Exception ($msg);
-  }
+	static function exception($obj, $msg) {
+		if (!is_object($obj) && is_string($obj)) {
+			$classname = $obj;
+		} else {
+			$classname = get_class($obj);
+		}
+		while (FALSE === self::createException($classname, $msg)) {
+			$classname = get_parent_class($classname);
+			if (!$classname) {
+				break;
+			}
+		}
+		// Resort to throwing Exception by default
+		throw new Exception ($msg);
+	}
+
+	static function underscore($str) {
+	    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $str));
+	  }
+
+	  static function dash($str) {
+	    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '-\\1', $str));
+	  }
+
+	  static function camelCase($str) {
+	    return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $str)));
+	  }
+
+	  static function lowerCamelCase($str) {
+	    $str = self::camelCase($str);
+	    $str[0] = strtolower($str[0]);
+	    return $str;
+	  }
   
   
 }
