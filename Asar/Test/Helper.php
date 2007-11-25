@@ -13,6 +13,8 @@
  **/
 abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 {
+	private static $_temp_path = FALSE;
+	
 	/**
 	 * Wrapper method for PHPUnit_Framework_TestCaes runbase to enable custom cleanup
 	 * 
@@ -47,7 +49,11 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 **/
 	public static function getTempDir()
 	{
-		return realpath('../../_temp').'/';
+		if (!self::$_temp_path) {
+			//self::$_temp_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+			self::$_temp_path = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR.'_temp'.DIRECTORY_SEPARATOR;
+		}
+		return self::$_temp_path;
 	}
 	
 	/**
