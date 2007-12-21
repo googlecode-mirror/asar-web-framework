@@ -11,20 +11,28 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 	private $cleanupList = array();
 	
 	protected function setUp() {
-		$this->recursiveDelete(realpath('../../_temp'));
-		
+		$this->temp_path = realpath(dirname(__FILE__).$this->upPath(4)).DIRECTORY_SEPARATOR.'_temp'.DIRECTORY_SEPARATOR;
+		$this->recursiveDelete($this->temp_path);
+	}
+	
+	private function upPath($levels=1) {
+		$p = '';
+		for($i = 0;$i < $levels;++$i) {
+			$p .= DIRECTORY_SEPARATOR.'..';
+		}
+		return $p;
 	}
 	
 	protected function tearDown() {
-		$this->recursiveDelete(realpath('../../_temp'));
+		$this->recursiveDelete($this->temp_path);
 	}
 	
 	public function __destruct() {
-		$this->recursiveDelete(realpath('../../_temp'));
+		$this->recursiveDelete($this->temp_path);
 	}
 
 	protected function recursiveDelete($folderPath) {
-		if (is_dir($folderPath)) {
+		if (file_exists($folderPath) && is_dir($folderPath)) {
 			$contents = scandir($folderPath);
 	        foreach ($contents as $value) {
 	            if ( $value != "." && $value != ".." ) {
@@ -45,16 +53,15 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 	public function testGettingTemporaryTestFilesDir()
 	{
 		$dir = Asar_Test_Helper::getTempDir();
-		$this->assertEquals(realpath('../../_temp').'/', $dir, 'Temp directory did not match expected path');
+		$this->assertEquals($this->temp_path, $dir, 'Temp directory did not match expected path');
 		
 	}
-	
 	
 	public function testCreatingFiles()
 	{
 		$filename = 'dummy.txt';
 		Asar_Test_Helper::newFile($filename, '');
-		$this->assertFileExists(realpath('../../_temp/'.$filename), 'The file does not exist');
+		$this->assertFileExists($this->temp_path.$filename, 'The file does not exist');
 	}
 	
 	public function testCreatingFilesWithContents()
@@ -70,7 +77,7 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 		$filename = 'dummy3.txt';
 		Asar_Test_Helper::newFile($filename, ' ');
 		Asar_Test_Helper::deleteFile($filename);
-		$this->assertFileNotExists(realpath('../../_temp/'.$filename), 'The test file must no longer exist after deleting it');
+		$this->assertFileNotExists($this->temp_path.$filename, 'The test file must no longer exist after deleting it');
 	}
 	
 	public function testClearingTemporaryDirectory()
@@ -80,9 +87,13 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 		foreach ($files as $file => $content) {
 			Asar_Test_Helper::newFile($file, $content);
 		}
+		// Make sure they exist first
+		foreach ($files as $f => $c) {
+			$this->assertFileExists($this->temp_path.$f, 'The test file '.$f.' must first exist before deleting it');
+		}
 		Asar_Test_Helper::clearTemp();
 		foreach ($files as $f => $c) {
-			$this->assertFileNotExists(realpath('../../_temp/').'/'.$f, 'The test file '.$f.' must no longer exist after deleting it');
+			$this->assertFileNotExists($this->temp_path.$f, 'The test file '.$f.' must no longer exist after deleting it');
 		}
 	}
 	
@@ -99,7 +110,7 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 	{
 		$file = 'dummy4.txt';
 		Asar_Test_Helper::newFile($file, '');
-		$this->assertEquals(realpath('../../_temp').'/'.$file, Asar_Test_Helper::getPath($file), 'The file path returned is not equal to expected');
+		$this->assertEquals($this->temp_path.$file, Asar_Test_Helper::getPath($file), 'The file path returned is not equal to expected');
 		
 	}
 	

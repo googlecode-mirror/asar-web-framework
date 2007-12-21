@@ -56,6 +56,33 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     
     $this->assertEquals($testval, $this->req->getParam($key), 'Parameter was not set');
   }
+	
+	function testInvokingToStringMethodOfMessageReturnsContent() {
+		$content = 'hello world';
+		$this->req->setContent($content);
+		$this->assertEquals($content, $this->req->__toString(), 'Invoking toString method did not return something properly');
+	}
+	
+	function testAnotherInvokingToStringMethodOfMessageReturnsContent() {
+		$content = 'this is a good place to die';
+		$this->req->setContent($content);
+		$this->assertEquals($content, $this->req->__toString(), 'Invoking toString method did not return something properly');
+	}
+	
+  	
+	function testGettingStringContentOfMessageWithArrayedContentGetsConcatenatedStrings() {
+		$contents = array(
+			'action' => 'Stupid',
+			'var1'   => 'Anything',
+			'var2'   => 'Ahahahaha',
+			'var3'   => 'Yo!',
+			'lover'  => 'Fell in love with a girl'
+		);
+		
+		$this->req->setContent($contents);
+		$expected = implode("\n", $contents);
+		$this->assertEquals($expected, $this->req->__toString(), 'Invoking toString did not return concatenated strings');
+	}
     
   function testAddParams() {
     $requestVars = array(

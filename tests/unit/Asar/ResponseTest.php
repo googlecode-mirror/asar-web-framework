@@ -48,10 +48,16 @@ class Asar_ResponseTest extends PHPUnit_Framework_TestCase {
   	$this->assertEquals(200, $this->res->getStatusCode(), 'Setting status to OK did not succeed');
   }
   
+  function test200ShouldBeDefaultStatusCode() {
+  	$this->assertEquals(200, $this->res->getStatusCode(), 'Status code 200 must be default');
+  }
+  
   function testSettingStatusNotFound() {
     $this->res->setStatusNotFound();
     $this->assertEquals(404, $this->res->getStatusCode(), 'Setting status to File Not Found did not succeed');
   }
+	
+	
 }
 
 

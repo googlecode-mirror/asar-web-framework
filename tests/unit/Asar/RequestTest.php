@@ -25,11 +25,26 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($requestVars, $test, 'Request contents did not match');
   }
   
-  function testSetAndGetRequestMethod() {
-    $this->req->setMethod(Asar_Request::GET);
-    
-    $this->assertEquals(Asar_Request::GET, $this->req->getMethod(), 'Request method did not match');
-  }
+	function testSetAndGetRequestMethod() {
+		$this->req->setMethod(Asar_Request::GET);
+		$this->assertEquals(Asar_Request::GET, $this->req->getMethod(), 'Request method did not match');
+	}
+  
+	function testSetAndGetRequestMethodPOST() {
+		$this->req->setMethod(Asar_Request::POST);
+		$this->assertEquals(Asar_Request::POST, $this->req->getMethod(), 'Request method must be POST');
+	}
+
+	function testSetAndGetRequestMethodPUT() {
+		$this->req->setMethod(Asar_Request::PUT);
+		$this->assertEquals(Asar_Request::PUT, $this->req->getMethod(), 'Request method must be PUT');
+	}
+
+	function testSetAndGetRequestMethodDELETE() {
+		$this->req->setMethod(Asar_Request::DELETE);
+		$this->assertEquals(Asar_Request::DELETE, $this->req->getMethod(), 'Request method must be DELETE');
+	}
+
   
   function testSetAndGetRequestType() {
     $reqtype = 'html';
@@ -73,7 +88,10 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
                ->method('processRequest')
                ->with($this->req, $arguments);
     $this->req->sendTo($respondent, $arguments);
-    
+  }
+  
+  function testSettingAndGettingUri() {
+  	$uri = '/'
   }
   
   function testSetAndGetType() {

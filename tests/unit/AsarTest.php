@@ -2,6 +2,7 @@
 
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
+require_once 'Asar/Test/Helper.php';
 
 class Test_Parent_Class {
 	function throwException() {
@@ -42,8 +43,10 @@ if (!class_exists('Test_Client', false)) {
 }
 
 abstract class Uninstantiable_Class {}
- 
-class AsarTest extends PHPUnit_Framework_TestCase {
+
+
+
+class AsarTest extends Asar_Test_Helper {
 	
 	protected function setUp() {
 		

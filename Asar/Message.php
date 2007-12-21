@@ -114,6 +114,13 @@ abstract class Asar_Message extends Asar_Base {
     return $this->context;
   }
   
+  function __toString() {
+  	if (is_array($this->contents)) {
+  		return implode("\n", $this->contents);
+  	}
+  	return $this->contents;
+  }
+  
 }
 
 class Asar_Message_Exception extends Asar_Base_Exception {}

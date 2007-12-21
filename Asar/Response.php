@@ -5,7 +5,7 @@
 require_once 'Asar.php';
 
 class Asar_Response extends Asar_Message {
-  private $status_code = NULL;
+  private $status_code = 200;
   
   function setStatusCode($code) {
   	// Check code against bounds 

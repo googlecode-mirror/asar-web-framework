@@ -8,10 +8,10 @@ class Asar_Request extends Asar_Message {
   private $uri        = NULL;
   private $method     = NULL;
   
-  const GET    = 'GET';
-  const POST   = 'POST';
-  const PUT    = 'PUT';
-  const DELETE = 'DELETE';
+  const GET    = 1;
+  const POST   = 2;
+  const PUT    = 3;
+  const DELETE = 4;
   
   
   function setUri($uri) {
@@ -46,7 +46,7 @@ class Asar_Request extends Asar_Message {
         return TRUE;
         break;
       default:
-        $this->exception('Unknown method passed.');
+        $this->exception('Unknown Request Method passed.');
     }
   }
   

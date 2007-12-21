@@ -14,20 +14,42 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	
 	function processRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
-		$this->params  = $this->request->getParams();
-		$this->callActionSafelyFromArguments($arguments);
+		//$this->params  = $this->request->getParams();
+		$this->callResourceAction();
     // @todo: Make sure we reset the object's response for cleanup
+    	
 		return $this->response;
 	}
-  
-  protected function callActionSafelyFromArguments($arguments) {
-    if ($arguments && array_key_exists('action', $arguments)) {
-			$this->callAction($arguments['action']);
-		} else {
-			$this->callAction('index');
-		}
-  }
 	
+	private function callResourceAction() {
+		if (!$this->request->getUri()) {
+			$this->request->setUri('/');
+		}
+		if (array_key_exists($this->request->getUri(), $this->map)) {
+			$method_name = $this->getRequestMethodString().'_'.$this->map[$this->request->getUri()];
+			if ($this->getReflection()->hasMethod($method_name)) {
+				$this->response->setContent($this->$method_name());
+			} else {
+				$this->response->setStatusCode(405);
+			}
+		} else {
+			$this->response->setStatusCode(404);
+		}
+	}
+	
+	private function getRequestMethodString() {
+		switch ($this->request->getMethod()) {
+			case Asar_Request::GET :
+				return 'GET';
+			case Asar_Request::POST :
+				return 'POST';
+			case Asar_Request::PUT :
+				return 'PUT';
+			case Asar_Request::DELETE :
+				return 'DELETE';
+		}
+	}
+  
 	protected function getReflection() {
 		if (!$this->reflection) {
 			$this->reflection = new ReflectionClass(get_class($this));
@@ -35,34 +57,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		return $this->reflection;
 	}
 	
-	protected function isActionExists($action) {
-		if (!is_array($this->actions)) {
-		  // Get all public methods (except processRequest) and store in actions list
-			foreach ($this->getReflection()->getMethods() as $method) {
-		  	if ($method->isPublic() && !$method->isStatic() && $method->getName() !== 'processRequest') {
-		  		$this->actions[] = $method->getName();
-		  	}
-		  }
-		}
-		if (in_array($action, $this->actions)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
-	protected function callAction($action) {
-		if ($this->isActionExists($action)) {
-		  $this->$action();
-		} else {
-			// @todo: implement this in $this->exception
-			throw new Asar_Controller_ActionNotFound_Exception("The action '$action' was not found in controller '". get_class($this)."'");
-		}
-	}
-  
-  protected function forwardTo($action_address) {
-    $this->callActionSafelyFromArguments(array('action'=> $action_address));
-  }
 }
 
 class Asar_Controller_Exception extends Asar_Base_Exception {}
