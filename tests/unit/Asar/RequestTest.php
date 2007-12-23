@@ -44,7 +44,11 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$this->req->setMethod(Asar_Request::DELETE);
 		$this->assertEquals(Asar_Request::DELETE, $this->req->getMethod(), 'Request method must be DELETE');
 	}
-
+	
+	function testSetAndGetRequestMethodHEAD() {
+		$this->req->setMethod(Asar_Request::HEAD);
+		$this->assertEquals(Asar_Request::HEAD, $this->req->getMethod(), 'Request method must be DELETE');
+	}
   
   function testSetAndGetRequestType() {
     $reqtype = 'html';
@@ -89,10 +93,10 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
                ->with($this->req, $arguments);
     $this->req->sendTo($respondent, $arguments);
   }
-  
+  /*
   function testSettingAndGettingUri() {
   	$uri = '/'
-  }
+  }*/
   
   function testSetAndGetType() {
     $uri = 'test/testing/stupid.txt';

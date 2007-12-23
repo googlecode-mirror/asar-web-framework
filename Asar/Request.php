@@ -12,6 +12,7 @@ class Asar_Request extends Asar_Message {
   const POST   = 2;
   const PUT    = 3;
   const DELETE = 4;
+  const HEAD   = 5;
   
   
   function setUri($uri) {
@@ -42,6 +43,7 @@ class Asar_Request extends Asar_Message {
       case self::POST:
       case self::PUT:
       case self::DELETE:
+      case self::HEAD:
         $this->method = $method;
         return TRUE;
         break;

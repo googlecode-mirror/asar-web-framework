@@ -26,14 +26,26 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 			$this->request->setUri('/');
 		}
 		if (array_key_exists($this->request->getUri(), $this->map)) {
-			$method_name = $this->getRequestMethodString().'_'.$this->map[$this->request->getUri()];
-			if ($this->getReflection()->hasMethod($method_name)) {
-				$this->response->setContent($this->$method_name());
+			// If the request method is HEAD, use GET
+			if ($this->request->getMethod() == Asar_Request::HEAD) {
+				$method_name = 'GET_'.$this->map[$this->request->getUri()];
+			} else {
+				$method_name = $this->getRequestMethodString().'_'.$this->map[$this->request->getUri()];
+			}
+			
+			if ($this->getReflection()->hasMethod($method_name)) { 
+				// Head must not return content back to client
+				if ($this->request->getMethod() == Asar_Request::HEAD) {
+					$this->$method_name();
+					$this->response->setContent('');
+				} else {
+					$this->response->setContent($this->$method_name());	
+				}
 			} else {
 				$this->response->setStatusCode(405);
 			}
 		} else {
-			$this->response->setStatusCode(404);
+			$this->response->setStatusCode(404); // Resource not Found
 		}
 	}
 	
@@ -47,6 +59,8 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 				return 'PUT';
 			case Asar_Request::DELETE :
 				return 'DELETE';
+			case Asar_Request::HEAD :
+				return 'HEAD';
 		}
 	}
   
