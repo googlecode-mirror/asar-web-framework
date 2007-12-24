@@ -69,6 +69,22 @@ class Asar {
     
 	return self::$apps[$application_name];
   }
+
+
+	/**
+	 * Returns the class prefix used for an object.
+	 * 
+	 * For example, an object instantiated from the class named 'Test_Class_Name'
+	 * when passed to this method will return 'Test';
+	 *
+	 * @return string class prefix
+	 * @param object
+	 **/
+	public static function getClassPrefix($obj)
+	{
+		$classname = get_class($obj);
+		return substr($classname, 0, strpos($classname, '_'));
+	}
   
   
   static function instantiate($class_name, array $arguments = array()) {

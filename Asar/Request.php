@@ -37,20 +37,35 @@ class Asar_Request extends Asar_Message {
     return $this->uri;
   }
   
-  function setMethod($method) {
-    switch ($method) {
-      case self::GET:
-      case self::POST:
-      case self::PUT:
-      case self::DELETE:
-      case self::HEAD:
-        $this->method = $method;
-        return TRUE;
-        break;
-      default:
-        $this->exception('Unknown Request Method passed.');
-    }
-  }
+	function setMethod($method) {
+		switch ($method) {
+			case self::GET:
+			case self::POST:
+			case self::PUT:
+			case self::DELETE:
+			case self::HEAD:
+				$this->method = $method;
+				return TRUE;
+				break;
+			case 'GET':
+				$this->method = self::GET;
+				break;
+			case 'HEAD':
+				$this->method = self::HEAD;
+				break;
+			case 'POST':
+				$this->method = self::POST;
+				break;
+			case 'PUT':
+				$this->method = self::PUT;
+				break;
+			case 'DELETE':
+				$this->method = self::DELETE;
+				break;
+			default:
+				$this->exception('Unknown Request Method passed.');
+		 }
+	}
   
   function getMethod() {
     if (is_null($this->method)) {

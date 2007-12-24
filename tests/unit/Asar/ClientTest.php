@@ -69,7 +69,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
       )
     );
     $r = $this->DC->createRequest($address, $arguments);
-    $this->assertEquals($arguments['method'], $r->getMethod(), 'Method mismatch');
+    $this->assertEquals(Asar_Request::GET, $r->getMethod(), 'Method mismatch');
     $this->assertEquals($address, $r->getUri(), 'Address mismatch');
     $this->assertTrue($this->arrayMatch($arguments['params'], $r->getParams()), 'Parameters did not match');
   }

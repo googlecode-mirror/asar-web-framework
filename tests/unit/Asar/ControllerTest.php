@@ -3,75 +3,96 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
 
-class Test_Controller extends Asar_Controller {
+class Test_Controller_Index extends Asar_Controller {
+	
 	protected $map = array(
-		'/' => 'index',
-		'/path1/' => 'method1'
+		'path' => 'Another'
 	);
 	
-	public function GET_index() {
-		return 'hello world';
-	}
-	
-	public function GET_method1() {
+	public function GET() {
 		return 'hello there';
 	}
 	
-	public function POST_method1() {
+	public function POST() {
 		return 'I am alright';
 	}
 	
-	public function PUT_method1() {
+	public function PUT() {
 		return 'Put it on';
 	}
 	
-	public function DELETE_method1() {
+	public function DELETE() {
 		return 'Deleted!';
 	}
 }
 
-class Test_Controller_Without_Index extends Asar_Controller {}
+class Test_Controller_Another extends Asar_Controller {
+	public function GET() {
+		return 'hello world';
+	}
+}
+
 
 class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
   
 	protected function setUp() {
-		$this->C = new Test_Controller();
+		$this->C = new Test_Controller_Index();
 	}
 	
-	public function testPassingARequestWithNoSpecifiedPathButWithMethodGetInvokesIndexWithGetMethod() {
+	public function testPassingARequestWithMethodGetInvokesMappedMethod() {
 		$req = new Asar_Request();
 		$req->setMethod(Asar_Request::GET);
-		$this->assertEquals('hello world', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
-	}
-	
-	public function testPassingARequestWithSpecifiedPathWithMethodGetInvokesMappedMethod() {
-		$req = new Asar_Request();
-		$req->setMethod(Asar_Request::GET);
-		$req->setUri('/path1/');
 		$this->assertEquals('hello there', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	public function testPassingARequestWithSpecifiedPathWithMethodPostInvokesMappedMethod() {
+	
+	public function testPassingARequestWithMethodPostInvokesMappedMethod() {
 		$req = new Asar_Request();
 		$req->setMethod(Asar_Request::POST);
-		$req->setUri('/path1/');
 		$this->assertEquals('I am alright', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	public function testPassingARequestWithSpecifiedPathWithMethodPutInvokesMappedMethod() {
+	public function testPassingARequestWithMethodPutInvokesMappedMethod() {
 		$req = new Asar_Request();
 		$req->setMethod(Asar_Request::PUT);
-		$req->setUri('/path1/');
 		$this->assertEquals('Put it on', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	public function testPassingARequestWithSpecifiedPathWithMethodDeleteInvokesMappedMethod() {
+	public function testPassingARequestWithMethodDeleteInvokesMappedMethod() {
 		$req = new Asar_Request();
 		$req->setMethod(Asar_Request::DELETE);
-		$req->setUri('/path1/');
 		$this->assertEquals('Deleted!', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
+	public function testRequestingAMappedResourceButUndefinedMethodMustReturnA405StatusResponse() {
+		$req = new Asar_Request();
+		$req->setMethod(Asar_Request::POST);
+		$this->assertEquals(405, $req->sendTo(new Test_Controller_Another())->getStatusCode());
+	}
+	
+	public function testRequestingAResourceWithHeadMethodShouldReturnTheSameResponseExceptContentWhenGetMethodIsDefinedForThatResource() {
+		$req = new Asar_Request();
+		$req->setMethod(Asar_Request::HEAD);
+		$this->assertEquals(200, $req->sendTo($this->C)->getStatusCode());
+	}
+	
+	public function testUsingHeadAsRequestMethodMustNotReturnAnyContent() {
+		$req = new Asar_Request();
+		$req->setMethod(Asar_Request::HEAD);
+		$this->assertEquals('', $req->sendTo($this->C)->__toString(), 'Returned content for HEAD!');
+	}
+	
+	public function testRequestingWithSubPaths() {
+		$req = new Asar_Request();
+		$req->setMethod(Asar_Request::GET);
+		$req->setUri('/path/');
+		$this->assertEquals('hello world', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
+	}
+	
+	/*
+	
+	
+	/*
 	public function testRequestingAnUnmappedResourceResultsIn404StatusResponse() {
 		$req = new Asar_Request();
 		$req->setMethod(Asar_Request::GET);
@@ -79,34 +100,6 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(404, $req->sendTo($this->C)->getStatusCode());
 	}
 	
-	public function testRequestingAMappedResourceButUndefinedMethodMustReturnA405StatusResponse() {
-		$req = new Asar_Request();
-		$req->setMethod(Asar_Request::POST);
-		$req->setUri('/');
-		$this->assertEquals(405, $req->sendTo($this->C)->getStatusCode());
-	}
-	
-	public function testRequestingAMappedResourceWithHeadMethodShouldReturnTheSameResponseExceptContentWhenGetMethodIsDefinedForThatResource() {
-		$req = new Asar_Request();
-		$req->setMethod(Asar_Request::HEAD);
-		$req->setUri('/');
-		$this->assertEquals(200, $req->sendTo($this->C)->getStatusCode());
-	}
-	
-	public function testUsingHeadAsRequestMethodMustNotReturnAnyContent() {
-		$req = new Asar_Request();
-		$req->setMethod(Asar_Request::HEAD);
-		$req->setUri('/');
-		$this->assertEquals('', $req->sendTo($this->C)->__toString(), 'Returned content for HEAD!');
-	}
-	
-	public function testRequestingWithSubPaths() {
-		$req = new Asar_Request();
-		$req->setMethod(Asar_Request::GET);
-		$req->setUri('/path1/param/');
-		$this->assertEquals('hello there', $req->sendTo($this->C)->__toString(), 'Controller did not handle request');
-	}
-	/*
 	function testMakeSureControllerActionHasAccessToRequestObject() {
 		$req = new Asar_Request();
 		$testcontent = array(

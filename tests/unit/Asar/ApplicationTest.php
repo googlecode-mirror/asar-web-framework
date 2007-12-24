@@ -4,12 +4,13 @@ require_once 'PHPUnit/Framework.php';
 require_once 'Asar/Application.php';
 
 
-class Test2_Application extends Asar_Application {
-  function getRouter() {
-    return $this->router;
-  }
+class Test2_Application extends Asar_Application {}
+class Test2_Controller_Index extends Asar_Controller{
+	function GET() {
+		return $this->request->getContent();
+	}
 }
-
+/*
 class Test2_Router extends Asar_Router {
   
   function processRequest(Asar_Request $request, array $arguments = NULL) {
@@ -23,6 +24,7 @@ class Test2_Router extends Asar_Router {
     return $response;
   }
 }
+*/
 
 
 class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
@@ -31,6 +33,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->app = new Test2_Application();
   }
   
+	public function testStartingMustFirstRunRootController()
+	{
+		Asar::start('Test2');
+	}
   
   function testLoadingController() {
     $test     = 'cheap';
@@ -114,16 +120,17 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testProcessingRequest() {
     $req = new Asar_Request();
-    $req->setContent( array(
+	$testarray = array(
                         'dirt' => 'cheap',
                         'suck' => 'lick',
                         'sup'  => 'Stupid Utility Padyaks',
                         'ban'  => 1
-                      )
-    );
+                      );
+    $req->setContent( $testarray );
+	$req->setMethod(Asar_Request::GET);
     $response = $req->sendTo($this->app);
     $this->assertTrue($response instanceof Asar_Response, 'Returned value is not an instance of Asar_Response');
-    $this->assertEquals('dirt => cheap, suck => lick, sup => Stupid Utility Padyaks, ban => 1, ', $response->getContent(), 'Unexpected value for content');
+    $this->assertEquals($testarray, $response->getContent(), 'Unexpected value for content');
   }
 }
 

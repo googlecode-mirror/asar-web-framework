@@ -49,6 +49,31 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$this->req->setMethod(Asar_Request::HEAD);
 		$this->assertEquals(Asar_Request::HEAD, $this->req->getMethod(), 'Request method must be DELETE');
 	}
+	
+	function testSettingGetRequestMethodWithString() {
+		$this->req->setMethod('GET');
+		$this->assertEquals(Asar_Request::GET, $this->req->getMethod(), 'Request method did not match');
+	}
+	
+	function testSettingPostRequestMethodWithString() {
+		$this->req->setMethod('POST');
+		$this->assertEquals(Asar_Request::POST, $this->req->getMethod(), 'Request method did not match');
+	}
+	
+	function testSettingHeadRequestMethodWithString() {
+		$this->req->setMethod('HEAD');
+		$this->assertEquals(Asar_Request::HEAD, $this->req->getMethod(), 'Request method did not match');
+	}
+	
+	function testSettingPutRequestMethodWithString() {
+		$this->req->setMethod('PUT');
+		$this->assertEquals(Asar_Request::PUT, $this->req->getMethod(), 'Request method did not match');
+	}
+	
+	function testSettingDeleteRequestMethodWithString() {
+		$this->req->setMethod('DELETE');
+		$this->assertEquals(Asar_Request::DELETE, $this->req->getMethod(), 'Request method did not match');
+	}
   
   function testSetAndGetRequestType() {
     $reqtype = 'html';

@@ -2,11 +2,12 @@
 require_once 'Asar.php';
 
 abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
-  protected $response   = NULL; // Stores the current response object for the controller
-  protected $request    = NULL; // The request object passed to controller
-  protected $reflection = NULL; // This is used for class reflection
-  protected $actions    = NULL; // A record for all the actions in the class;
-  protected $params     = NULL; // Storage for the params from request object 
+	protected $response   = NULL; // Stores the current response object for the controller
+	protected $request    = NULL; // The request object passed to controller
+	protected $reflection = NULL; // This is used for class reflection
+	protected $actions    = NULL; // A record for all the actions in the class;
+	protected $params     = NULL; // Storage for the params from request object
+	protected $map        = array(); // URI to Controller mappings
   
   function __construct() {
   	$this->response = new Asar_Response();
@@ -15,37 +16,45 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	function processRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
 		//$this->params  = $this->request->getParams();
-		$this->callResourceAction();
-    // @todo: Make sure we reset the object's response for cleanup
+		if (!$this->route()) {
+			$this->callResourceAction();
+		}
+
+		// @todo: Make sure we reset the object's response for cleanup
     	
 		return $this->response;
 	}
 	
 	private function callResourceAction() {
-		if (!$this->request->getUri()) {
-			$this->request->setUri('/');
+		$method = $this->request->getMethod();
+		if ($method == Asar_Request::HEAD) {
+			$method_name = 'GET';
+		} else {
+			$method_name = $this->getRequestMethodString();
 		}
-		if (array_key_exists($this->request->getUri(), $this->map)) {
-			// If the request method is HEAD, use GET
-			if ($this->request->getMethod() == Asar_Request::HEAD) {
-				$method_name = 'GET_'.$this->map[$this->request->getUri()];
-			} else {
-				$method_name = $this->getRequestMethodString().'_'.$this->map[$this->request->getUri()];
-			}
-			
-			if ($this->getReflection()->hasMethod($method_name)) { 
-				// Head must not return content back to client
-				if ($this->request->getMethod() == Asar_Request::HEAD) {
-					$this->$method_name();
-					$this->response->setContent('');
-				} else {
-					$this->response->setContent($this->$method_name());	
-				}
-			} else {
-				$this->response->setStatusCode(405);
+		if ($this->getReflection()->hasMethod($method_name)) { 
+			if ($method != Asar_Request::HEAD) {
+				$this->response->setContent($this->$method_name());
 			}
 		} else {
-			$this->response->setStatusCode(404); // Resource not Found
+			$this->response->setStatusCode(405);
+		}
+	}
+	
+	/**
+	 * See if there are mapped resources for the given uri
+	 *
+	 * @return Asar_Response
+	 **/
+	private function route()
+	{
+		$uri = explode('/', $this->request->getUri());
+		if (count($uri) > 1 && array_key_exists($uri[1], $this->map)) {
+			$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$uri[1]]);
+			$this->response = $this->request->sendTo($controller);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

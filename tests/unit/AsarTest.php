@@ -37,10 +37,8 @@ class Test_Class_With_No_Exception {
 }
 
 class Test_Application extends Asar_Application {}
-class Test_Router extends Asar_Router{}
-if (!class_exists('Test_Client', false)) {
-	class Test_Client extends Asar_Client {}
-}
+class Test2_Class {}
+class TestClassWithNoPrefix {}
 
 abstract class Uninstantiable_Class {}
 
@@ -71,7 +69,7 @@ class AsarTest extends Asar_Test_Helper {
 	function testLoadClass() {
 		try {
 			Asar::loadClass('Test_Dummy_Class');
-			$this->assertTrue(false, 'Must not reach this point');
+			$this->fail('Must not reach this point');
 		} catch (Exception $e) {
 			$this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
 			$this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class Test_Dummy_Class does not exist.'), 'Did not attempt to load the class definition');
@@ -126,7 +124,7 @@ class AsarTest extends Asar_Test_Helper {
 			// Test if we get the right client
 			//$app    = Asar::getAppWithClient($client->getName());
 		} catch (Exception $e) {
-			$this->assertTrue(false, 'Exception thrown: '. get_class($e) . ' , '. $e->getMessage());
+			$this->fail('Exception thrown: '. get_class($e) . ' , '. $e->getMessage());
 		}
 		$this->assertEquals('Test_Application', get_class($app), 'Wrong application loaded');
 	}
@@ -192,6 +190,19 @@ class AsarTest extends Asar_Test_Helper {
 		$testclass = 'Test_Parent_Class';
 		$obj = Asar::instantiate($testclass);
 		$this->assertEquals($testclass, get_class($obj), 'Wrong class');
+	}
+	
+	function testGettingClassPrefix() {
+		$obj = new Test_Parent_Class();
+		$this->assertEquals('Test', Asar::getClassPrefix($obj), 'Unable to get class prefix');
+	}
+	
+	function testGettingClassPrefix2() {
+		$this->assertEquals('Test2', Asar::getClassPrefix(new Test2_Class()), 'Unable to get class prefix');
+	}
+	
+	function testGettingClassPrefix3() {
+		$this->assertEquals('', Asar::getClassPrefix(new TestClassWithNoPrefix()), 'Unable to get class prefix');
 	}
 	
 	function testInstantiateWithArguments() {

@@ -2,7 +2,7 @@
 require_once 'Asar.php';
 
 abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
-  protected $router;
+  protected $root_controller_class_name;
   /*
   private static $instance = NULL;
   
@@ -19,12 +19,12 @@ abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
   */
   
   function __construct() {
-    $router_class_name = $this->getAppName().'_Router';
-    $this->router = Asar::instantiate($router_class_name);
+    $root_controller_class_name = $this->getAppName().'_Controller_Index';
+    $this->root_controller = Asar::instantiate($root_controller_class_name);
   }
   
   function processRequest(Asar_Request $request, array $arguments = NULL) {
-    $response = $request->sendTo($this->router, $arguments);
+    $response = $request->sendTo($this->root_controller, $arguments);
     if (!($response instanceof Asar_Response)) {
       $this->exception('There was an error processing the request. The returned value must be a valid Asar_Response object');
       return NULL;
