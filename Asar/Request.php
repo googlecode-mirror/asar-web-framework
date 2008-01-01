@@ -6,6 +6,7 @@ require_once 'Asar.php';
 
 class Asar_Request extends Asar_Message {
   private $uri        = NULL;
+  private $path       = NULL;
   private $method     = NULL;
   
   const GET    = 1;
@@ -35,6 +36,14 @@ class Asar_Request extends Asar_Message {
   
   function getUri() {
     return $this->uri;
+  }
+  
+  function setPath($path) {
+  	$this->path = $path;
+  }
+  
+  function getPath() {
+  	return $this->path;
   }
   
 	function setMethod($method) {

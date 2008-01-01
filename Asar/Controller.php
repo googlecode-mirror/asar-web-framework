@@ -48,9 +48,9 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	 **/
 	private function route()
 	{
-		$uri = explode('/', $this->request->getUri());
-		if (count($uri) > 1 && array_key_exists($uri[1], $this->map)) {
-			$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$uri[1]]);
+		$path = explode('/', $this->request->getPath());
+		if (count($path) > 1 && array_key_exists($path[1], $this->map)) {
+			$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$path[1]]);
 			$this->response = $this->request->sendTo($controller);
 			return true;
 		} else {

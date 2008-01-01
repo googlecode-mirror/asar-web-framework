@@ -118,10 +118,26 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
                ->with($this->req, $arguments);
     $this->req->sendTo($respondent, $arguments);
   }
+	
+	function testSendToPassesObjectAsReference() {
+		$this->markTestIncomplete();
+	}
   /*
   function testSettingAndGettingUri() {
   	$uri = '/'
   }*/
+  
+  function testSettingAndGettingPath() {
+  	$path = 'test/testing/stupid.txt';
+  	$this->req->setPath($path);
+  	$this->assertEquals($path, $this->req->getPath(), 'Unable to set path');
+  }
+  
+  function testSettingAndGettingPathAgain() {
+  	$path = 'beat/right/change.txt';
+  	$this->req->setPath($path);
+  	$this->assertEquals($path, $this->req->getPath(), 'Unable to set path');
+  }
   
   function testSetAndGetType() {
     $uri = 'test/testing/stupid.txt';
