@@ -8,6 +8,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	protected $actions    = NULL; // A record for all the actions in the class;
 	protected $params     = NULL; // Storage for the params from request object
 	protected $map        = array(); // URI to Controller mappings
+	private   $context    = NULL; // The controller that called this controller
   
   function __construct() {
   	$this->response = new Asar_Response();
@@ -15,6 +16,9 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	
 	function processRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
+		if ($arguments && array_key_exists('context', $arguments)) {
+			$this->context = $arguments['context'];
+		}
 		//$this->params  = $this->request->getParams();
 		if (!$this->route()) {
 			$this->callResourceAction();
@@ -42,6 +46,26 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	}
 	
 	/**
+	 * Returns the context of which from
+	 * which the controller was called
+	 **/
+	protected function getContext() {
+		return $this->context;
+	}	 	 	
+	
+	/**
+	 * Get the context subpath of the request
+	 * that the resource is operating on
+	 * 
+	 * @return string
+	 **/	 	 	 	 	
+	protected function getContextPath() {
+		$fullpath = explode('/',rtrim($this->request->getPath(), '/'));
+		array_pop($fullpath);
+		return implode('/', $fullpath).'/';
+	}
+	
+	/**
 	 * See if there are mapped resources for the given uri
 	 *
 	 * @return Asar_Response
@@ -51,7 +75,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		$path = explode('/', $this->request->getPath());
 		if (count($path) > 1 && array_key_exists($path[1], $this->map)) {
 			$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$path[1]]);
-			$this->response = $this->request->sendTo($controller);
+			$this->response = $this->request->sendTo($controller, array('context'=>$this));
 			return true;
 		} else {
 			return false;

@@ -10,7 +10,7 @@ abstract class Asar_Message extends Asar_Base {
   private $params     = array();
   private $type       = NULL;
   private $headers    = array();
-  private $context    = array();
+  private $context    = NULL;
   private $mime_types = array(
     'html'   => 'text/html',
     'htm'    => 'text/html',
@@ -110,7 +110,7 @@ abstract class Asar_Message extends Asar_Base {
     $this->context = $processor;
   }
   
-  function getCurrentContext() {
+  function getContext() {
     return $this->context;
   }
   

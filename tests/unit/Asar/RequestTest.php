@@ -119,8 +119,10 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
     $this->req->sendTo($respondent, $arguments);
   }
 	
-	function testSendToPassesObjectAsReference() {
-		$this->markTestIncomplete();
+	function testGettingContext() {
+		$respondent = $this->getMock('Asar_Requestable', array('processRequest'));
+		$this->req->sendTo($respondent);
+		$this->assertSame($respondent, $this->req->getContext(), 'Getting Context failed');
 	}
   /*
   function testSettingAndGettingUri() {
