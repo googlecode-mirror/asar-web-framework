@@ -8,17 +8,28 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	protected $actions    = NULL; // A record for all the actions in the class;
 	protected $params     = NULL; // Storage for the params from request object
 	protected $map        = array(); // URI to Controller mappings
-	private   $context    = NULL; // The controller that called this controller
+	protected $context    = NULL; // The object that called this controller
+	protected $depth      = NULL;    // How deep is the controller on the path
+	protected $path_array = array();
+	protected $path       = NULL;  // The path of the controller
+	protected $forward    = NULL;
   
-  function __construct() {
-  	$this->response = new Asar_Response();
-  }
+	function __construct() {
+		$this->response = new Asar_Response;
+	}
 	
 	function processRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
 		if ($arguments && array_key_exists('context', $arguments)) {
 			$this->context = $arguments['context'];
+			$this->depth = $this->context->getDepth() + 1;
+		} else {
+			$this->depth = 0;
 		}
+		
+		$this->path_array = array_slice($this->request->getPathArray(), 0, $this->depth + 1);
+		$this->path = str_replace('//', '/', implode('/', $this->path_array));
+		
 		//$this->params  = $this->request->getParams();
 		if (!$this->route()) {
 			$this->callResourceAction();
@@ -27,6 +38,23 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		// @todo: Make sure we reset the object's response for cleanup
     	
 		return $this->response;
+	}
+	
+	/**
+	 * Returns the subpath requested from request object
+	 * if available. Returns false if there's none
+	 *
+	 * @return string or boolean false
+	 **/
+	private function nextPath()
+	{
+		$req_path = $this->request->getPathArray();
+		if ($this->depth+1 < count($req_path)) {
+			// Still have paths below
+			return $req_path[$this->depth+1];
+		} else {
+			return false;
+		}
 	}
 	
 	private function callResourceAction() {
@@ -41,29 +69,31 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 				$this->response->setContent($this->$method_name());
 			}
 		} else {
-			$this->response->setStatusCode(405);
+			$this->response->setStatus(405);
 		}
 	}
 	
 	/**
-	 * Returns the context of which from
-	 * which the controller was called
+	 * Get how deep is the controller on the path
+	 *
+	 * @return int
 	 **/
-	protected function getContext() {
-		return $this->context;
-	}	 	 	
+	function getDepth()
+	{
+		return $this->depth;
+	}
 	
 	/**
-	 * Get the context subpath of the request
-	 * that the resource is operating on
-	 * 
+	 * Returns the path from which
+	 * this controller was invoked
+	 *
 	 * @return string
-	 **/	 	 	 	 	
-	protected function getContextPath() {
-		$fullpath = explode('/',rtrim($this->request->getPath(), '/'));
-		array_pop($fullpath);
-		return implode('/', $fullpath).'/';
-	}
+	 **/
+	function getPath()
+	{
+		return $this->path;
+	}	 	 	
+	
 	
 	/**
 	 * See if there are mapped resources for the given uri
@@ -72,11 +102,21 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	 **/
 	private function route()
 	{
-		$path = explode('/', $this->request->getPath());
-		if (count($path) > 1 && array_key_exists($path[1], $this->map)) {
-			$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$path[1]]);
-			$this->response = $this->request->sendTo($controller, array('context'=>$this));
-			return true;
+		$next = $this->nextPath();
+		if ($next) {
+			if (array_key_exists($next, $this->map)) {
+				// The path is mapped
+				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$next]);
+				$this->response = $this->request->sendTo($controller, array('context'=>$this));
+				return true;
+			} elseif ($this->forward) {
+				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->forward);
+				$this->response = $this->request->sendTo($controller, array('context'=>$this));
+				return true;
+			} else {
+				$this->response->setStatus(404);
+				return true;
+			}
 		} else {
 			return false;
 		}

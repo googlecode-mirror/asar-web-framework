@@ -5,31 +5,31 @@ require_once 'Asar/Request.php';
 class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   
 	
-  protected function setUp() {
-    $this->req = new Asar_Request();
-  }
-  
-  function testSetAndGetContent() {
-    $requestVars = array(
-      'action' => 'Stupid',
-      'var1'   => 'Anything',
-      'var2'   => 'Ahahahaha',
-      'var3'   => 'Yo!',
-      'lover'  => 'Fell in love with a girl'
-    );
-    
-    $this->req->setContent($requestVars);
-    
-    $test = $this->req->getContent();
-    
-    $this->assertEquals($requestVars, $test, 'Request contents did not match');
-  }
-  
+	 protected function setUp() {
+	   $this->req = new Asar_Request();
+	 }
+ 
+	function testSetAndGetContent() {
+		$requestVars = array(
+		  'action' => 'Stupid',
+		  'var1'   => 'Anything',
+		  'var2'   => 'Ahahahaha',
+		  'var3'   => 'Yo!',
+		  'lover'  => 'Fell in love with a girl'
+		);
+
+		$this->req->setContent($requestVars);
+
+		$test = $this->req->getContent();
+
+		$this->assertEquals($requestVars, $test, 'Request contents did not match');
+	}
+ 
 	function testSetAndGetRequestMethod() {
 		$this->req->setMethod(Asar_Request::GET);
 		$this->assertEquals(Asar_Request::GET, $this->req->getMethod(), 'Request method did not match');
 	}
-  
+ 
 	function testSetAndGetRequestMethodPOST() {
 		$this->req->setMethod(Asar_Request::POST);
 		$this->assertEquals(Asar_Request::POST, $this->req->getMethod(), 'Request method must be POST');
@@ -44,165 +44,197 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$this->req->setMethod(Asar_Request::DELETE);
 		$this->assertEquals(Asar_Request::DELETE, $this->req->getMethod(), 'Request method must be DELETE');
 	}
-	
+
 	function testSetAndGetRequestMethodHEAD() {
 		$this->req->setMethod(Asar_Request::HEAD);
 		$this->assertEquals(Asar_Request::HEAD, $this->req->getMethod(), 'Request method must be DELETE');
 	}
-	
+
 	function testSettingGetRequestMethodWithString() {
 		$this->req->setMethod('GET');
 		$this->assertEquals(Asar_Request::GET, $this->req->getMethod(), 'Request method did not match');
 	}
-	
+
 	function testSettingPostRequestMethodWithString() {
 		$this->req->setMethod('POST');
 		$this->assertEquals(Asar_Request::POST, $this->req->getMethod(), 'Request method did not match');
 	}
-	
+
 	function testSettingHeadRequestMethodWithString() {
 		$this->req->setMethod('HEAD');
 		$this->assertEquals(Asar_Request::HEAD, $this->req->getMethod(), 'Request method did not match');
 	}
-	
+
 	function testSettingPutRequestMethodWithString() {
 		$this->req->setMethod('PUT');
 		$this->assertEquals(Asar_Request::PUT, $this->req->getMethod(), 'Request method did not match');
 	}
-	
+
 	function testSettingDeleteRequestMethodWithString() {
 		$this->req->setMethod('DELETE');
 		$this->assertEquals(Asar_Request::DELETE, $this->req->getMethod(), 'Request method did not match');
 	}
-  
-  function testSetAndGetRequestType() {
-    $reqtype = 'html';
-    $this->req->setType($reqtype);
-    
-    $this->assertEquals($reqtype, $this->req->getType(), 'Request type did not match');
-  }
-  
-  function testAddParams() {
-    $requestVars = array(
-      'action' => 'Stupid',
-      'var1'   => 'Anything',
-      'var2'   => 'Ahahahaha',
-      'var3'   => 'Yo!',
-      'lover'  => 'Fell in love with a girl'
-    );
-    
-    $toAdd = array(
-      'stupid' => 'boy',
-      'crazy'  => 'girl'
-    );
-    
-    $this->req->setParams($requestVars);
-    $this->req->setParams($toAdd);
-    
-    $this->assertEquals(array_merge($requestVars, $toAdd), $this->req->getParams(), 'Unable to set and add params');
-  }
-  
-  function testSendTo() {
-    $respondent = $this->getMock('Asar_Requestable', array('processRequest'));
-    $respondent->expects($this->once())
-               ->method('processRequest')
-               ->with($this->req);
-    $this->req->sendTo($respondent);
-  }
-  
-  function testSendToWithArguments() {
-    $arguments = array('test' => 'right', 'been' => array(1,2,3));
-    $respondent = $this->getMock('Asar_Requestable', array('processRequest'));
-    $respondent->expects($this->once())
-               ->method('processRequest')
-               ->with($this->req, $arguments);
-    $this->req->sendTo($respondent, $arguments);
-  }
-	
+ 
+	 function testSetAndGetRequestType() {
+	   $reqtype = 'html';
+	   $this->req->setType($reqtype);
+   
+	   $this->assertEquals($reqtype, $this->req->getType(), 'Request type did not match');
+	 }
+ 
+	 function testAddParams() {
+	   $requestVars = array(
+	     'action' => 'Stupid',
+	     'var1'   => 'Anything',
+	     'var2'   => 'Ahahahaha',
+	     'var3'   => 'Yo!',
+	     'lover'  => 'Fell in love with a girl'
+	   );
+   
+	   $toAdd = array(
+	     'stupid' => 'boy',
+	     'crazy'  => 'girl'
+	   );
+   
+	   $this->req->setParams($requestVars);
+	   $this->req->setParams($toAdd);
+   
+	   $this->assertEquals(array_merge($requestVars, $toAdd), $this->req->getParams(), 'Unable to set and add params');
+	 }
+ 
+	 function testSendTo() {
+	   $respondent = $this->getMock('Asar_Requestable', array('processRequest'));
+	   $respondent->expects($this->once())
+	              ->method('processRequest')
+	              ->with($this->req);
+	   $this->req->sendTo($respondent);
+	 }
+ 
+	 function testSendToWithArguments() {
+	   $arguments = array('test' => 'right', 'been' => array(1,2,3));
+	   $respondent = $this->getMock('Asar_Requestable', array('processRequest'));
+	   $respondent->expects($this->once())
+	              ->method('processRequest')
+	              ->with($this->req, $arguments);
+	   $this->req->sendTo($respondent, $arguments);
+	 }
+
 	function testGettingContext() {
 		$respondent = $this->getMock('Asar_Requestable', array('processRequest'));
 		$this->req->sendTo($respondent);
 		$this->assertSame($respondent, $this->req->getContext(), 'Getting Context failed');
 	}
-  /*
-  function testSettingAndGettingUri() {
-  	$uri = '/'
-  }*/
-  
-  function testSettingAndGettingPath() {
-  	$path = 'test/testing/stupid.txt';
-  	$this->req->setPath($path);
-  	$this->assertEquals($path, $this->req->getPath(), 'Unable to set path');
-  }
-  
-  function testSettingAndGettingPathAgain() {
-  	$path = 'beat/right/change.txt';
-  	$this->req->setPath($path);
-  	$this->assertEquals($path, $this->req->getPath(), 'Unable to set path');
-  }
+	 /*
+	 function testSettingAndGettingUri() {
+	 	$uri = '/'
+	 }*/
+ 
+	 function testSettingAndGettingPath() {
+	 	$path = '/test/testing/stupid.txt';
+	 	$this->req->setPath($path);
+	 	$this->assertEquals($path, $this->req->getPath(), 'Unable to set path');
+	 }
+ 
+	 function testSettingAndGettingPathAgain() {
+	 	$path = '/beat/right/change.txt';
+	 	$this->req->setPath($path);
+	 	$this->assertEquals($path, $this->req->getPath(), 'Unable to set path');
+	 }
+
+	function testGettingPathAsArray() {
+		$path = '/this/is/a/test/right.txt';
+		$this->req->setPath($path);
+		$this->assertEquals(
+			array('/', 'this', 'is', 'a', 'test', 'right.txt'),
+			$this->req->getPathArray(),
+			'Unable to get path as array'
+		);
+	}
+	
+	function testGettingPathAsArrayWithTrailingSlash() {
+		$path = '/this/is/a/test/right/';
+		$this->req->setPath($path);
+		$this->assertEquals(
+			array('/', 'this', 'is', 'a', 'test', 'right'),
+			$this->req->getPathArray(),
+			'Unable to get path as array'
+		);
+	}
+	
+	function testSettingPathWithDoubleSlashWillResultInExceptionThrown() {
+		$this->setExpectedException('Asar_Request_Exception');
+		$path = '/this/is/a//test/right/';
+		$this->req->setPath($path);
+	}
+	
+	function testSEttingPathWithoutSlashAtBeginningThrowsException() {
+		$this->setExpectedException('Asar_Request_Exception');
+		$path = 'this/is/a/test/right/';
+		$this->req->setPath($path);
+	}
   
   function testSetAndGetType() {
-    $uri = 'test/testing/stupid.txt';
+    $uri = '/test/testing/stupid.txt';
     $this->req->setUri($uri);
     $this->assertEquals('txt', $this->req->getType(), 'Type did not match');
   }
   
   function testSetAndGetRequestTypeTxt() {
-    $uri = 'test/testing/stupid.txt';
+    $uri = '/test/testing/stupid.txt';
     $this->req->setUri($uri);
     $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeDefault() {
-    $uri = 'test/testing/interesting';
+    $uri = '/test/testing/interesting';
     $this->req->setUri($uri);
     $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeDefaultSlash() {
-    $uri = 'test/testing/interesting/';
+    $uri = '/test/testing/interesting/';
     $this->req->setUri($uri);
     $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypePhp() {
-    $uri = 'test/testing/cool.php';
+    $uri = '/test/testing/cool.php';
     $this->req->setUri($uri);
     $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeHtml() {
-    $uri = 'test/testing/cool.html';
+    $uri = '/test/testing/cool.html';
     $this->req->setUri($uri);
     $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeHtm() {
-    $uri = 'test/testing/cool.htm';
+    $uri = '/test/testing/cool.htm';
     $this->req->setUri($uri);
     $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeRss() {
-    $uri = 'test/testing/cool.rss';
+    $uri = '/test/testing/cool.rss';
     $this->req->setUri($uri);
     $this->assertEquals('application/xml', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeXhtml() {
-    $uri = 'test/testing/cool.xhtml';
+    $uri = '/test/testing/cool.xhtml';
     $this->req->setUri($uri);
     $this->assertEquals('application/xhtml+xml', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeXhr() {
-    $uri = 'test/testing/cool.xhr';
+    $uri = '/test/testing/cool.xhr';
     $this->req->setUri($uri);
     $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeJson() {
-    $uri = 'test/testing/cool.json';
+    $uri = '/test/testing/cool.json';
     $this->req->setUri($uri);
     $this->assertEquals('application/json', $this->req->getMimeType(), 'Mime-type did not match');
   }

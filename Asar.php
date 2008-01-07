@@ -48,7 +48,7 @@ class Asar {
     if (class_exists($class, false)) {
       return true;
     }
-    $file = str_replace('_', '/', $class) . '.php';
+    $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
     if (!self::fileExists($file)) {
       self::exception('Asar', "Class definition file for the class $class does not exist.");
       return false;
@@ -62,11 +62,13 @@ class Asar {
   static function start($application_name, Asar_Client $client = NULL) {
     /**
       * @todo: Remove dependency on existing classes
+	  * @todo: Add Default Client when starting
       */
     // $application_name must be found by ('ApplicationName_Application');
     // using naming convention
     self::$apps[$application_name] = self::instantiate($application_name.'_Application');
-    
+	
+	echo $req->sendTo(self::$apps[$application_name]);
 	return self::$apps[$application_name];
   }
 

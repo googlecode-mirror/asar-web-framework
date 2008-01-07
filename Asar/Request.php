@@ -5,47 +5,61 @@
 require_once 'Asar.php';
 
 class Asar_Request extends Asar_Message {
-  private $uri        = NULL;
-  private $path       = NULL;
-  private $method     = NULL;
+	private $uri        = NULL;
+	private $path       = NULL;
+	private $path_array = array();
+	private $method     = NULL;
+
+	const GET    = 1;
+	const POST   = 2;
+	const PUT    = 3;
+	const DELETE = 4;
+	const HEAD   = 5;
   
-  const GET    = 1;
-  const POST   = 2;
-  const PUT    = 3;
-  const DELETE = 4;
-  const HEAD   = 5;
   
+	function setUri($uri) {
+		$this->uri = $uri;
+		$this->setType($this->getTypeFromUri($uri));
+	}
+
+	protected function getTypeFromUri($uri) {
+		// Remove the string after the '?'
+		if (strpos($uri, '?')) {
+			$uri = substr($uri, 0, strpos($uri,'?'));
+		}
+
+		// Remove the all string before the last occurrence of the '/'
+		$fname = substr($uri, strrpos($uri, '/') + 1);
+
+		// Get the file extension
+		return substr($fname, strrpos($fname, '.')+1);
+	}
+
+	function getUri() {
+		return $this->uri;
+	}
   
-  function setUri($uri) {
-    $this->uri = $uri;
-    $this->setType($this->getTypeFromUri($uri));
-  }
+	function setPath($path) {
+		if (strpos($path, '//') > -1) {
+			$this->exception('The path specified has double slashes, \'//\', which is unresorvable ');
+		}
+		if (strpos($path, '/') !== 0) {
+			$this->exception('The path must start with a single slash');
+		}
+		$this->path = rtrim($path, '/');
+		$path_array = explode('/', $this->path);
+		$path_array[0] ='/';
+		$this->path_array = $path_array;
+	}
   
-  protected function getTypeFromUri($uri) {
-    // Remove the string after the '?'
-    if (strpos($uri, '?')) {
-      $uri = substr($uri, 0, strpos($uri,'?'));
-    }
-    
-    // Remove the all string before the last occurrence of the '/'
-    $fname = substr($uri, strrpos($uri, '/') + 1);
-    
-    // Get the file extension
-    return substr($fname, strrpos($fname, '.')+1);
-  }
+	function getPath() {
+		return $this->path;
+	}
   
-  function getUri() {
-    return $this->uri;
-  }
-  
-  function setPath($path) {
-  	$this->path = $path;
-  }
-  
-  function getPath() {
-  	return $this->path;
-  }
-  
+	function getPathArray() {
+		return $this->path_array;
+	}
+	
 	function setMethod($method) {
 		switch ($method) {
 			case self::GET:
@@ -100,5 +114,5 @@ class Asar_Request extends Asar_Message {
   
 }
 
-class Asar_Request_Exeption extends Asar_Message_Exception {}
+class Asar_Request_Exception extends Asar_Message_Exception {}
 ?>

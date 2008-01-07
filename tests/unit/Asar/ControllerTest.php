@@ -10,29 +10,29 @@ class Test_Controller_Index extends Asar_Controller {
 		'next' => 'Next'
 	);
 	
-	public function GET() {
+	function GET() {
 		return 'hello there';
 	}
 	
-	public function POST() {
+	function POST() {
 		return 'I am alright';
 	}
 	
-	public function PUT() {
+	function PUT() {
 		return 'Put it on';
 	}
 	
-	public function DELETE() {
+	function DELETE() {
 		return 'Deleted!';
 	}
 }
 
 class Test_Controller_Another extends Asar_Controller {
-	public function GET() {
+	function GET() {
 		return 'hello world';
 	}
 	
-	public function POST() {
+	function POST() {
 		return $this->request->getParams();
 	}
 }
@@ -42,18 +42,41 @@ class Test_Controller_Next extends Asar_Controller {
 		'proceed' => 'Proceed'
 	);
 	
-	public function GET() {
-		return 'context path = "'.$this->getContextPath().'"';
+	function GET() {
+		return 'context path = "'.$this->context->getPath().'"';
 	}
 	
-	public function POST() {
-		return get_class($this->getContext());
+	function POST() {
+		return get_class($this->context);
 	}
 }
 
 class Test_Controller_Proceed extends Asar_Controller {
-	public function GET() {
-		return 'context path = "'.$this->getContextPath().'"';
+	function GET() {
+		return 'context path = "'.$this->context->getPath().'"';
+	}
+	
+	function POST() {
+		return $this->getPath();
+	}
+	
+	function PUT() {
+		return $this->getDepth();
+	}
+}
+
+class Test_Controller_Forwarding extends Asar_Controller {
+	protected $forward = 'Forwarded';
+	
+	function GET() {
+		return 'AAAA';
+	}
+}
+
+class Test_Controller_Forwarded extends Asar_Controller {
+	
+	function GET() {
+		return 'BBBB';
 	}
 }
 
@@ -67,7 +90,7 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$this->R->setPath('/');
 	}
 
-	public function testPassingARequestWithMethodGetInvokesMappedMethod() {
+	function testPassingARequestWithMethodGetInvokesMappedMethod() {
 		$this->R->setMethod(Asar_Request::GET);
 		$this->assertEquals('hello there',
 							$this->R->sendTo($this->C)->__toString(),
@@ -75,58 +98,58 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	
-	public function testPassingARequestWithMethodPostInvokesMappedMethod() {
+	function testPassingARequestWithMethodPostInvokesMappedMethod() {
 		$this->R->setMethod(Asar_Request::POST);
 		$this->assertEquals('I am alright', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	public function testPassingARequestWithMethodPutInvokesMappedMethod() {
+	function testPassingARequestWithMethodPutInvokesMappedMethod() {
 		$this->R->setMethod(Asar_Request::PUT);
 		$this->assertEquals('Put it on', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	public function testPassingARequestWithMethodDeleteInvokesMappedMethod() {
+	function testPassingARequestWithMethodDeleteInvokesMappedMethod() {
 		$this->R->setMethod(Asar_Request::DELETE);
 		$this->assertEquals('Deleted!', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	public function testGettingContext() {
+	function testRequestingAResourceWithHeadMethodShouldReturnTheSameResponseExceptContentWhenGetMethodIsDefinedForThatResource() {
+		$this->R->setMethod(Asar_Request::HEAD);
+		$this->assertEquals(200, $this->R->sendTo($this->C)->getStatus());
+	}
+	
+	function testRequestingAMappedResourceButUndefinedMethodMustReturnA405StatusResponse() {
+		$this->R->setMethod(Asar_Request::PUT);
+		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_Another())->getStatus());
+	}
+	
+	function testUsingHeadAsRequestMethodMustNotReturnAnyContent() {
+		$this->R->setMethod(Asar_Request::HEAD);
+		$this->assertEquals('', $this->R->sendTo($this->C)->__toString(), 'Returned content for HEAD!');
+	}
+	
+	function testRequestingWithSubPaths() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/path/');
+		$this->assertEquals('hello world', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
+	}
+	
+	function testGettingContext() {
 		$this->R->setMethod(Asar_Request::POST);
 		$this->R->setPath('/next/');
 		$this->assertEquals('Test_Controller_Index', $this->R->sendTo($this->C)->__toString(), 'Unable to obtain context path');
 	}
 	
-	public function testGettingContextPath() {
-		$this->R->setMethod(Asar_Request::GET);
-		$this->R->setPath('/next/');
-		$this->assertEquals('context path = "/"', $this->R->sendTo($this->C)->__toString(), 'Unable to obtain context path');
-	}
-	
-	public function testGettingAnotherContextPath() {
-		$this->R->setMethod(Asar_Request::GET);
-		$this->R->setPath('/next/proceed/');
-		$this->assertEquals('context path = "/next/"', $this->R->sendTo($this->C)->__toString(), 'Unable to obtain context path');
-	}
-	
-	public function testRequestingAMappedResourceButUndefinedMethodMustReturnA405StatusResponse() {
+	function testGettingPathDepthWhenIndex() {
 		$this->R->setMethod(Asar_Request::PUT);
-		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_Another())->getStatusCode());
+		$this->R->setPath('/');
+		$this->assertEquals('0', $this->R->sendTo(new Test_Controller_Proceed)->__toString(), 'Controller was unable to obtain Path Depth');
 	}
 	
-	public function testRequestingAResourceWithHeadMethodShouldReturnTheSameResponseExceptContentWhenGetMethodIsDefinedForThatResource() {
-		$this->R->setMethod(Asar_Request::HEAD);
-		$this->assertEquals(200, $this->R->sendTo($this->C)->getStatusCode());
-	}
-	
-	public function testUsingHeadAsRequestMethodMustNotReturnAnyContent() {
-		$this->R->setMethod(Asar_Request::HEAD);
-		$this->assertEquals('', $this->R->sendTo($this->C)->__toString(), 'Returned content for HEAD!');
-	}
-	
-	public function testRequestingWithSubPaths() {
-		$this->R->setMethod(Asar_Request::GET);
-		$this->R->setPath('/path/');
-		$this->assertEquals('hello world', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
+	function testGettingPathDepthWhen1LevelDeep() {
+		$this->R->setMethod(Asar_Request::PUT);
+		$this->R->setPath('/proceed');
+		$this->assertEquals('1', $this->R->sendTo(new Test_Controller_Next)->__toString(), 'Controller was unable to obtain Path Depth');
 	}
 	
 	function testMakeSureControllerActionHasAccessToRequestObject() {
@@ -139,13 +162,44 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$response = $this->R->sendTo(new Test_Controller_Another);
 		$this->assertEquals($testcontent, $response->getContent(), 'Unexpected Result');
 	}
-	/*
-	public function testRequestingAnUnmappedResourceResultsIn404StatusResponse() {
-		$this->R->setMethod(Asar_Request::GET);
-		$this->R->setPath('/non-existent-path/');
-		$this->assertEquals(404, $this->R->sendTo($this->C)->getStatusCode());
+	
+	function testGettingPathDepthWhen2LevelsDeep() {
+		$this->R->setMethod(Asar_Request::PUT);
+		$this->R->setPath('/next/proceed');
+		$this->assertEquals('2', $this->R->sendTo($this->C)->__toString(), 'Controller was unable to obtain Path Depth');
 	}
 	
+	function testGettingPath() {
+		$this->R->setMethod(Asar_Request::POST);
+		$this->assertEquals('/', $this->R->sendTo(new Test_Controller_Proceed)->__toString(), 'Controller was unable to obtain Path');
+	}
+	
+	
+	function testGettingContextPath() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/');
+		$this->assertEquals('context path = "/"', $this->R->sendTo($this->C)->__toString(), 'Unable to obtain context path');
+	}
+	
+	function testGettingAnotherContextPath() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/proceed/');
+		$this->assertEquals('context path = "/next"', $this->R->sendTo($this->C)->__toString(), 'Unable to obtain context path');
+	}
+	
+	function testRequestingAnUnmappedResourceResultsIn404StatusResponse() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/non-existent-path/');
+		$this->assertEquals(404, $this->R->sendTo($this->C)->getStatus());
+	}
+	
+	function testRequestingAnUnmappedResourceButControllerHasForwardDefinedForwardsThatRequest() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/we_are_the_champion/');
+		$controller = new Test_Controller_Forwarding;
+		$this->assertEquals('BBBB', $this->R->sendTo($controller)->__toString(), 'Unexpected response');
+	}
+	/*
 	
   
   function testExposeRequestParamsAsParamsPropertyInController() {

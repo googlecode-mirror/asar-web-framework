@@ -7,7 +7,7 @@ require_once 'Asar/Application.php';
 class Test2_Application extends Asar_Application {}
 class Test2_Controller_Index extends Asar_Controller{
 	function GET() {
-		return $this->request->getContent();
+		return 'Hello World';
 	}
 }
 /*
@@ -43,7 +43,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $expected = 'Test2_Controller_Cheap';
     try {
       $this->app->loadController($test);
-      $this->assertTrue(False, 'Must not reach execution');
+      $this->fail('Must not reach execution');
     } catch (Exception $e) {
       $this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
       $this->assertEquals("Class definition file for the class $expected does not exist.",
@@ -130,7 +130,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
 	$req->setMethod(Asar_Request::GET);
     $response = $req->sendTo($this->app);
     $this->assertTrue($response instanceof Asar_Response, 'Returned value is not an instance of Asar_Response');
-    $this->assertEquals($testarray, $response->getContent(), 'Unexpected value for content');
+    $this->assertEquals('Hello World', $response->__toString(), 'Unexpected value for content');
   }
 }
 
