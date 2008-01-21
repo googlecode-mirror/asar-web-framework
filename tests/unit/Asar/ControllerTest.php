@@ -80,6 +80,8 @@ class Test_Controller_Forwarded extends Asar_Controller {
 	}
 }
 
+class Test_Controller_With_No_Methods extends Asar_Controller {}
+
 
 
 class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
@@ -90,11 +92,17 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$this->R->setPath('/');
 	}
 
-	function testPassingARequestWithMethodGetInvokesMappedMethod() {
+	function testPassingARequestWithMethodGetInvokesMethod() {
 		$this->R->setMethod(Asar_Request::GET);
 		$this->assertEquals('hello there',
 							$this->R->sendTo($this->C)->__toString(),
 							'Controller did not handle request');
+	}
+	
+	
+	function testPassingARequestWithMethodGETShouldReturnStatusSuccessWhenRequestIsOkay() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->assertEquals(200, $this->R->sendTo($this->C)->getStatus(), 'Controller did not return proper status code');
 	}
 	
 	
@@ -108,24 +116,56 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Put it on', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	function testPassingARequestWithMethodDeleteInvokesMappedMethod() {
+	function testPassingARequestWithMethodDELETEInvokesMappedMethod() {
 		$this->R->setMethod(Asar_Request::DELETE);
 		$this->assertEquals('Deleted!', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
-	function testRequestingAResourceWithHeadMethodShouldReturnTheSameResponseExceptContentWhenGetMethodIsDefinedForThatResource() {
+	function testRequestingAResourceWithHeadMethodShouldNotReturnAnyContent() {
+		$this->R->setMethod(Asar_Request::HEAD);
+		$this->assertEquals('', $this->R->sendTo($this->C)->__toString());
+	}
+	/*
+	function testRequestingAResourceWithHeadMethodShouldReturnTheSameResponseExceptAsItsGetMethod() {
 		$this->R->setMethod(Asar_Request::HEAD);
 		$this->assertEquals(200, $this->R->sendTo($this->C)->getStatus());
-	}
+	}*/
 	
 	function testRequestingAMappedResourceButUndefinedMethodMustReturnA405StatusResponse() {
 		$this->R->setMethod(Asar_Request::PUT);
 		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_Another())->getStatus());
 	}
 	
+	function testRequestingUndefinedGETMethod() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_With_No_Methods())->getStatus());
+	}
+	
+	function testRequestingUndefinedPOSTMethod() {
+		$this->R->setMethod(Asar_Request::POST);
+		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_With_No_Methods())->getStatus());
+	}
+	
+	function testRequestingUndefinedDELETEMethod() {
+		$this->R->setMethod(Asar_Request::DELETE);
+		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_With_No_Methods())->getStatus());
+	}
+	
+	function testRequestingUndefinedHEADMethod() {
+		$this->R->setMethod(Asar_Request::HEAD);
+		$this->assertEquals(405, $this->R->sendTo(new Test_Controller_With_No_Methods())->getStatus());
+	}
+	
 	function testUsingHeadAsRequestMethodMustNotReturnAnyContent() {
 		$this->R->setMethod(Asar_Request::HEAD);
-		$this->assertEquals('', $this->R->sendTo($this->C)->__toString(), 'Returned content for HEAD!');
+		$response = $this->R->sendTo($this->C);
+		$this->assertEquals(200, $response->getStatus(), 'Get method was not called');
+		$this->assertEquals('', $response->__toString(), 'Returned content for HEAD!');
+	}
+	
+	function testUsingGETAsRequestMethodMustReturnAnyContent() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->assertNotEquals('', $this->R->sendTo($this->C)->__toString(), 'Returned content for HEAD!');
 	}
 	
 	function testRequestingWithSubPaths() {

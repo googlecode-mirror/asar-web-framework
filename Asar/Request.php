@@ -5,31 +5,52 @@
 require_once 'Asar.php';
 
 class Asar_Request extends Asar_Message {
-	private $uri        = NULL;
 	private $path       = NULL;
 	private $path_array = array();
 	private $method     = NULL;
+	private $host       = NULL;
 
-	const GET    = 1;
-	const POST   = 2;
-	const PUT    = 3;
-	const DELETE = 4;
-	const HEAD   = 5;
+	const GET    = 'GET';
+	const POST   = 'POST';
+	const PUT    = 'PUT';
+	const DELETE = 'DELETE';
+	const HEAD   = 'HEAD';
   
   
+	/**
+	 * Sets the host
+	 *
+	 * @return void
+	 * @param string $host 
+	 **/
+	function setHost($host)
+	{
+		$this->host = $host;
+	}
+	
+	
+	/**
+	 * Returns the host (e.g. www.example.com)
+	 *
+	 * @return string
+	 **/
+	function getHost()
+	{
+		return $this->host;
+	}
+	
 	function setUri($uri) {
 		$this->uri = $uri;
-		$this->setType($this->getTypeFromUri($uri));
 	}
 
-	protected function getTypeFromUri($uri) {
+	protected function getTypeFromPath($path) {
 		// Remove the string after the '?'
-		if (strpos($uri, '?')) {
-			$uri = substr($uri, 0, strpos($uri,'?'));
+		if (strpos($path, '?')) {
+			$path = substr($path, 0, strpos($path,'?'));
 		}
 
-		// Remove the all string before the last occurrence of the '/'
-		$fname = substr($uri, strrpos($uri, '/') + 1);
+		// Remove the string before the last occurrence of the '/'
+		$fname = substr($path, strrpos($path, '/') + 1);
 
 		// Get the file extension
 		return substr($fname, strrpos($fname, '.')+1);
@@ -50,6 +71,8 @@ class Asar_Request extends Asar_Message {
 		$path_array = explode('/', $this->path);
 		$path_array[0] ='/';
 		$this->path_array = $path_array;
+		
+		$this->setType($this->getTypeFromPath($path));
 	}
   
 	function getPath() {
@@ -68,35 +91,25 @@ class Asar_Request extends Asar_Message {
 			case self::DELETE:
 			case self::HEAD:
 				$this->method = $method;
-				return TRUE;
-				break;
-			case 'GET':
-				$this->method = self::GET;
-				break;
-			case 'HEAD':
-				$this->method = self::HEAD;
-				break;
-			case 'POST':
-				$this->method = self::POST;
-				break;
-			case 'PUT':
-				$this->method = self::PUT;
-				break;
-			case 'DELETE':
-				$this->method = self::DELETE;
 				break;
 			default:
 				$this->exception('Unknown Request Method passed.');
 		 }
 	}
-  
-  function getMethod() {
-    if (is_null($this->method)) {
-      $this->exception('Method is not set');
-    } else {
-      return $this->method;
-    }
-  }
+
+	
+	/**
+	 * Returns the method set for this request
+	 * Defaults to 'GET' if no method was defined
+	 * 
+	 * @return string 
+	 */
+	function getMethod() {
+		if (is_null($this->method)) {
+			$this->method = self::GET;
+		}
+		return $this->method;
+	}
   
   function setContent($contents) {
     if (is_array($contents)) {

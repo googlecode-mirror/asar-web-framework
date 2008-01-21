@@ -2,17 +2,16 @@
 require_once 'Asar.php';
 
 abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
-	protected $response   = NULL; // Stores the current response object for the controller
-	protected $request    = NULL; // The request object passed to controller
-	protected $reflection = NULL; // This is used for class reflection
-	protected $actions    = NULL; // A record for all the actions in the class;
-	protected $params     = NULL; // Storage for the params from request object
+	protected $response   = NULL;    // Stores the current response object for the controller
+	protected $request    = NULL;    // The request object passed to controller
+	protected $actions    = NULL;    // A record for all the actions in the class;
+	protected $params     = NULL;    // Storage for the params from request object
 	protected $map        = array(); // URI to Controller mappings
-	protected $context    = NULL; // The object that called this controller
+	protected $context    = NULL;    // The object that called this controller
 	protected $depth      = NULL;    // How deep is the controller on the path
 	protected $path_array = array();
-	protected $path       = NULL;  // The path of the controller
-	protected $forward    = NULL;
+	protected $path       = NULL;    // The path of the controller
+	protected $forward    = NULL;    // Controller to forward with the request when there are no mapped controllers/resources
   
 	function __construct() {
 		$this->response = new Asar_Response;
@@ -34,8 +33,6 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		if (!$this->route()) {
 			$this->callResourceAction();
 		}
-
-		// @todo: Make sure we reset the object's response for cleanup
     	
 		return $this->response;
 	}
@@ -58,19 +55,62 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	}
 	
 	private function callResourceAction() {
-		$method = $this->request->getMethod();
-		if ($method == Asar_Request::HEAD) {
-			$method_name = 'GET';
-		} else {
-			$method_name = $this->getRequestMethodString();
-		}
-		if ($this->getReflection()->hasMethod($method_name)) { 
-			if ($method != Asar_Request::HEAD) {
-				$this->response->setContent($this->$method_name());
-			}
-		} else {
-			$this->response->setStatus(405);
-		}
+		$this->response->setContent( $this->{$this->request->getMethod()}() );
+	}
+	
+	
+	/**
+	 * Default PUT method handler
+	 *
+	 * @return Asar_Response
+	 **/
+	function PUT()
+	{
+		$this->response->setStatus(405);
+	}
+	
+	
+	/**
+	 * Default GET method handler
+	 *
+	 * @return Asar_Response
+	 **/
+	function GET()
+	{
+		$this->response->setStatus(405);
+	}
+	
+	
+	/**
+	 * Default POST method handler
+	 *
+	 * @return Asar_Response
+	 **/
+	function POST()
+	{
+		$this->response->setStatus(405);
+	}
+	
+	
+	/**
+	 * Default DELETE method handler
+	 *
+	 * @return Asar_Response
+	 **/
+	function DELETE()
+	{
+		$this->response->setStatus(405);
+	}
+	
+	
+	/**
+	 * Default HEAD method handler
+	 *
+	 * @return Asar_Response
+	 **/
+	function HEAD()
+	{
+		$this->GET();
 	}
 	
 	/**
@@ -98,14 +138,13 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	/**
 	 * See if there are mapped resources for the given uri
 	 *
-	 * @return Asar_Response
+	 * @return bool
 	 **/
 	private function route()
 	{
 		$next = $this->nextPath();
 		if ($next) {
-			if (array_key_exists($next, $this->map)) {
-				// The path is mapped
+			if ($this->isResourceMapped($next)) {
 				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$next]);
 				$this->response = $this->request->sendTo($controller, array('context'=>$this));
 				return true;
@@ -122,28 +161,16 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		}
 	}
 	
-	private function getRequestMethodString() {
-		switch ($this->request->getMethod()) {
-			case Asar_Request::GET :
-				return 'GET';
-			case Asar_Request::POST :
-				return 'POST';
-			case Asar_Request::PUT :
-				return 'PUT';
-			case Asar_Request::DELETE :
-				return 'DELETE';
-			case Asar_Request::HEAD :
-				return 'HEAD';
-		}
-	}
-  
-	protected function getReflection() {
-		if (!$this->reflection) {
-			$this->reflection = new ReflectionClass(get_class($this));
-		}
-		return $this->reflection;
-	}
 	
+	/**
+	 * See if the resource is mapped
+	 *
+	 * @return bool
+	 **/
+	private function isResourceMapped($resource)
+	{
+		return array_key_exists($resource, $this->map);
+	}
 	
 }
 

@@ -61,14 +61,14 @@ class Asar {
   
   static function start($application_name, Asar_Client $client = NULL) {
     /**
-      * @todo: Remove dependency on existing classes
-	  * @todo: Add Default Client when starting
-      */
+     * @todo: Remove dependency on existing classes
+	 * @todo: Add Default Client when starting
+     */
     // $application_name must be found by ('ApplicationName_Application');
     // using naming convention
     self::$apps[$application_name] = self::instantiate($application_name.'_Application');
 	
-	echo $req->sendTo(self::$apps[$application_name]);
+	//echo $req->sendTo(self::$apps[$application_name]);
 	return self::$apps[$application_name];
   }
 
