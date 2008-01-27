@@ -52,5 +52,10 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		$request = $this->client->createRequest();
 		$this->assertEquals('/funny/', $request->getUri(), 'Unable to set Uri Properly');
 	}
+	
+	function testCreatingRequestSetsParamsFromGetEnvironmentVariable() {
+		$request = $this->client->createRequest();
+		$this->assertEquals($this->expected_params, $request->getParams(), 'Parameters were not set');
+	}
 }
 ?>

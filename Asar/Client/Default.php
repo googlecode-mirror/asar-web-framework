@@ -6,7 +6,8 @@ class Asar_Client_Default extends Asar_Client {
  		
 		return parent::createRequest( $this->getUriFromServerVars(),
 	    	array(
-	    		'method' => $_SERVER['REQUEST_METHOD']
+	    		'method' => $_SERVER['REQUEST_METHOD'],
+				'params' => $_GET
 	    	)
 		);
 	}
