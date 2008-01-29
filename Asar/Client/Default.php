@@ -30,6 +30,18 @@ class Asar_Client_Default extends Asar_Client {
 			}
 		}
 	}
+	
+	/**
+	 * Sends request to Application and outputs the response to the buffer
+	 *
+	 * @return Asar_Response
+	 **/
+	public function sendRequestTo($request, Asar_Application $application)
+	{
+		$response = &parent::sendRequestTo($request, $application);
+		echo $response;
+		return $response;
+	}
 }
 
 ?>

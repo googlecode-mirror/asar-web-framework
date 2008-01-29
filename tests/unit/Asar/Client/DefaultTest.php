@@ -2,6 +2,12 @@
 
 require_once 'Asar.php';
 
+class AsarClientDefaultTest_Application extends Asar_Application {}
+class AsarClientDefaultTest_Controller_Index extends Asar_Controller {
+	function GET() {
+		return 'Yes';
+	}
+}
 
 class Asar_Client_DefaultTest extends Asar_Test_Helper {
 	
@@ -30,24 +36,24 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 	    $this->assertEquals('Asar_Request', get_class($request), 'Invalid object type. Must be \'Asar_Request\'.');
 	}
 	
-	function testSendRequestReadsServerRequestMethod() {
+	function testCreateRequestReadsServerRequestMethod() {
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$request = $this->client->createRequest();
 		$this->assertEquals(Asar_Request::POST, $request->getMethod(), 'Method mismatch');
 	}
 	
-	function testSendRequestGetsUriFromRequestUriButSubtractTheQueryString() {
+	function testCreateRequestGetsUriFromRequestUriButSubtractTheQueryString() {
 		$request = $this->client->createRequest();
 		$this->assertEquals('/basic/var1/var2.txt', $request->getUri(), 'Unable to set Uri Properly');
 	}
 	
-	function testSendRequestGetsUriFromRequestUri() {
+	function testCreateRequestGetsUriFromRequestUri() {
 		$_SERVER['REQUEST_URI'] = '/basic/var1/var3.txt';
 		$request = $this->client->createRequest();
 		$this->assertEquals('/basic/var1/var3.txt', $request->getUri(), 'Unable to set Uri Properly');
 	}
 	
-	function testSendRequestReadsRedirectUrlWhenAvailable() {
+	function testCreateRequestReadsRedirectUrlWhenAvailable() {
 		$_SERVER['REDIRECT_URL'] = '/funny/';
 		$request = $this->client->createRequest();
 		$this->assertEquals('/funny/', $request->getUri(), 'Unable to set Uri Properly');
@@ -56,6 +62,15 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 	function testCreatingRequestSetsParamsFromGetEnvironmentVariable() {
 		$request = $this->client->createRequest();
 		$this->assertEquals($this->expected_params, $request->getParams(), 'Parameters were not set');
+	}
+	
+	function testSendingRequestSendsResponseContentToOutputBuffer() {
+		$_SERVER['REQUEST_URI'] = '/';
+		$request = $this->client->createRequest();
+		ob_start();
+		$this->client->sendRequestTo($request, new AsarClientDefaultTest_Application);
+		$test = ob_get_clean();
+		$this->assertEquals('Yes', $test, 'Response content was not outputed');
 	}
 }
 ?>

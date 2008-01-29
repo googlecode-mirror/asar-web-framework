@@ -33,18 +33,23 @@ class Asar_Client extends Asar_Base {
 				$req->setType($arguments['type']);
 			}
 		}
-		$this->request = $req;
-		return $this->request;
+		return $req;
 	}
 	
 	/**
 	 * Sends request to the application specified
 	 *
 	 * @returns Asar_Response An response object
+	 * @params mixed  The request. Can be an array for request arguments or an Asar_Request object itself
 	 * @params Asar_Application The application that will receive the request
 	 */
-	function sendRequestTo(Asar_Application $application) {
-		$this->response = $this->request->sendTo($application);
+	function sendRequestTo($request, Asar_Application $application) {
+		if (is_array($request)) {
+			$req = $this->createRequest($request);
+		} elseif($request instanceof Asar_Request) {
+			$req = $request;	
+		}
+		$this->response = $req->sendTo($application);
 		return $this->response;
 	}
 	

@@ -74,7 +74,24 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 			'method' => 'GET',
 			'type'   => 'txt'
 		);
-		$this->assertTrue($this->DC->sendRequest($request_arguments)->to(new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
+		$this->assertTrue($this->DC->sendRequestTo($request_arguments, new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
+		$this->assertTrue($this->DC->getResponse() instanceof Asar_Response, 'Unable to set response property for client');
+	}
+	
+	function testSendRequestToAlsoAcceptsRequestObjectAsParameter() {
+		$expected_params = array(
+			'var1'   => 'val1'
+		);
+		
+		$request_arguments = array(
+			'path'   =>  'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful',
+			'params' => $expected_params,
+			'method' => 'GET',
+			'type'   => 'txt'
+		);
+		
+		
+		$this->assertTrue($this->DC->sendRequestTo($this->DC->createRequest($request_arguments), new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
 		$this->assertTrue($this->DC->getResponse() instanceof Asar_Response, 'Unable to set response property for client');
 	}
 	
