@@ -16,7 +16,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 	
 	
 	function setUp() {
-		$this->DC = new Asar_Client();
+		$this->client = new Asar_Client();
 	}
 	
 	private function arrayCopy(&$from, &$to) {
@@ -41,7 +41,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	function testCreateRequest() {
-		$address = 'people/get/asartalo/tags/reallyStupid/';
+		$address = '/people/get/asartalo/tags/reallyStupid';
 		$arguments = array(
 			'method'  => 'GET',
 			'headers' => array(
@@ -57,48 +57,45 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 				'crazy'  => 'beautiful'
 			)
 		);
-		$r = $this->DC->createRequest($address, $arguments);
+		$r = $this->client->createRequest($address, $arguments);
 		$this->assertEquals(Asar_Request::GET, $r->getMethod(), 'Method mismatch');
-		$this->assertEquals($address, $r->getUri(), 'Address mismatch');
+		$this->assertEquals($address, $r->getPath(), 'Address mismatch');
 		$this->assertTrue($this->arrayMatch($arguments['params'], $r->getParams()), 'Parameters did not match');
+		$this->assertEquals($r, $this->client->getRequest(), 'Client did not set internal request property');
 	}
 	
-	function testSendRequest() {
-		$expected_params = array(
-			'var1'   => 'val1'
-		);
-		
-		$request_arguments = array(
-			'path'   =>  'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful',
-			'params' => $expected_params,
-			'method' => 'GET',
-			'type'   => 'txt'
-		);
-		$this->assertTrue($this->DC->sendRequestTo($request_arguments, new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
-		$this->assertTrue($this->DC->getResponse() instanceof Asar_Response, 'Unable to set response property for client');
+	function testCreatingARequestWithNoArgumentsPassedSendsDefaultPathAsIndex() {
+		$r = $this->client->createRequest();
+		$this->assertEquals('/', $r->getPath(), 'Path mismatch');
 	}
 	
-	function testSendRequestToAlsoAcceptsRequestObjectAsParameter() {
-		$expected_params = array(
-			'var1'   => 'val1'
+	function testSendRequestSendsNewlyCreatedRequestObjectToApplication() {
+		$address = '/people/get/asartalo/tags/reallyStupid/';
+		$arguments = array(
+			'method'  => 'GET',
+			'headers' => array(
+				'Accept'          => 'text/html',
+				'Accept-Encoding' => 'gzip,deflate'
+			),
+			'params' => array(
+				'var1'   => 'val1',
+				'var2'	 => 'val2',
+				'enter'  => 'true',
+				'center' => '1',
+				'stupid' => '',
+				'crazy'  => 'beautiful'
+			)
 		);
-		
-		$request_arguments = array(
-			'path'   =>  'basic/enactment/var1/val1/var2/val2.txt?enter=true$center=1&stupid&crazy=beautiful',
-			'params' => $expected_params,
-			'method' => 'GET',
-			'type'   => 'txt'
-		);
-		
-		
-		$this->assertTrue($this->DC->sendRequestTo($this->DC->createRequest($request_arguments), new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
-		$this->assertTrue($this->DC->getResponse() instanceof Asar_Response, 'Unable to set response property for client');
+		$this->client->createRequest($address, $arguments);
+		$this->assertTrue($this->client->sendRequestTo(new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
+		$this->assertTrue($this->client->getResponse() instanceof Asar_Response, 'Unable to set response property for client');
 	}
+	
 	
 	function testSetAndGetName() {
 		$testname = 'A really cool name for a client';
-		$this->DC->setName($testname);
-		$this->assertEquals($testname, $this->DC->getName(), 'Client name did not match expected value');
+		$this->client->setName($testname);
+		$this->assertEquals($testname, $this->client->getName(), 'Client name did not match expected value');
 	}
 	/*
 	function testSendingRequestAcceptsAResponse() {

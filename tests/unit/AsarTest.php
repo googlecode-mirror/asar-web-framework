@@ -35,14 +35,14 @@ class Test_Class_With_No_Exception {
 		Asar::exception($this, 'Throwing exception for '.get_class($this));
 	}
 }
-/*
-class Best_Application extends Asar_Application {}
-class Best_Controller_Index extends Asar_Controller{
+
+class AsarTest_Application extends Asar_Application {}
+class AsarTest_Controller_Index extends Asar_Controller{
 	function GET() {
 		return 'Hello World';
 	}
 }
-*/
+
 class Test2_Class {}
 class TestClassWithNoPrefix {}
 
@@ -111,24 +111,6 @@ class AsarTest extends Asar_Test_Helper {
 		$file->delete();
 		rmdir('Temp/Class');
 		rmdir('Temp');
-	}
-	
-	function testStartWithNonExistentApp() {
-		$dummyapp = 'DummyApp';
-		try {
-			Asar::start('DummyApp');
-		} catch (Exception $e) {
-			// must attempt to load application class
-			$this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
-			$this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class DummyApp_Application does not exist.'), 'Did not attempt to load the class definition');
-			
-		}
-	}
-	
-	function testStartWithTestApplication() {
-		$testapp = 'Best';
-		$this->markTestIncomplete();
-		//$this->assertEquals('Best_Application', get_class($app), 'Wrong application loaded');
 	}
 	
 	function testSimpleException() {
@@ -221,6 +203,40 @@ class AsarTest extends Asar_Test_Helper {
 		$testclass = 'Uninstantiable_Class';
 		$this->setExpectedException('Asar_Exception');
 		$obj = Asar::instantiate($testclass);
+	}
+	
+	function testStartWithNonExistentApp() {
+		$dummyapp = 'DummyApp';
+		try {
+			Asar::start('DummyApp');
+		} catch (Exception $e) {
+			// must attempt to load application class
+			$this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
+			$this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class DummyApp_Application does not exist.'), 'Did not attempt to load the class definition');
+			
+		}
+	}
+	
+	function testStartTestApplicationOnClientObjectSetsAResponseObjectOnClient() {
+		$testapp = 'AsarTest';
+		$client = new Asar_Client;
+		$client->createRequest('/', array('method'=>'GET'));
+		Asar::start('AsarTest', $client);
+		$this->assertTrue($client->getResponse() instanceof Asar_Response, 'start method did not set response for client');
+	}
+	
+	function testStartTestApplicationOnClientObjectInvokesApplicationAndSetsResponseObjectOnClient() {
+		$testapp = 'AsarTest';
+		$client = new Asar_Client;
+		$client->createRequest('/', array('method'=>'GET'));
+		Asar::start('AsarTest', $client);
+		$this->assertEquals($client->getResponse()->getContent(), 'Hello World','start method did not set response for client');
+	}
+	
+	function testStartingWithNoDefinedApplicationInvokesTheDefaultClient() {
+		$this->setExpectedException('Asar_Client_Default_Exception');
+		$testapp = 'AsarTest';
+		Asar::start('AsarTest');
 	}
 }
 

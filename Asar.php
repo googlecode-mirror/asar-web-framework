@@ -67,9 +67,14 @@ class Asar {
     // $application_name must be found by ('ApplicationName_Application');
     // using naming convention
     self::$apps[$application_name] = self::instantiate($application_name.'_Application');
+    if (!$client) {
+    	$client = new Asar_Client_Default;
+    	$client->createRequest();
+    }
+    $client->sendRequestTo(self::$apps[$application_name]);
 	
 	//echo $req->sendTo(self::$apps[$application_name]);
-	return self::$apps[$application_name];
+	//return self::$apps[$application_name];
   }
 
 

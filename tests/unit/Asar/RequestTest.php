@@ -178,6 +178,11 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$path = 'this/is/a/test/right/';
 		$this->req->setPath($path);
 	}
+	
+	function testSettingPathWithSlashOnlyShouldNotResultInEmptyStringSetForPathProperty() {
+		$this->req->setPath('/');
+		$this->assertNotEquals('', $this->req->getPath(), 'Path is empty string');
+	}
   
   function testSetAndGetType() {
     $path = '/test/testing/stupid.txt';

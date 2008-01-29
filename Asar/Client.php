@@ -3,14 +3,13 @@ require_once 'Asar.php';
 
 class Asar_Client extends Asar_Base {
 	
-	private $app      = NULL;
 	private $name     = NULL;
-	private $request  = NULL;
-	private $response = NULL;
+	protected $request  = NULL;
+	protected $response = NULL;
 	
-	function createRequest($uri = '', $arguments = NULL) {
-		$req = new Asar_Request();		
-		$req->setUri($uri);
+	function createRequest($path = '/', $arguments = NULL) {
+		$req = new Asar_Request();
+		$req->setPath($path);
 		
 		if (is_array($arguments)) {			
 			if (array_key_exists('method', $arguments)) {
@@ -33,7 +32,18 @@ class Asar_Client extends Asar_Base {
 				$req->setType($arguments['type']);
 			}
 		}
+		$this->request = $req;
 		return $req;
+	}
+	
+	/**
+	 * Returns the latest request created or NULL if none
+	 *
+	 * @return Asar_Request
+	 **/
+	function getRequest()
+	{
+		return $this->request;
 	}
 	
 	/**
@@ -43,13 +53,8 @@ class Asar_Client extends Asar_Base {
 	 * @params mixed  The request. Can be an array for request arguments or an Asar_Request object itself
 	 * @params Asar_Application The application that will receive the request
 	 */
-	function sendRequestTo($request, Asar_Application $application) {
-		if (is_array($request)) {
-			$req = $this->createRequest($request);
-		} elseif($request instanceof Asar_Request) {
-			$req = $request;	
-		}
-		$this->response = $req->sendTo($application);
+	function sendRequestTo(Asar_Application $application) {
+		$this->response = $this->getRequest()->sendTo($application);
 		return $this->response;
 	}
 	
@@ -62,11 +67,6 @@ class Asar_Client extends Asar_Base {
 	function getResponse() {
 		return $this->response;
 	}
-	
-	function setServiceProvider(Asar_Application $app) {
-		$this->app = $app;
-	}
-
 	
 	function setName($name) {
 		if (!is_string($name)) {

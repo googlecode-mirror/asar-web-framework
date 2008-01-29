@@ -33,9 +33,12 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->app = new Test2_Application();
   }
   
-	public function testStartingMustFirstRunRootController()
+	public function testInvokingMustFirstRunIndexController()
 	{
-		Asar::start('Test2');
+		$req = new Asar_Request();
+		$req->setPath('/');
+		$response = $req->sendTo($this->app);
+		$this->assertEquals('Hello World', $response->__toString(), 'Application did not invoke index controller' );
 	}
   
   function testLoadingController() {

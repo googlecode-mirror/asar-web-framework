@@ -67,7 +67,7 @@ class Asar_Request extends Asar_Message {
 		if (strpos($path, '/') !== 0) {
 			$this->exception('The path must start with a single slash');
 		}
-		$this->path = rtrim($path, '/');
+		$this->path = ($path === '/') ? $path : rtrim($path, '/');
 		$path_array = explode('/', $this->path);
 		$path_array[0] ='/';
 		$this->path_array = $path_array;
