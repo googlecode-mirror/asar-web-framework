@@ -12,7 +12,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	protected $path_array = array();
 	protected $path       = NULL;    // The path of the controller
 	protected $forward    = NULL;    // Controller to forward with the request when there are no mapped controllers/resources
-	protected $view       = array(); // Array of values to store on the view object ---> may need rethinking
+	protected $view       = NULL;    // Template object to use
   
 	function __construct() {
 		$this->response = new Asar_Response;
@@ -56,12 +56,13 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	}
 	
 	private function callResourceAction() {
+		$this->view = new Asar_Template();
 		$content = $this->{$this->request->getMethod()}();
 		if (is_null($content)) {
-			$view_object = $this->getView();
-			if ($view_object) {
-				$view_object->setVars($this->view);
-				$content = $view_object->fetch();
+			$template_file = $this->getViewPath();
+			if (Asar::fileExists($template_file)) {
+				$this->view->setTemplate($template_file);
+				$content = $this->view->fetch();
 			}
 		}
 		$this->response->setContent( $content );
@@ -171,22 +172,15 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	}
 	
 	/**
-	 * Returns the view object that the controller is going to use
+	 * Returns the path to view template that the controller is going to use
 	 *
-	 * @return Asar_Template
+	 * @return 
 	 **/
-	private function getView()
+	private function getViewPath()
 	{
 		$classpath = explode('_', get_class($this));
 		$classpath[1] = 'View';
-		$template_file = implode('/', $classpath).'/'.$this->request->getMethod().'.php';
-		if (Asar::fileExists($template_file)) {
-			$template = new Asar_Template();
-			$template->setTemplate($template_file);
-			return $template;
-		} else {
-			return NULL;
-		}
+		return implode('/', $classpath).'/'.$this->request->getMethod().'.php';
 	}
 	
 	
