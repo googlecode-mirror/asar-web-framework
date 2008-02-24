@@ -39,7 +39,8 @@ class Test_Controller_Another extends Asar_Controller {
 
 class Test_Controller_Next extends Asar_Controller {
 	protected $map = array(
-		'proceed' => 'Proceed'
+		'proceed' => 'Proceed',
+		'follow'  => 'Follow'
 	);
 	
 	function GET() {
@@ -65,11 +66,22 @@ class Test_Controller_Proceed extends Asar_Controller {
 	}
 }
 
+class Test_Controller_Follow extends Asar_Controller {
+
+	function GET() {
+		$this->view['var'] = 'Followed GET';
+	}
+}
+
 class Test_Controller_Forwarding extends Asar_Controller {
 	protected $forward = 'Forwarded';
 	
 	function GET() {
 		return 'AAAA';
+	}
+	
+	function POST() {
+		$this->view['output'] = 'This is the way';
 	}
 }
 
@@ -84,7 +96,7 @@ class Test_Controller_With_No_Methods extends Asar_Controller {}
 
 
 
-class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
+class Asar_ControllerTest extends Asar_Test_Helper {
   
 	protected function setUp() {
 		$this->C = new Test_Controller_Index;
@@ -125,11 +137,6 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$this->R->setMethod(Asar_Request::HEAD);
 		$this->assertEquals('', $this->R->sendTo($this->C)->__toString());
 	}
-	/*
-	function testRequestingAResourceWithHeadMethodShouldReturnTheSameResponseExceptAsItsGetMethod() {
-		$this->R->setMethod(Asar_Request::HEAD);
-		$this->assertEquals(200, $this->R->sendTo($this->C)->getStatus());
-	}*/
 	
 	function testRequestingAMappedResourceButUndefinedMethodMustReturnA405StatusResponse() {
 		$this->R->setMethod(Asar_Request::PUT);
@@ -238,6 +245,30 @@ class Asar_ControllerTest extends PHPUnit_Framework_TestCase {
 		$this->R->setPath('/we_are_the_champion/');
 		$controller = new Test_Controller_Forwarding;
 		$this->assertEquals('BBBB', $this->R->sendTo($controller)->__toString(), 'Unexpected response');
+	}
+	
+	function testResourcesWillAttemptToInvokeCorrespondingTemplateWhenViewIsDefined() {
+		$this->R->setMethod(Asar_Request::POST);
+		$controller = new Test_Controller_Forwarding;
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$template = self::newFile('Test/View/Forwarding/POST.php', '<h1><?=$output?></h1>');
+		$this->assertEquals('<h1>This is the way</h1>', $this->R->sendTo($controller)->__toString(), 'The template file was probably not invoked');
+		set_include_path($old_include_path); // reset path
+	}
+	
+	function testAttemptToInvokeCorrespondingTemplateGet() {
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/follow/');
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$template = self::newFile('Test/View/Follow/GET.php', '<strong><?=$var?></strong>Yadayada');
+		$this->assertEquals('<strong>Followed GET</strong>Yadayada', $this->R->sendTo($this->C)->__toString(), 'The template file was probably not invoked');
+		set_include_path($old_include_path); // reset path
+	}
+	
+	function testGettingViewInvokesATemplateObjectWithTheViewCorrespondingToTheRequest() {
+		$this->markTestIncomplete();
 	}
 	/*
 	

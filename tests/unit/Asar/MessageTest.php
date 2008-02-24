@@ -83,6 +83,14 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
 		$expected = implode("\n", $contents);
 		$this->assertEquals($expected, $this->req->__toString(), 'Invoking toString did not return concatenated strings');
 	}
+	
+	function testGettingStringContentOfMessageWhenContentIsNullReturnsAnEmptyString() {
+		$this->req->setContent(null);
+		ob_start();
+		echo $this->req;
+		$test = ob_get_clean();
+		$this->assertEquals('', $test, 'Did not return an empty string as expected');
+	}
     
   function testAddParams() {
     $requestVars = array(

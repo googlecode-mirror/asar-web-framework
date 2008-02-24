@@ -5,121 +5,124 @@
 require_once 'Asar.php';
 
 abstract class Asar_Message extends Asar_Base {
-  private $address    = NULL;
-  private $contents   = NULL;
-  private $params     = array();
-  private $type       = NULL;
-  private $headers    = array();
-  private $context    = NULL;
-  private $mime_types = array(
-    'html'   => 'text/html',
-    'htm'    => 'text/html',
-    'php'    => 'text/html',
-    'rss'    => 'application/xml',
-    'xml'    => 'application/xml',
-    'xhtml'  => 'application/xhtml+xml',
-    'txt'    => 'text/plain',
-    'xhr'    => 'text/plain',
-    'css'    => 'text/css',
-    'js'     => 'text/javascript',
-    'json'   => 'application/json',
-  );
-  
-  function setHeaders($headers) {
-    if (is_array($headers)) {
-      $this->headers = $headers;
-    }
-  }
-  
-  function getHeaders() {
-    if (!(count($this->headers) > 0)) {
-      $this->exception('Headers not set');
-    } else {
-      return $this->headers;
-    }
-  }
-  
-  function setAddress($address) {
-    $this->address = $address;
-  }  
-  
-  function getAddress() {
-    if (is_null($this->address)) {
-      $this->exception('Address not set');
-    } else {
-      return $this->address;
-    }
-  }
-  
-  function setContent($contents) {
-      $this->contents = $contents;
-  }
-  
-  function getContent() {
-    return $this->contents;
-  }
-  
-  // For query strings
-  function setParams($params) {
-    if (is_array($params)) {
-      $this->params = array_merge($this->params, $params);
-    } else {
-      $this->exception('Params must be an associative array');
-    }
-  }
-  
-  function getParams() {
-    return $this->params;
-  }
-  
-  function setParam($key, $value) {
-    $this->params[$key] = $value;
-  }
-  
-  function getParam($key) {
-    if (array_key_exists($key, $this->params)) {
-      return $this->params[$key];
-    } else {
-      $this->exception("The parameter '$key' specified does not exist");
-    }
-  }
-  
-  
-  // @todo: Better mime-type setting ('text/plain', 'text/html', etc.)
-  function setType($type) {
-    $this->type = $type;
-  }
-  
-  function getType() {
-    if (is_null($this->type)) {
-      $this->exception('Type not set');
-    } else {
-      return $this->type;
-    }
-  }
-  
-  function getMimeType() {
-  	if (@ array_key_exists($this->type, $this->mime_types)) {
-  		return $this->mime_types[$this->type];
-  	} else {
-      return 'text/html';
-  	}
-  }
-  
-  protected function setContext($processor) {
-    $this->context = $processor;
-  }
-  
-  function getContext() {
-    return $this->context;
-  }
-  
-  function __toString() {
-  	if (is_array($this->contents)) {
-  		return implode("\n", $this->contents);
-  	}
-  	return $this->contents;
-  }
+	private $address    = NULL;
+	private $contents   = NULL;
+	private $params     = array();
+	private $type       = NULL;
+	private $headers    = array();
+	private $context    = NULL;
+	private $mime_types = array(
+		'html'   => 'text/html',
+		'htm'    => 'text/html',
+		'php'    => 'text/html',
+		'rss'    => 'application/xml',
+		'xml'    => 'application/xml',
+		'xhtml'  => 'application/xhtml+xml',
+		'txt'    => 'text/plain',
+		'xhr'    => 'text/plain',
+		'css'    => 'text/css',
+		'js'     => 'text/javascript',
+		'json'   => 'application/json',
+		);
+
+	function setHeaders($headers) {
+		if (is_array($headers)) {
+			$this->headers = $headers;
+		}
+	}
+
+	function getHeaders() {
+		if (!(count($this->headers) > 0)) {
+			$this->exception('Headers not set');
+		} else {
+			return $this->headers;
+		}
+	}
+
+	function setAddress($address) {
+		$this->address = $address;
+	}  
+
+	function getAddress() {
+		if (is_null($this->address)) {
+			$this->exception('Address not set');
+		} else {
+			return $this->address;
+		}
+	}
+
+	function setContent($contents) {
+		$this->contents = $contents;
+	}
+
+	function getContent() {
+		return $this->contents;
+	}
+
+	// For query strings
+	function setParams($params) {
+		if (is_array($params)) {
+			$this->params = array_merge($this->params, $params);
+		} else {
+			$this->exception('Params must be an associative array');
+		}
+	}
+
+	function getParams() {
+		return $this->params;
+	}
+
+	function setParam($key, $value) {
+		$this->params[$key] = $value;
+	}
+
+	function getParam($key) {
+		if (array_key_exists($key, $this->params)) {
+			return $this->params[$key];
+		} else {
+			$this->exception("The parameter '$key' specified does not exist");
+		}
+	}
+
+
+	// @todo: Better mime-type setting ('text/plain', 'text/html', etc.)
+	function setType($type) {
+		$this->type = $type;
+	}
+
+	function getType() {
+		if (is_null($this->type)) {
+			$this->exception('Type not set');
+		} else {
+			return $this->type;
+		}
+	}
+
+	function getMimeType() {
+		if (@ array_key_exists($this->type, $this->mime_types)) {
+			return $this->mime_types[$this->type];
+		} else {
+			return 'text/html';
+		}
+	}
+
+	protected function setContext($processor) {
+		$this->context = $processor;
+	}
+
+	function getContext() {
+		return $this->context;
+	}
+
+	function __toString() {
+		if (is_array($this->contents)) {
+			return implode("\n", $this->contents);
+		}
+		if (is_null($this->contents)) {
+			return '';
+		}
+		return $this->contents;
+	}
   
 }
 

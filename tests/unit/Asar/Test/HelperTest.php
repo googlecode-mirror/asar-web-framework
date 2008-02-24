@@ -111,7 +111,26 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 		$file = 'dummy4.txt';
 		Asar_Test_Helper::newFile($file, '');
 		$this->assertEquals($this->temp_path.$file, Asar_Test_Helper::getPath($file), 'The file path returned is not equal to expected');
-		
+	}
+	
+	public function testCreatingDirectories()
+	{
+		$dir = 'testDir/subDir/newDir/';
+		Asar_Test_Helper::createDir($dir);
+		$tempdir = Asar_Test_Helper::getTempDir();
+		$this->assertTrue(file_exists($tempdir.'testDir'), 'Did not create first directory');
+		$this->assertTrue(file_exists($tempdir.'testDir/subDir'), 'Did not create subdirectory');
+		$this->assertTrue(file_exists($tempdir.'testDir/subDir/newDir'), 'Did not create last path');
+	}
+	
+	public function testCreatingAFileWithASpecifiedPath()
+	{
+		$file = 'aFolder/anotherFolder/thefile.txt';
+		Asar_Test_Helper::newFile($file, '');
+		$tempdir = Asar_Test_Helper::getTempDir();
+		$this->assertTrue(file_exists($tempdir.'aFolder'), 'Did not create first directory');
+		$this->assertTrue(file_exists($tempdir.'aFolder/anotherFolder'), 'Did not create subdirectory');
+		$this->assertTrue(file_exists($tempdir.'aFolder/anotherFolder/thefile.txt'), 'Did not create file');
 	}
 	
 	public function testGettingTheFullPathWhenAFileDoesNotExistMustReturnFalse()

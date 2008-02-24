@@ -81,8 +81,26 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 		if (!file_exists(self::getTempDir())) {
 			mkdir(self::getTempDir());
 		}
-		file_put_contents(self::getTempDir().'/'.$filename, $content);
 		
+		// See if it has a path to it
+		if (strpos($filename, '/') > -1) {
+			// Create Path First
+			self::createDir(substr($filename, 0, strrpos($filename, '/') + 1));
+		}
+		file_put_contents(self::getTempDir().DIRECTORY_SEPARATOR.$filename, $content);
+		
+	}
+	
+	/**
+	 * Creates a directory with the specified pathname
+	 *
+	 * @return void
+	 * @param string The directory path to be created
+	 **/
+	public static function createDir($dirpath)
+	{
+		//echo $dirpath,"\n";
+		mkdir(self::getTempDir().$dirpath, 0777, true);
 	}
 	
 	/**

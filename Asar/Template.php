@@ -88,6 +88,7 @@ class Asar_Template implements ArrayAccess {
 	/**
 	 * Set a bunch of variables at once using an associative array.
 	 *
+	 * @todo Needs optimization
 	 * @param array $vars array of vars to set
 	 * @return void
 	 */
