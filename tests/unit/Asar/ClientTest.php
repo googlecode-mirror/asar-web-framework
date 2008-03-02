@@ -41,10 +41,13 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	function testCreateRequest() {
-		$address = '/people/get/asartalo/tags/reallyStupid';
+		$path = '/people/get/asartalo/tags/reallyStupid';
 		$arguments = array(
-			'method'  => 'GET',
-			'headers' => array(
+			'scheme'    => 'http',
+			'authority' => 'example.host.com',
+			'path'      => $path,
+			'method'    => 'GET',
+			'headers'   => array(
 				'Accept'          => 'text/html',
 				'Accept-Encoding' => 'gzip,deflate'
 			),
@@ -57,9 +60,11 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 				'crazy'  => 'beautiful'
 			)
 		);
-		$r = $this->client->createRequest($address, $arguments);
+		$r = $this->client->createRequest($arguments);
 		$this->assertEquals(Asar_Request::GET, $r->getMethod(), 'Method mismatch');
-		$this->assertEquals($address, $r->getPath(), 'Address mismatch');
+		$this->assertEquals($path, $r->getPath(), 'Address mismatch');
+		$this->assertEquals('http', $r->getUriScheme(), 'Scheme mismatch');
+		$this->assertEquals('example.host.com', $r->getUriAuthority(), 'URI Authority mismatch');
 		$this->assertTrue($this->arrayMatch($arguments['params'], $r->getParams()), 'Parameters did not match');
 		$this->assertEquals($r, $this->client->getRequest(), 'Client did not set internal request property');
 	}

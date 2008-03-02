@@ -7,11 +7,19 @@ class Asar_Client extends Asar_Base {
 	protected $request  = NULL;
 	protected $response = NULL;
 	
-	function createRequest($path = '/', $arguments = NULL) {
+	function createRequest($arguments = NULL) {
 		$req = new Asar_Request();
-		$req->setPath($path);
 		
-		if (is_array($arguments)) {			
+		if (is_array($arguments)) {
+			$req->setUriAuthority($arguments['authority']);
+			$req->setUriScheme($arguments['scheme']);
+						
+			if (array_key_exists('path', $arguments)) {
+				$req->setPath($arguments['path']);
+			} else {
+				$req->setPath('/');
+			}
+			
 			if (array_key_exists('method', $arguments)) {
 				$req->setMethod($arguments['method']);
 			}
@@ -31,6 +39,8 @@ class Asar_Client extends Asar_Base {
 			if (array_key_exists('type', $arguments)) {
 				$req->setType($arguments['type']);
 			}
+		} else {
+			$req->setPath('/');
 		}
 		$this->request = $req;
 		return $req;

@@ -252,7 +252,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$controller = new Test_Controller_Forwarding;
 		$old_include_path = get_include_path();
 		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
-		$template = self::newFile('Test/View/Forwarding/POST.php', '<h1><?=$output?></h1>');
+		$template = self::newFile('Test/View/Forwarding/POST.html.php', '<h1><?=$output?></h1>');
 		$this->assertEquals('<h1>This is the way</h1>', $this->R->sendTo($controller)->__toString(), 'The template file was probably not invoked');
 		set_include_path($old_include_path); // reset path
 	}
@@ -262,14 +262,11 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$this->R->setPath('/next/follow/');
 		$old_include_path = get_include_path();
 		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
-		$template = self::newFile('Test/View/Follow/GET.php', '<strong><?=$var?></strong>Yadayada');
+		$template = self::newFile('Test/View/Follow/GET.html.php', '<strong><?=$var?></strong>Yadayada');
 		$this->assertEquals('<strong>Followed GET</strong>Yadayada', $this->R->sendTo($this->C)->__toString(), 'The template file was probably not invoked');
 		set_include_path($old_include_path); // reset path
 	}
 	
-	function testGettingViewInvokesATemplateObjectWithTheViewCorrespondingToTheRequest() {
-		$this->markTestIncomplete();
-	}
 	/*
 	
   

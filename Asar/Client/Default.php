@@ -2,10 +2,13 @@
 
 class Asar_Client_Default extends Asar_Client {
 	
-	function createRequest() {
- 		
-		return parent::createRequest( $this->getUriFromServerVars(),
+	function createRequest($arguments = NULL) {
+
+		return parent::createRequest(
 	    	array(
+				'authority' => $_SERVER['SERVER_NAME'],
+				'scheme' => 'http',
+				'path'   => $this->getUriFromServerVars(),
 	    		'method' => $_SERVER['REQUEST_METHOD'],
 				'params' => $_GET
 	    	)
@@ -36,6 +39,23 @@ class Asar_Client_Default extends Asar_Client {
 	}
 	
 	/**
+	 * Exports the response object to the appropriate HTTP response.
+	 *
+	 * Exporting will set the appropriate HTTP status based on the
+	 * response object's status property, the content-type, etc.
+	 *
+	 * @return void
+	 * @param  Asar_Response response object
+	 **/
+	public function exportResponse(Asar_Response $response)
+	{
+		if (!headers_sent()) {
+			header('Content-Type: ' . $response->getMimeType(), true, $response->getStatus());
+		}
+		echo $response;
+	}
+	
+	/**
 	 * Sends request to Application and outputs the response to the buffer
 	 *
 	 * @return Asar_Response
@@ -44,7 +64,7 @@ class Asar_Client_Default extends Asar_Client {
 	public function sendRequestTo(Asar_Application $application)
 	{
 		$response = parent::sendRequestTo($application);
-		echo $response;
+		$this->exportResponse($response);
 		return $response;
 	}
 }

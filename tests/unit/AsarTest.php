@@ -55,7 +55,7 @@ abstract class Uninstantiable_Class {}
 class AsarTest extends Asar_Test_Helper {
 	
 	protected function setUp() {
-		
+		$_SERVER['SERVER_NAME'] = 'sample.website';
 	}
 	
 	protected function tearDown() {

@@ -17,9 +17,11 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		
 		if (isset($_SERVER['REDIRECT_URL'])) unset($_SERVER['REDIRECT_URL']);
 		
+		$_SERVER['SERVER_NAME'] = 'www.host.example';
 		$_SERVER['REQUEST_URI'] = '/basic/var1/var2.txt?enter=true&center=1&stupid&crazy=beautiful';
 		$_SERVER['QUERY_STRING'] = 'enter=true&center=1&stupid&crazy=beautiful';
 	    $_SERVER['REQUEST_METHOD'] = 'GET';
+		$_SERVER['HTTP_ACCEPT'] = 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5';
 	    $_GET['enter']  = 'true';
 	    $_GET['center'] = '1';
 	    $_GET['stupid'] = '';
@@ -49,26 +51,36 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		$this->assertEquals(Asar_Request::POST, $request->getMethod(), 'Method mismatch');
 	}
 	
+	function testCreateRequestGetsHostFromServerName() {
+		$request = $this->client->createRequest();
+		$this->assertEquals('www.host.example', $request->getHost(), 'Host mismatch');
+	}
+	
 	function testCreateRequestGetsUriFromRequestUriButSubtractTheQueryString() {
 		$request = $this->client->createRequest();
-		$this->assertEquals('/basic/var1/var2.txt', $request->getPath(), 'Unable to set Uri Properly');
+		$this->assertEquals('/basic/var1/var2.txt', $request->getPath(), 'Unable to set URI Properly');
 	}
 	
 	function testCreateRequestGetsUriFromRequestUri() {
 		$_SERVER['REQUEST_URI'] = '/basic/var1/var3.txt';
 		$request = $this->client->createRequest();
-		$this->assertEquals('/basic/var1/var3.txt', $request->getPath(), 'Unable to set Uri Properly');
+		$this->assertEquals('/basic/var1/var3.txt', $request->getPath(), 'Unable to set URI Properly');
 	}
 	
 	function testCreateRequestReadsRedirectUrlWhenAvailable() {
 		$_SERVER['REDIRECT_URL'] = '/funny';
 		$request = $this->client->createRequest();
-		$this->assertEquals('/funny', $request->getPath(), 'Unable to set Uri Properly');
+		$this->assertEquals('/funny', $request->getPath(), 'Unable to set URI Properly');
 	}
 	
 	function testCreatingRequestSetsParamsFromGetEnvironmentVariable() {
 		$request = $this->client->createRequest();
 		$this->assertEquals($this->expected_params, $request->getParams(), 'Parameters were not set');
+	}
+	
+	function testDefaultClientSetsTheUriSchemeToHttp() {
+		$request = $this->client->createRequest();
+		$this->assertEquals('http', $request->getUriScheme(), 'URI Scheme was not set to \'http\'');
 	}
 	
 	function testCreatingRequestWhen_SERVER_REDICT_URLIsUnsetWillThrowError() {
@@ -84,6 +96,17 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		$this->client->sendRequestTo(new AsarClientDefaultTest_Application);
 		$test = ob_get_clean();
 		$this->assertEquals('Yes', $test, 'Response content was not outputed');
+	}
+	
+	function testExportingResponseShouldSetHttpResponseHeaderToAsarResponse() {
+		$response = new Asar_Response;
+		$response->setType('txt');
+		$this->markTestIncomplete('Difficult to implement because code requires setting headers');
+		/*
+		$this->client->exportResponse($response);
+		$headers = headers_list();
+		$this->assertTrue(in_array('Content-Type: text/plain', $headers, 'The expected response header was not found'));
+		*/
 	}
 }
 ?>

@@ -99,6 +99,9 @@ abstract class Asar_Message extends Asar_Base {
 	}
 
 	function getMimeType() {
+		/**
+		 * @todo needs improvement to skip with the @
+		 */
 		if (@ array_key_exists($this->type, $this->mime_types)) {
 			return $this->mime_types[$this->type];
 		} else {

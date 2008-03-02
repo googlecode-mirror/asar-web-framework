@@ -1,5 +1,5 @@
 <?php
-class Asar_Template implements ArrayAccess {
+class Asar_Template extends Asar_Base implements ArrayAccess {
 	protected $vars = array(); // Holds all the template variables
 	protected $path; // Path to the templates
 	protected $template_file; // Template file to use
@@ -92,7 +92,7 @@ class Asar_Template implements ArrayAccess {
 	 * @param array $vars array of vars to set
 	 * @return void
 	 */
-	public function setVars($vars, $clear = false) {
+	public function setVars($vars) {
 		foreach ($vars as $var => $val) {
 			$this->set($var, $val);
 		}
@@ -154,12 +154,16 @@ class Asar_Template implements ArrayAccess {
 			$_file = $this->template_file;
 		}
 		
-		extract($this->vars);           // Extract the variables set
-		ob_start();						// Start output buffering
-		include($this->path . $_file);	// Include the file
-		$_contents = ob_get_contents();	// Get the contents of the buffer
-		ob_end_clean();					// End buffering and discard
-		return $_contents;				// Return the contents
+		if (Asar::fileExists($this->path . $_file)) {
+			extract($this->vars);           // Extract the variables set
+			ob_start();						// Start output buffering
+			include($this->path . $_file);	// Include the file
+			$_contents = ob_get_clean();	// Get the contents of the buffer. End buffering and discard
+			return $_contents;				// Return the contents
+		} else {
+			$this->exception('Template file not found');
+			return null;
+		}
 		
 	}
 	
@@ -169,5 +173,5 @@ class Asar_Template implements ArrayAccess {
 	}
 }
 
-class Asar_Template_Exception extends Exception {}
+class Asar_Template_Exception extends Asar_Base_Exception {}
 ?>

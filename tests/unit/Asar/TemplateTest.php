@@ -59,49 +59,9 @@ class Asar_TemplateTest_TestHelper2 {
  */
 class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
 
-
-    protected $classname;
     protected $cleanUpList = array();
     
-    /*
-    protected static $classList = array();
     
-    protected function classInit($className, $obj) {
-    	
-    	$reflector = new ReflectionClass($className);
-    	
-    	$reflector_properties = $reflector->getProperties();
-    	$properties = array();
-    	foreach ($reflector_properties as $property) {
-    		if ($property->isStatic()) {
-    			$properties[$property->getName()] = $property->getValue($obj);
-    		}
-    	}
-    	self::$classList[$className] = array(
-    		'properties'   => $properties	
-    	);
-    }
-    
-    protected function classReset($className, $obj) {
-    	$reflector = new ReflectionClass($className);
-    	
-    	$reflector_properties = $reflector->getProperties();
-    	$properties = array();
-    	$property_valuelist = self::$classList[$className]['properties'];
-    	foreach ($reflector_properties as $property) {
-    		if ($property->isStatic()) {
-    			$property->setValue($obj, $property_valuelist[$property->getName()]);
-    		}
-    	}
-    	self::$classList[$className] = array(
-    		'properties'   => $properties	
-    	);
-    }*/
-    
-    public function __construct() {
-    	parent::__construct();
-    	$this->classname = 'Asar_Template';
-    }
     
     public static function main() {
         require_once "PHPUnit/TextUI/TestRunner.php";
@@ -111,8 +71,7 @@ class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function setUp() {
-    	$tplrf = new ReflectionClass($this->classname);
-    	$this->T = $tplrf->newInstance();	
+    	$this->T = new Asar_Template;
     	
     	if (!file_exists('temp')) {
     		mkdir('temp');	
@@ -174,20 +133,20 @@ class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
     	$this->assertTrue($this->hasString($haystack, '<p>Testing</p>'), 'Unable to set variable for file'.$haystack);
     	$this->assertTrue($this->hasString($haystack, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
     }
-    /**
-     * @todo How to implement this:
      
     public function testThrowingErrorWhenMissingTemplateUsed() {
-    	try {
-    		$haystack = $this->T->fetch('NonexistingTemplateFile');
-    	} catch (Exception $e) {
-    		$this->assertTrue($e instanceof Asar_TemplateException, 'Exception thrown is not a Asar_TemplateException');
-    		$this->assertTrue($this->hasString($e->getMessage(), 'NonexistingTemplateFile'), 'Asar_TemplateException does not properly indicate which template it tried to include');
-    	}
-    	
+    	$this->setExpectedException('Asar_Template_Exception');
+    	$this->T->fetch('NonexistentTemplateFile');
+    	//$this->assertTrue($e instanceof Asar_Template_Exception, 'Exception thrown is not an Asar_Template_Exception');
+    	$this->assertTrue($this->hasString($e->getMessage(), 'NonexistingTemplateFile'), 'Asar_Template_Exception does not properly indicate which template it tried to include');
     }
-    */
     
+    public function testReturnsNullWhenMissingTemplateUsed() {
+		$this->setExpectedException('Asar_Template_Exception');    	
+		$haystack = $this->T->fetch('NonexistentTemplateFile');
+    	$this->assertEquals(null, $haystack, 'Template did not return null when including non-existentTemplateFile');
+    }
+
     public function testSettingVariables() {
     	$this->T->set('var', 'Testing');
     	$this->T->set('var2', 'TestingAgain');

@@ -180,7 +180,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	{
 		$classpath = explode('_', get_class($this));
 		$classpath[1] = 'View';
-		return implode('/', $classpath).'/'.$this->request->getMethod().'.php';
+		return implode('/', $classpath).'/'.$this->request->getMethod().'.html'.'.php';
 	}
 	
 	
