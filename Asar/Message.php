@@ -5,12 +5,12 @@
 require_once 'Asar.php';
 
 abstract class Asar_Message extends Asar_Base {
-	private $address    = NULL;
-	private $contents   = NULL;
+	private $address    = null;
+	private $contents   = null;
 	private $params     = array();
-	private $type       = NULL;
+	private $type       = null;
 	private $headers    = array();
-	private $context    = NULL;
+	private $context    = null;
 	private $mime_types = array(
 		'html'   => 'text/html',
 		'htm'    => 'text/html',
@@ -91,11 +91,7 @@ abstract class Asar_Message extends Asar_Base {
 	}
 
 	function getType() {
-		if (is_null($this->type)) {
-			$this->exception('Type not set');
-		} else {
-			return $this->type;
-		}
+		return $this->type;
 	}
 
 	function getMimeType() {

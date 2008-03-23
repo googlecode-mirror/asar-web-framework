@@ -25,7 +25,7 @@ class Asar_Request extends Asar_Message {
 	 * @return void
 	 * @param string $host 
 	 **/
-	function setHost($host)
+	public function setHost($host)
 	{
 		$this->setUriAuthority($host);
 	}
@@ -36,13 +36,13 @@ class Asar_Request extends Asar_Message {
 	 *
 	 * @return string
 	 **/
-	function getHost()
+	public function getHost()
 	{
 		return $this->getUriAuthority();
 	}
 	
 	
-	function setUri($uri) {
+	public function setUri($uri) {
 		// Get the scheme part first
 		$this->uri_scheme = substr($uri, 0, strpos($uri, ':'));
 		$path = str_replace($this->uri_scheme.'://', '', $uri);
@@ -50,40 +50,40 @@ class Asar_Request extends Asar_Message {
 		$this->setPath( substr($path, strpos($path, '/'), strlen($path)+1) );
 	}
 
-	function getUri() {
+	public function getUri() {
 		return $this->uri_scheme.'://'.$this->uri_authority.$this->path;
 	}
 	
-	function setUriScheme($scheme) {
+	public function setUriScheme($scheme) {
 		$this->uri_scheme = $scheme;
 	}
 	
-	function getUriScheme() {
+	public function getUriScheme() {
 		return $this->uri_scheme;
 	}
 	
-	function setUriAuthority($autority) {
+	public function setUriAuthority($autority) {
 		$this->uri_authority = $autority;
 	}
 	
-	function getUriAuthority() {
+	public function getUriAuthority() {
 		return $this->uri_authority;
 	}
 
 	protected function getTypeFromPath($path) {
 		// Remove the string after the '?'
 		if (strpos($path, '?')) {
-			$path = substr($path, 0, strpos($path,'?'));
+			$path = substr($path, 0, strpos($path, '?'));
 		}
 
 		// Remove the string before the last occurrence of the '/'
 		$fname = substr($path, strrpos($path, '/') + 1);
 
 		// Get the file extension
-		return substr($fname, strrpos($fname, '.')+1);
+		return substr($fname, strrpos($fname, '.') + 1);
 	}
   
-	function setPath($path) {
+	public function setPath($path) {
 		if (strpos($path, '//') > -1) {
 			$this->exception('The path specified has double slashes, \'//\', which is unresorvable ');
 		}
@@ -98,15 +98,15 @@ class Asar_Request extends Asar_Message {
 		$this->setType($this->getTypeFromPath($path));
 	}
   
-	function getPath() {
+	public function getPath() {
 		return $this->path;
 	}
   
-	function getPathArray() {
+	public function getPathArray() {
 		return $this->path_array;
 	}
 	
-	function setMethod($method) {
+	public function setMethod($method) {
 		switch ($method) {
 			case self::GET:
 			case self::POST:
@@ -127,26 +127,25 @@ class Asar_Request extends Asar_Message {
 	 * 
 	 * @return string 
 	 */
-	function getMethod() {
+	public function getMethod() {
 		if (is_null($this->method)) {
 			$this->method = self::GET;
 		}
 		return $this->method;
 	}
   
-  function setContent($contents) {
-    if (is_array($contents)) {
-      parent::setContent($contents);
-    } else {
-      $this->exception('Contents must be an associative array');
+    public function setContent($contents) {
+        if (is_array($contents)) {
+            parent::setContent($contents);
+        } else {
+            $this->exception('Contents must be an associative array');
+        }
     }
-  }
   
-  function sendTo(Asar_Requestable $processor, array $arguments = NULL) {
-    $this->setContext($processor);
-    return $processor->processRequest($this, $arguments);
-  }
-
+    function sendTo(Asar_Requestable $processor, array $arguments = NULL) {
+        $this->setContext($processor);
+        return $processor->processRequest($this, $arguments);
+    }
   
 }
 

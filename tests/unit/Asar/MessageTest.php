@@ -92,34 +92,34 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('', $test, 'Did not return an empty string as expected');
 	}
     
-  function testAddParams() {
-    $requestVars = array(
-      'action' => 'Stupid',
-      'var1'   => 'Anything',
-      'var2'   => 'Ahahahaha',
-      'var3'   => 'Yo!',
-      'lover'  => 'Fell in love with a girl'
-    );
-    
-    $toAdd = array(
-      'stupid' => 'boy',
-      'crazy'  => 'girl'
-    );
-    
-    $this->req->setParams($requestVars);
-    $this->req->setParams($toAdd);
-    
-    $this->assertEquals(array_merge($requestVars, $toAdd), $this->req->getParams(), 'Unable to set and add params');
-  }
+    function testAddParams() {
+        $requestVars = array(
+            'action' => 'Stupid',
+            'var1'   => 'Anything',
+            'var2'   => 'Ahahahaha',
+            'var3'   => 'Yo!',
+            'lover'  => 'Fell in love with a girl'
+        );
+
+        $toAdd = array(
+            'stupid' => 'boy',
+            'crazy'  => 'girl'
+        );
+
+        $this->req->setParams($requestVars);
+        $this->req->setParams($toAdd);
+
+        $this->assertEquals(array_merge($requestVars, $toAdd), $this->req->getParams(), 'Unable to set and add params');
+    }
   
-  function testSetAndGetType() {
-  	$this->req->setType('txt');
-  	$this->assertEquals('txt', $this->req->getType(), 'Type mismatch');
-    $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
-    $this->req->setType('html');
-    $this->assertEquals('html', $this->req->getType(), 'Type mismatch');
-    $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
-  }
+    function testSetAndGetType() {
+        $this->req->setType('txt');
+        $this->assertEquals('txt', $this->req->getType(), 'Type mismatch');
+        $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
+        $this->req->setType('html');
+        $this->assertEquals('html', $this->req->getType(), 'Type mismatch');
+        $this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
+    }
   
   function testSetAndGetRequestTypeTxt() {
     $this->req->setType('txt');

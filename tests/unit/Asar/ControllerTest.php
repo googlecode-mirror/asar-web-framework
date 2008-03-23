@@ -268,7 +268,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 	}
 	
 	/**
-	 * undocumented function
+	 * Test Getting the Layout template
 	 *
 	 * @return void
 	 **/
@@ -286,6 +286,46 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		set_include_path($old_include_path); // reset path
 	}
 	
+	/**
+	 * Test for getting the appropriate representation (view) for the request 
+	 *
+	 * @return void
+	 **/
+	public function testGettingJsonTemplateForTheRequest()
+	{
+	    
+	    $old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		// Json Representation
+		$json_template = self::newFile('Test/View/Follow/GET.json.php', '{<?=$var?>}');
+		$html_template = self::newFile('Test/View/Follow/GET.html.php', '<h1><?=$var?></h1>');
+		$this->R->setPath('/next/follow/');
+		$this->R->setType('json');
+		$this->assertEquals('{Followed GET}',
+		                    $this->R->sendTo($this->C)->__toString(),
+		                    'The wrong template was used. Must be json.');
+	}
+
+    /**
+	 * Layout should not be included for requests for representations
+	 * other than html.
+	 *
+	 * @return void
+	 **/
+	public function testLayoutShouldNotBeIncludedWhenRequestDoesNotAskForHtmlRepresentation()
+	{
+	    $this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/follow/');
+        $this->R->setType('json');
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$template = self::newFile('Test/View/Follow/GET.json.php', '{<?=$var?>}');
+		$layout   = self::newFile('Test/View/Layout.html.php', '<html><head><title>Test Layout</title></head><body><?=$contents?></body></html>');
+		$this->assertNotContains('<html><head><title>Test Layout</title></head><body>',
+		                    $this->R->sendTo($this->C)->__toString(),
+		                    'The layout file was not invoked');
+		set_include_path($old_include_path); // reset path
+	}
 	/*
 	
   
