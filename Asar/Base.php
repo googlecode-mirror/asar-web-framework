@@ -42,5 +42,3 @@ class Asar_Base {
 }
 
 class Asar_Base_Exception extends Exception {}
-
-?>

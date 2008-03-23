@@ -184,5 +184,3 @@ class Asar_File extends Asar_Base {
 }
 
 class Asar_File_Exception extends Asar_Base_Exception {}
-
-?>

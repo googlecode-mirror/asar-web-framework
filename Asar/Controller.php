@@ -56,11 +56,17 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	}
 	
 	private function callResourceAction() {
-		$this->view = new Asar_Template();
+		$this->view = new Asar_Template_Html;
 		$content = $this->{$this->request->getMethod()}();
 		if (is_null($content)) {
-			$template_file = $this->getViewPath();
+			$template_file = $this->getViewPath() . 
+			                 $this->request->getMethod() .
+			                 '.html' . '.php';
 			if (Asar::fileExists($template_file)) {
+				$layout_file = $this->getViewLayout();
+				if (Asar::fileExists($layout_file)) {
+                    $this->view->setLayout($layout_file);
+                }
 				$this->view->setTemplate($template_file);
 				$content = $this->view->fetch();
 			}
@@ -171,18 +177,30 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		}
 	}
 	
+	
 	/**
 	 * Returns the path to view template that the controller is going to use
 	 *
-	 * @return 
+	 * @return string
 	 **/
 	private function getViewPath()
 	{
 		$classpath = explode('_', get_class($this));
 		$classpath[1] = 'View';
-		return implode('/', $classpath).'/'.$this->request->getMethod().'.html'.'.php';
+		return implode('/', $classpath) . '/';
 	}
 	
+	/**
+	 * Returns the path to the layout file
+	 *
+	 * @return string
+	 * @todo Maybe we can combine some methods here with getViewPath
+	 **/
+	private function getViewLayout()
+	{
+	    $classpath = explode('_', get_class($this));
+	    return $classpath[0] . '/View/Layout.html.php';
+	}
 	
 	
 	/**

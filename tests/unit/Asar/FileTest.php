@@ -156,4 +156,3 @@ class Asar_FileTest extends Asar_Test_Helper {
 	}
   
 }
-?>

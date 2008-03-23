@@ -172,6 +172,3 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
   }
   
 }
-
-
-?>

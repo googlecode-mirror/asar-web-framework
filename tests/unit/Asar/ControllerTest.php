@@ -267,6 +267,25 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		set_include_path($old_include_path); // reset path
 	}
 	
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 **/
+	public function testGetTheLayoutTemplateWhenItIsAvailable()
+	{
+	    $this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/follow/');
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$template = self::newFile('Test/View/Follow/GET.html.php', '<h1><?=$var?></h1>');
+		$layout   = self::newFile('Test/View/Layout.html.php', '<html><head><title>Test Layout</title></head><body><?=$contents?></body></html>');
+		$this->assertEquals('<html><head><title>Test Layout</title></head><body><h1>Followed GET</h1></body></html>',
+		                    $this->R->sendTo($this->C)->__toString(),
+		                    'The layout file was not invoked');
+		set_include_path($old_include_path); // reset path
+	}
+	
 	/*
 	
   
@@ -293,5 +312,3 @@ class Asar_ControllerTest extends Asar_Test_Helper {
   }*/
   
 }
-
-?>

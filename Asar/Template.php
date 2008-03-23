@@ -75,13 +75,17 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	/**
 	 * Set a template variable.
 	 *
-	 * @param string $name name of the variable to set
+	 * @param mixed $var name of the variable to set or an associative array with 'var_name' => value pairs
 	 * @param mixed $value the value of the variable
 	 *
 	 * @return void
 	 */
-	public function set($name, $value) {
-		$this->vars[$name] = $value;
+	public function set($var, $value = NULL) {
+		if (is_array($var)) {
+			$this->vars = array_merge($this->vars, $var);
+		} else {
+			$this->vars[$var] = $value;
+		}
 	}
 
 
@@ -92,10 +96,8 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	 * @param array $vars array of vars to set
 	 * @return void
 	 */
-	public function setVars($vars) {
-		foreach ($vars as $var => $val) {
-			$this->set($var, $val);
-		}
+	public function setVars(array $vars) {
+		$this->set($vars);
 	}
 	
 	
@@ -174,4 +176,3 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 }
 
 class Asar_Template_Exception extends Asar_Base_Exception {}
-?>

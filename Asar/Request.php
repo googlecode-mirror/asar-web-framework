@@ -151,4 +151,3 @@ class Asar_Request extends Asar_Message {
 }
 
 class Asar_Request_Exception extends Asar_Message_Exception {}
-?>

@@ -130,4 +130,3 @@ abstract class Asar_Message extends Asar_Base {
 }
 
 class Asar_Message_Exception extends Asar_Base_Exception {}
-?>

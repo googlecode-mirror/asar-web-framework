@@ -16,6 +16,20 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	private static $_temp_path = FALSE;
 	
 	/**
+	 * See if watchErrors was called
+	 *
+	 * @var bool 
+	 **/
+	private static $error_handler_set = false;
+	
+	/**
+	 * undocumented class variable
+	 *
+	 * @var array
+	 **/
+	private static $watched_errors = array();
+	
+	/**
 	 * Wrapper method for PHPUnit_Framework_TestCaes runbase to enable custom cleanup
 	 * 
 	 *
@@ -24,11 +38,13 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 **/
 	public function runBare()
 	{
-		
 		self::clearTemp(); // Make sure we cleanup before we test
 		mkdir(self::getTempDir()); // Make the temp directory ready
 		parent::runBare();
 		self::clearTemp(); // ...and after we test
+		if (self::$error_handler_set) {
+		    self::stopWatchErrors();
+	    }
 	}
 	
 	/**
@@ -39,6 +55,58 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	public function __destruct()
 	{
 		//self::clearTemp();
+		
+	}
+	
+	/**
+	 * An Error Handler to watch errors
+	 *
+	 * @return void
+	 **/
+	public static function watchErrors()
+	{
+        set_error_handler(array('Asar_Test_Helper', 'custom_error_handler'));
+        self::$error_handler_set = true;
+	}
+	
+	/**
+	 * The error handler set by watchErrors()
+	 *
+	 * This stores the watched errors in an array
+	 *
+	 * @return void
+	 **/
+	public static function custom_error_handler($errno, $errstr, $errfile, $errline)
+	{
+	    self::$watched_errors[] = array('type'     => $errno,
+	                                     'message' => $errstr,
+	                                     'file'    => $errfile,
+                                         'line'    => $errline
+                                         );
+	}
+	
+	/**
+	 * Returns the last error that was received after
+	 * watchErrors() was invoked
+	 *
+	 * @return array An array of error properties
+	 **/
+	public static function getLastError()
+	{
+	    $count = count(self::$watched_errors);
+	    return ($count) ? self::$watched_errors[$count - 1] : null;
+	}
+	
+	/**
+	 * Sets the error handler to the old error handler
+	 *
+	 * @return void
+	 **/
+	public static function stopWatchErrors()
+	{
+	    if (self::$error_handler_set) {
+	        restore_error_handler();
+        }
 	}
 	
 	
@@ -95,18 +163,20 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 * Creates a directory with the specified pathname
 	 *
 	 * @return void
-	 * @param string The directory path to be created
+	 * @param string $dirpath The directory path to be created
 	 **/
 	public static function createDir($dirpath)
 	{
-		//echo $dirpath,"\n";
-		mkdir(self::getTempDir().$dirpath, 0777, true);
+		if (!file_exists(self::getTempDir().$dirpath)) {
+		    mkdir(self::getTempDir().$dirpath, 0777, true);
+	    }
 	}
 	
 	/**
 	 * Removes the file with the specified path
 	 *
 	 * @return void
+	 * @param string $filename The file to be deleted
 	 **/
 	public static function deleteFile($filename)
 	{
@@ -119,6 +189,7 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 * method to delete files and folders recursively
 	 *
 	 * @return void
+	 * @param string $folderPath The path to the folder to be emptied
 	 **/
 	private static function recursiveDelete($folderPath) {
 		if (file_exists($folderPath) && is_dir($folderPath)) {
@@ -158,4 +229,3 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 		return file_get_contents(self::getTempDir().'/'.$filename);
 	}
 } // END abstract class Asar_Test_Helper
-?>

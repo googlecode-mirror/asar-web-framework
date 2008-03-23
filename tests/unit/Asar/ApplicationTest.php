@@ -136,5 +136,3 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('Hello World', $response->__toString(), 'Unexpected value for content');
   }
 }
-
-?>

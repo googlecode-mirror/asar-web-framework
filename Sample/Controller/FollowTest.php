@@ -6,4 +6,3 @@ class Sample_Controller_FollowTest extends Asar_Controller {
 		$this->view['what_to_say'] = 'I\'ve been followed!';
 	}
 }
-?>

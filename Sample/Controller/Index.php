@@ -11,4 +11,3 @@ class Sample_Controller_Index extends Asar_Controller {
 		$this->view['follow_url'] = '/follow/';
 	}
 }
-?>

@@ -69,5 +69,3 @@ class Asar_Client_Default extends Asar_Client {
 	}
 }
 class Asar_Client_Default_Exception extends Asar_Client_Exception {}
-
-?>

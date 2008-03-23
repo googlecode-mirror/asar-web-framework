@@ -67,5 +67,3 @@ abstract class Asar_Application extends Asar_Base implements Asar_Requestable {
 }
 
 class Asar_Application_Exception extends Asar_Base_Exception {}
-
-?>

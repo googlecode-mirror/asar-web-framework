@@ -238,6 +238,40 @@ class AsarTest extends Asar_Test_Helper {
 		$testapp = 'AsarTest';
 		Asar::start('AsarTest');
 	}
+	
+	function testSettingApplicationStartModeProduction() {
+		Asar::setMode(Asar::PRODUCTION_MODE);
+		$this->assertEquals(Asar::PRODUCTION_MODE, Asar::getMode(), 'Mode was not set to Production');
+	}
+	
+	function testSettingApplicationStartModeDevelopment() {
+		Asar::setMode(Asar::DEVELOPMENT_MODE);
+		$this->assertEquals(Asar::DEVELOPMENT_MODE, Asar::getMode(), 'Mode was not set to Development');
+	}
+	
+	function testSettingApplicationStartModeTest() {
+		Asar::setMode(Asar::TEST_MODE);
+		$this->assertEquals(Asar::TEST_MODE, Asar::getMode(), 'Mode was not set to Test');
+	}
+	
+	function testSettingApplicationStartModeToSomethingElseWillResortToProductionModeByDefault() {
+		Asar::setMode('asdfasdf');
+		$this->assertEquals(Asar::PRODUCTION_MODE, Asar::getMode(), 'Mode was not set to Production');
+	}
+	
+	function testAddingDebugInformation() {
+		Asar::debug('Title', 'Some debug message');
+		$this->assertEquals(array('Title'=>'Some debug message'), Asar::getDebugMessages(), 'Unable to obtain debug mesesage');
+	}
+	
+	function testAddingAnotherDebugInformation() {
+		Asar::debug('Another Title', 'Another debug message');
+		$this->assertEquals(array('Another Title'=>'Another debug message'), Asar::getDebugMessages(), 'Unable to obtain debug mesesage');
+	}
+	
+	function testClearingDebugInformation() {
+		Asar::debug('Yet Another Title', 'Yet another debug message');
+		Asar::clearDebugMessages();
+		$this->assertEquals(NULL, Asar::getDebugMessages(), 'The debug messages was not reset');
+	}
 }
-
-?>

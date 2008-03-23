@@ -3,66 +3,101 @@
 spl_autoload_register(array('Asar', 'loadClass'));
 
 if (!class_exists('Asar_Base', false)) {
-  require_once 'Asar/Base.php';
+	require_once 'Asar/Base.php';
 }
 
-
+	
 class Asar {
-  private static $version  = '0.0.1pa';
-  private static $asarpath = NULL;
-  private static $instance = NULL;
-  private static $apps            = array();
-  
-  
-  /*
-  function register ($app_name, $client_name = NULL) {
-    $this->apps[$application_name] = self::instantiate($application_name.'_Application');
-    
-    if (!$client_name && !is_string($client_name)) {
-      // Generate a random key if no client_name is given
-      $client_name  = time() . substr(md5(microtime()), 0, rand(5, 12));
-      $client_class = 'Asar';
-    }
-    $this->clients[$client_name] = self::instantiate($client_name.'_Client');
-    $this->clients_to_apps[$client_name] = $application_name;
-  }
-  */
-  
-  static function reset() {
-    self::$apps            = array();
-  }
-  
-  static function getVersion() {
-    return self::$version;
-  }
-  
-  static function setAsarPath($path) {
-    self::$asarpath = $path;
-    set_include_path(get_include_path() . PATH_SEPARATOR . self::$asarpath);
-  }
-  /**
-   * Asar Loader
-   * argument must follow naming convention
-   */
-  static function loadClass($class) {
-    if (class_exists($class, false)) {
-      return true;
-    }
-    $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-    if (!self::fileExists($file)) {
-      self::exception('Asar', "Class definition file for the class $class does not exist.");
-      return false;
-    } else {
-      include_once($file);
-      return true;
-    }
-  }
+	private static $version	= '0.0.1pa';
+	private static $asarpath = NULL;
+	private static $instance = NULL;
+	private static $apps     = array();
+	private static $mode     = NULL;
+	private static $debug    = NULL;
+	
+	const PRODUCTION_MODE    = 0;
+	const DEVELOPMENT_MODE   = 1;
+	const TEST_MODE          = 2;
+	
+	
+	/*<a href="/Users/Shared/Work/Newsletter/Aside/March 2008/The-Scholar-Ship-Newsletter-Mar08.html" id="" title="The-Scholar-Ship-Newsletter-Mar08">The-Scholar-Ship-Newsletter-Mar08</a>
+	function register ($app_name, $client_name = NULL) {
+		$this->apps[$application_name] = self::instantiate($application_name.'_Application');
+		
+		if (!$client_name && !is_string($client_name)) {
+			// Generate a random key if no client_name is given
+			$client_name	= time() . substr(md5(microtime()), 0, rand(5, 12));
+			$client_class = 'Asar';
+		}
+		$this->clients[$client_name] = self::instantiate($client_name.'_Client');
+		$this->clients_to_apps[$client_name] = $application_name;
+	}
+	*/
+	
+	static function reset() {
+		self::$apps = array();
+		self::clearDebugMessages();
+	}
+	
+	static function getVersion() {
+		return self::$version;
+	}
+	
+	static function setAsarPath($path) {
+		self::$asarpath = $path;
+		set_include_path(get_include_path() . PATH_SEPARATOR . self::$asarpath);
+	}
+	
+	static function setMode($mode) {
+		switch ($mode) {
+			case self::DEVELOPMENT_MODE:
+			case self::TEST_MODE:
+				self::$mode = $mode;
+				break;
+			default:
+				self::$mode = self::PRODUCTION_MODE;
+		}
+		
+	}
+	
+	static function getMode() {
+		return self::$mode;
+	}
+	
+	static function debug($name, $message) {
+		self::$debug[$name] = $message;
+	}
+	
+	static function getDebugMessages() {
+		return self::$debug;
+	}
+	
+	static function clearDebugMessages() {
+		self::$debug = NULL;
+	}
+	
+	/**
+	 * Asar Loader
+	 * argument must follow naming convention
+	 */
+	static function loadClass($class) {
+		if (class_exists($class, false)) {
+			return true;
+		}
+		$file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+		if (!self::fileExists($file)) {
+			self::exception('Asar', "Class definition file for the class $class does not exist.");
+			return false;
+		} else {
+			include_once($file);
+			return true;
+		}
+	}
   
   
   static function start($application_name, Asar_Client $client = NULL) {
     /**
      * @todo: Remove dependency on existing classes
-	 * @todo: Add Default Client when starting
      */
     // $application_name must be found by ('ApplicationName_Application');
     // using naming convention
@@ -85,7 +120,7 @@ class Asar {
 	 * when passed to this method will return 'Test';
 	 *
 	 * @return string class prefix
-	 * @param object
+	 * @param object $obj an instance of a PHP class
 	 **/
 	public static function getClassPrefix($obj)
 	{
@@ -190,4 +225,3 @@ class Asar {
 }
 
 class Asar_Exception extends Exception {}
-?>

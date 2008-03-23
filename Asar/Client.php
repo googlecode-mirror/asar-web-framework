@@ -99,5 +99,3 @@ class Asar_Client extends Asar_Base {
 }
 
 class Asar_Client_Exception extends Asar_Base_Exception {}
-
-?>

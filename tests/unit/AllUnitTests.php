@@ -49,5 +49,3 @@ class AllUnitTests
 if (PHPUnit_MAIN_METHOD == 'AllUnitTests::main') {
     AllUnitTests::main();
 }
-
-?>

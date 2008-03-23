@@ -109,4 +109,3 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		*/
 	}
 }
-?>
