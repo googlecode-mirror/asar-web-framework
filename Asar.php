@@ -9,19 +9,19 @@ if (!class_exists('Asar_Base', false)) {
 	
 class Asar {
 	private static $version	= '0.0.1pa';
-	private static $asarpath = NULL;
-	private static $instance = NULL;
+	private static $asarpath = null;
+	private static $instance = null;
 	private static $apps     = array();
-	private static $mode     = NULL;
-	private static $debug    = NULL;
+	private static $mode     = 0;
+	private static $debug    = null;
 	
-	const PRODUCTION_MODE    = 0;
-	const DEVELOPMENT_MODE   = 1;
-	const TEST_MODE          = 2;
+	const MODE_PRODUCTION    = 0;
+	const MODE_DEVELOPMENT   = 1;
+	const MODE_TEST          = 2;
 	
 	
 	/*<a href="/Users/Shared/Work/Newsletter/Aside/March 2008/The-Scholar-Ship-Newsletter-Mar08.html" id="" title="The-Scholar-Ship-Newsletter-Mar08">The-Scholar-Ship-Newsletter-Mar08</a>
-	function register ($app_name, $client_name = NULL) {
+	function register ($app_name, $client_name = null) {
 		$this->apps[$application_name] = self::instantiate($application_name.'_Application');
 		
 		if (!$client_name && !is_string($client_name)) {
@@ -50,12 +50,12 @@ class Asar {
 	
 	static function setMode($mode) {
 		switch ($mode) {
-			case self::DEVELOPMENT_MODE:
-			case self::TEST_MODE:
+			case self::MODE_DEVELOPMENT:
+			case self::MODE_TEST:
 				self::$mode = $mode;
 				break;
 			default:
-				self::$mode = self::PRODUCTION_MODE;
+				self::$mode = self::MODE_PRODUCTION;
 		}
 		
 	}
@@ -65,7 +65,9 @@ class Asar {
 	}
 	
 	static function debug($name, $message) {
-		self::$debug[$name] = $message;
+	    if (self::$mode == self::MODE_DEVELOPMENT) {
+		    self::$debug[$name] = $message;
+	    }
 	}
 	
 	static function getDebugMessages() {
@@ -73,7 +75,7 @@ class Asar {
 	}
 	
 	static function clearDebugMessages() {
-		self::$debug = NULL;
+		self::$debug = null;
 	}
 	
 	/**
@@ -95,7 +97,7 @@ class Asar {
 	}
   
   
-  static function start($application_name, Asar_Client $client = NULL) {
+  static function start($application_name, Asar_Client $client = null) {
     /**
      * @todo: Remove dependency on existing classes
      */
@@ -141,7 +143,7 @@ class Asar {
       // We're assuming this is Singleton by convention
       // @todo: what if we class didn't follow that convention?
       $instanceMethod = $reflector->getMethod('instance');
-      $obj = $instanceMethod->invoke(NULL);
+      $obj = $instanceMethod->invoke(null);
     } else {
       self::exception('Asar', 'Trying to instantiate the uninstantiable class '.$class_name);
     }
@@ -169,6 +171,7 @@ class Asar {
           // strip Unix '/' and Windows '\'
           $target = rtrim($base, '\\/') . DIRECTORY_SEPARATOR . $file;
           if (file_exists($target)) {
+              // @todo add caching for successful searches
               return $target;
           }
       }
@@ -203,23 +206,27 @@ class Asar {
 		throw new Exception ($msg);
 	}
 
-	static function underscore($str) {
+	static function underscore($str)
+	{
 	    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $str));
-	  }
+    }
 
-	  static function dash($str) {
-	    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '-\\1', $str));
-	  }
+    static function dash($str)
+    {
+        return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '-\\1', $str));
+    }
 
-	  static function camelCase($str) {
-	    return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $str)));
-	  }
+    static function camelCase($str)
+    {
+        return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $str)));
+    }
 
-	  static function lowerCamelCase($str) {
-	    $str = self::camelCase($str);
-	    $str[0] = strtolower($str[0]);
-	    return $str;
-	  }
+    static function lowerCamelCase($str)
+    {
+        $str = self::camelCase($str);
+        $str[0] = strtolower($str[0]);
+        return $str;
+    }
   
   
 }

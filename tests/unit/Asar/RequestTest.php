@@ -25,6 +25,14 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($requestVars, $test, 'Request contents did not match');
 	}
 	
+	function testSendTo() {
+    	$respondent = $this->getMock('Asar_Requestable', array('handleRequest'));
+    	$respondent->expects($this->once())
+    	           ->method('handleRequest')
+    	           ->with($this->req);
+    	$this->req->sendTo($respondent);
+    }
+	
 	function testSetAndGetRequestMethod() {
 		$this->req->setMethod(Asar_Request::GET);
 		$this->assertEquals(Asar_Request::GET, $this->req->getMethod(), 'Request method did not match');
@@ -125,26 +133,18 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 	
 		$this->assertEquals(array_merge($requestVars, $toAdd), $this->req->getParams(), 'Unable to set and add params');
 	}
- 
-	function testSendTo() {
-		$respondent = $this->getMock('Asar_Requestable', array('processRequest'));
-		$respondent->expects($this->once())
-		           ->method('processRequest')
-		           ->with($this->req);
-		$this->req->sendTo($respondent);
-	}
- 
+	
 	function testSendToWithArguments() {
-		$arguments = array('test' => 'right', 'been' => array(1,2,3));
-		$respondent = $this->getMock('Asar_Requestable', array('processRequest'));
+		//$arguments = array('test' => 'right', 'been' => array(1,2,3));
+		$respondent = $this->getMock('Asar_Requestable', array('handleRequest'));
 		$respondent->expects($this->once())
-		           ->method('processRequest')
+		           ->method('handleRequest')
 		           ->with($this->req, $arguments);
 		$this->req->sendTo($respondent, $arguments);
 	}
 
 	function testGettingContext() {
-		$respondent = $this->getMock('Asar_Requestable', array('processRequest'));
+		$respondent = $this->getMock('Asar_Requestable', array('handleRequest'));
 		$this->req->sendTo($respondent);
 		$this->assertSame($respondent, $this->req->getContext(), 'Getting Context failed');
 	}

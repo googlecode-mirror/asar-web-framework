@@ -170,5 +170,22 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     $this->req->setType('json');
     $this->assertEquals('application/json', $this->req->getMimeType(), 'Mime-type did not match');
   }
-  
+    
+    function testGettingSupportedMimeTypes()
+    {
+        $types = array(
+    		'html'   => 'text/html',
+    		'htm'    => 'text/html',
+    		'php'    => 'text/html',
+    		'rss'    => 'application/xml',
+    		'xml'    => 'application/xml',
+    		'xhtml'  => 'application/xhtml+xml',
+    		'txt'    => 'text/plain',
+    		'xhr'    => 'text/plain',
+    		'css'    => 'text/css',
+    		'js'     => 'text/javascript',
+    		'json'   => 'application/json',
+    		);
+    	$this->assertEquals($types, Asar_Message::getSupportedTypes(), 'The list of supported types is not as expected');
+    }
 }

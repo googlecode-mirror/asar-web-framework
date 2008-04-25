@@ -64,7 +64,7 @@ class Asar_BasicFTest extends Asar_Test_Helper
      **/
     public function testGetIndexShouldReturnResponseObject()
     {
-        //$response = ;
+        $response = $this->request->sendTo($this->app);
         $this->assertTrue($this->request->sendTo($this->app) instanceof Asar_Response, 'The request did not return an Asar_Response object');
     }
     

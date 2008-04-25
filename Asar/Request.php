@@ -142,9 +142,9 @@ class Asar_Request extends Asar_Message {
         }
     }
   
-    function sendTo(Asar_Requestable $processor, array $arguments = NULL) {
-        $this->setContext($processor);
-        return $processor->processRequest($this, $arguments);
+    function sendTo(Asar_Requestable $handler, array $arguments = NULL) {
+        $this->setContext($handler);
+        return $handler->handleRequest($this, $arguments);
     }
   
 }

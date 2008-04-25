@@ -142,12 +142,14 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	public function offsetUnset($offset) {
 		unset($this->vars[$offset]);
 	}
+	
+	
 
 
 	/**
 	 * Open, parse, and return the template file.
 	 *
-	 * @param string string the template file name
+	 * @param string $_file the template file name
 	 *
 	 * @return string
 	 */

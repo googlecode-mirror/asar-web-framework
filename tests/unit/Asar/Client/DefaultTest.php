@@ -108,4 +108,5 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		$this->assertTrue(in_array('Content-Type: text/plain', $headers, 'The expected response header was not found'));
 		*/
 	}
+	
 }

@@ -326,6 +326,8 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		                    'The layout file was not invoked');
 		set_include_path($old_include_path); // reset path
 	}
+	
+	
 	/*
 	
   

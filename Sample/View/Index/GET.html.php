@@ -1,4 +1,4 @@
 <h1><?=$hello?></h1>
 <p>
-	<a href="<?=$follow_url?>">Follow Me!</a>
+	<a href="<?=$follow_url?>" id="follow_link">Follow Me!</a>
 </p>

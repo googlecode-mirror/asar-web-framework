@@ -240,38 +240,53 @@ class AsarTest extends Asar_Test_Helper {
 	}
 	
 	function testSettingApplicationStartModeProduction() {
-		Asar::setMode(Asar::PRODUCTION_MODE);
-		$this->assertEquals(Asar::PRODUCTION_MODE, Asar::getMode(), 'Mode was not set to Production');
+		Asar::setMode(Asar::MODE_PRODUCTION);
+		$this->assertEquals(Asar::MODE_PRODUCTION, Asar::getMode(), 'Mode was not set to Production');
 	}
 	
 	function testSettingApplicationStartModeDevelopment() {
-		Asar::setMode(Asar::DEVELOPMENT_MODE);
-		$this->assertEquals(Asar::DEVELOPMENT_MODE, Asar::getMode(), 'Mode was not set to Development');
+		Asar::setMode(Asar::MODE_DEVELOPMENT);
+		$this->assertEquals(Asar::MODE_DEVELOPMENT, Asar::getMode(), 'Mode was not set to Development');
 	}
 	
 	function testSettingApplicationStartModeTest() {
-		Asar::setMode(Asar::TEST_MODE);
-		$this->assertEquals(Asar::TEST_MODE, Asar::getMode(), 'Mode was not set to Test');
+		Asar::setMode(Asar::MODE_TEST);
+		$this->assertEquals(Asar::MODE_TEST, Asar::getMode(), 'Mode was not set to Test');
 	}
 	
 	function testSettingApplicationStartModeToSomethingElseWillResortToProductionModeByDefault() {
 		Asar::setMode('asdfasdf');
-		$this->assertEquals(Asar::PRODUCTION_MODE, Asar::getMode(), 'Mode was not set to Production');
+		$this->assertEquals(Asar::MODE_PRODUCTION, Asar::getMode(), 'Mode was not set to Production');
 	}
 	
 	function testAddingDebugInformation() {
+		Asar::setMode(Asar::MODE_DEVELOPMENT);
 		Asar::debug('Title', 'Some debug message');
 		$this->assertEquals(array('Title'=>'Some debug message'), Asar::getDebugMessages(), 'Unable to obtain debug mesesage');
 	}
 	
 	function testAddingAnotherDebugInformation() {
+		Asar::setMode(Asar::MODE_DEVELOPMENT);
 		Asar::debug('Another Title', 'Another debug message');
 		$this->assertEquals(array('Another Title'=>'Another debug message'), Asar::getDebugMessages(), 'Unable to obtain debug mesesage');
 	}
 	
 	function testClearingDebugInformation() {
+	    Asar::setMode(Asar::MODE_DEVELOPMENT);
 		Asar::debug('Yet Another Title', 'Yet another debug message');
 		Asar::clearDebugMessages();
-		$this->assertEquals(NULL, Asar::getDebugMessages(), 'The debug messages was not reset');
+		$this->assertEquals(null, Asar::getDebugMessages(), 'The debug messages was not reset');
+	}
+	
+	/**
+	 * Only use debug when in Development Mode
+	 *
+	 * @return void
+	 **/
+	public function testDebugOnlyWhenInDevelopmentMode()
+	{
+	    Asar::setMode(Asar::MODE_PRODUCTION);
+	    Asar::debug('Another Title', 'Another debug message');
+		$this->assertEquals(null, Asar::getDebugMessages(), 'The debug messages was not reset');
 	}
 }

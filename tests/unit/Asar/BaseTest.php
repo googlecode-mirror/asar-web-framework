@@ -2,84 +2,73 @@
 
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
-require_once 'Asar/Base.php';
 
 class Asar_Base_Child_Temp extends Asar_Base {
-  protected $first   = 'First Attribute';
-  protected $second  = 'Second Attribute';
-  protected $third   = 'Third Attribute';
-  
-  public $fourth  = '';
-  public $fifth   = '';
-  public $sixth   = '';
-  
-  public $seventh = '';
-  public $eighth   = '';
-  public $ninth   = '';
-  
-  protected static $attr_reader   = array('first', 'second', 'third');
-  protected static $attr_writer   = array('fourth', 'fifth', 'sixth');
-  protected static $attr_accessor = array('seventh', 'eighth', 'ninth');
-  
-  function throwException() {
-  	$this->exception('Exception thrown from Asar_Base_Child_Temp');
-  }
+    function throwException() {
+        $this->exception('Exception thrown from Asar_Base_Child_Temp');
+    }
+    
+    function amIDebugging() {
+        return $this->isDebugMode();
+    }
 }
 
 class Asar_BaseTest extends PHPUnit_Framework_TestCase {
-  
-  public static function main()
-  {
-      PHPUnit_TextUI_TestRunner::run(self::suite());
-  }
-  
-  protected function setUp() {
-    $this->ABC = new Asar_Base_Child_Temp();
-  }
-  
-  function testThrowingException() {
-    try {
-      $this->ABC->throwException();
-      $this->assertTrue(false, 'Exception not thrown');
-    } catch (Exception $e) {
-      $this->assertEquals('Asar_Base_Exception', get_class($e), 'Wrong exception thrown');
-      $this->assertEquals('Exception thrown from Asar_Base_Child_Temp', $e->getMessage(), 'Exception message mismatch');
+
+    public static function main()
+    {
+        PHPUnit_TextUI_TestRunner::run(self::suite());
     }
-  }
-  
-  /*
-  function testAttrReader() {
-    $this->assertEquals('First Attribute', $this->ABC->getFirst(), 'Unable to get first attribute');
-    $this->assertEquals('Second Attribute', $this->ABC->getSecond(), 'Unable to get second attribute');
-    $this->assertEquals('Third Attribute', $this->ABC->getThird(), 'Unable to get third attribute');
-  }
-  
-  
-  
-  function testAttrWriter() {
+
+    protected function setUp()
+    {
+        Asar::setMode(Asar::MODE_PRODUCTION);
+        $this->ABC = new Asar_Base_Child_Temp();
+    }
     
-    $this->ABC->setFourth('Just Fourth');
-    $this->ABC->setFifth('Just Fifth');
-    $this->ABC->setSixth('Just Sixth');
+    protected function tearDown()
+    {
+        Asar::setMode(Asar::MODE_PRODUCTION);
+    }
+
+    public function testThrowingException()
+    {
+        try {
+            $this->ABC->throwException();
+            $this->assertTrue(false, 'Exception not thrown');
+        } catch (Exception $e) {
+            $this->assertEquals('Asar_Base_Exception', get_class($e), 'Wrong exception thrown');
+            $this->assertEquals('Exception thrown from Asar_Base_Child_Temp', $e->getMessage(), 'Exception message mismatch');
+        }
+    }
     
-    $this->assertEquals('Just Fourth', $this->ABC->fourth, 'Unable to set fourth attribute');
-    $this->assertEquals('Just Fifth',  $this->ABC->fifth, 'Unable to set fifth attribute');
-    $this->assertEquals('Just Sixth', $this->ABC->sixth, 'Unable to set sixth attribute');
-  }
-  
-  function testAttrAccessor() {
+    /**
+     * Should enable calling Asar::debug directly from class
+     *
+     * @return void
+     **/
+    public function testDebugging()
+    {
+        Asar::setMode(Asar::MODE_DEVELOPMENT); // Debugging only works in development mode
+        $debug_message = 'My custom debug message.';
+        $debug_key = 'the_key';
+        $this->ABC->debug($debug_key, $debug_message);
+        $debug = Asar::getDebugMessages();
+        $this->assertTrue(array_key_exists($debug_key, $debug), 'The debug title was not found');
+        $this->assertEquals($debug_message, $debug[$debug_key], 'The debug message was not found');
+    }
     
-    $this->ABC->setFourth('Just Seventh');
-    $this->ABC->setFifth('Just Eighth');
-    $this->ABC->setSixth('Just Ninth');
+    /**
+     * See if we're in debugging mode
+     *
+     * @return void
+     **/
+    public function testSeeIfDebuggingIsEnabled()
+    {
+        Asar::setMode(Asar::MODE_DEVELOPMENT);
+        $this->assertTrue($this->ABC->amIDebugging(), 'Debug mode was not properly set');
+        
+    }
     
-    $this->assertEquals('Just Seventh', $this->ABC->fourth, 'Unable to set seventh attribute');
-    $this->assertEquals('Just Eighth',  $this->ABC->fifth, 'Unable to set eighth attribute');
-    $this->assertEquals('Just Ninth', $this->ABC->sixth, 'Unable to set ninth attribute');
     
-    $this->assertEquals('Just Seventh', $this->ABC->getSeventh(), 'Unable to get seventh attribute');
-    $this->assertEquals('Just Eighth', $this->ABC->getEighth(), 'Unable to get eighth attribute');
-    $this->assertEquals('Just Ninth', $this->ABC->getNinth(), 'Unable to get ninth attribute');
-  }
-  */
 }

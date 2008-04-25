@@ -58,14 +58,6 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	Asar_Template::clearHelperRegistry();
     }
     
-    protected function hasString($haystack, $needle) {
-    	if(strpos($haystack, $needle) > 0) {
-    		return true;
-    	} else {
-    		return false;
-    	}
-    }
-    
     /**
      * @todo: Create test to check if 'short tags' are enabled
      */    
@@ -75,14 +67,14 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	$this->T->set('var2', 'TestingAgain');
     	
     	$haystack = $this->T->fetch();
-    	$this->assertTrue($this->hasString($haystack, '<p>Testing</p>'), 'Unable to set variable for file'.$haystack);
-    	$this->assertTrue($this->hasString($haystack, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file'.$haystack);
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
     }
      
     public function testThrowingErrorWhenMissingTemplateUsed() {
     	$this->setExpectedException('Asar_Template_Exception');
     	$this->T->fetch('NonexistentTemplateFile');
-    	$this->assertTrue($this->hasString($e->getMessage(), 'NonexistingTemplateFile'), 'Asar_Template_Exception does not properly indicate which template it tried to include');
+    	$this->assertContains('NonexistingTemplateFile', $e->getMessage(), 'Asar_Template_Exception does not properly indicate which template it tried to include');
     }
     
     public function testReturnsNullWhenMissingTemplateUsed() {
@@ -97,8 +89,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	
     	$haystack = $this->T->fetch(self::$template_path);
     	
-    	$this->assertTrue($this->hasString($haystack, '<p>Testing</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($haystack, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
     }
     
     public function testMultiSetVariables() {
@@ -107,8 +99,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 		
     	$haystack = $this->T->fetch(self::$template_path);
     	
-    	$this->assertTrue($this->hasString($haystack, '<p>Testing</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($haystack, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
     }
 
 	public function testMultiSetVariablesUsingSetOnly() {
@@ -117,8 +109,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 		
     	$haystack = $this->T->fetch(self::$template_path);
     	
-    	$this->assertTrue($this->hasString($haystack, '<p>Nesting</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($haystack, '<p><strong>NestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Nesting</p>', $haystack, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>NestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
     }
     
     public function testArrayTypeSettingAndGetting() {
@@ -127,8 +119,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 		
     	$haystack = $this->T->fetch(self::$template_path);
     	
-    	$this->assertTrue($this->hasString($haystack, '<p>Testing</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($haystack, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
     	
     	$this->assertEquals('Testing', $this->T['var'], 'Unexpected value for template variable');
     	$this->assertEquals('TestingAgain', $this->T['var2'], 'Unexpected value for template variable');
@@ -146,8 +138,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	$this->T['var'] = 'Testing';
 		$this->T['var2'] = 'TestingAgain';
     	$this->T->setTemplate(self::$template_path);
-    	$this->assertTrue($this->hasString($this->T, '<p>Testing</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($this->T, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $this->T, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $this->T, 'Unable to set variable for file');
     	
     }
     
@@ -160,8 +152,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 			echo $this->T;
 		$haystack = ob_get_contents();
 		ob_end_clean();
-    	$this->assertTrue($this->hasString($haystack, '<p>Testing</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($haystack, '<p><strong>TestingAgain</strong></p>'), 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
     	
     }
     
@@ -172,8 +164,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	
     	$haystack = $this->T->fetch(self::$template_path);
     	
-    	$this->assertTrue($this->hasString($haystack, '<p>'.$testr.'</p>'), 'Unable to set variable for file');
-    	$this->assertTrue($this->hasString($haystack, '<p><strong></strong></p>'), 'Unable to set an empty string to an unitialized variable for file');
+    	$this->assertContains('<p>'.$testr.'</p>', $haystack, 'Unable to set variable for file');
+    	$this->assertContains('<p><strong></strong></p>', $haystack, 'Unable to set an empty string to an unitialized variable for file');
     	
     }
     

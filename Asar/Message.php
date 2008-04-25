@@ -11,7 +11,7 @@ abstract class Asar_Message extends Asar_Base {
 	private $type       = null;
 	private $headers    = array();
 	private $context    = null;
-	private $mime_types = array(
+	private static $mime_types = array(
 		'html'   => 'text/html',
 		'htm'    => 'text/html',
 		'php'    => 'text/html',
@@ -25,6 +25,11 @@ abstract class Asar_Message extends Asar_Base {
 		'json'   => 'application/json',
 		);
 
+	static function getSupportedTypes()
+	{
+	   return self::$mime_types;
+	}
+	
 	function setHeaders($headers) {
 		if (is_array($headers)) {
 			$this->headers = $headers;
@@ -98,8 +103,8 @@ abstract class Asar_Message extends Asar_Base {
 		/**
 		 * @todo needs improvement to skip with the @
 		 */
-		if (@ array_key_exists($this->type, $this->mime_types)) {
-			return $this->mime_types[$this->type];
+		if (@ array_key_exists($this->type, self::$mime_types)) {
+			return self::$mime_types[$this->type];
 		} else {
 			return 'text/html';
 		}

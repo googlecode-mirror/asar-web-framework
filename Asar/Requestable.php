@@ -1,4 +1,5 @@
 <?php
 interface Asar_Requestable {
-  function processRequest(Asar_Request $request, array $arguments = NULL);
+    function handleRequest(Asar_Request $handler, array $arguments = NULL);
+    //function processResponse(Asar_Response $response);
 }

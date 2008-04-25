@@ -10,28 +10,22 @@ class Test2_Controller_Index extends Asar_Controller{
 		return 'Hello World';
 	}
 }
-/*
-class Test2_Router extends Asar_Router {
-  
-  function processRequest(Asar_Request $request, array $arguments = NULL) {
-    $response = new Asar_Response();
-    $contents = $request->getContent();
-    $val = '';
-    foreach ($contents as $content => $value) {
-      $val .= "$content => $value, ";
-    }
-    $response->setContent($val);
-    return $response;
-  }
-}
-*/
 
+class Asar_ApplicationTest_Application extends Asar_Application {}
 
 class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
-  protected function setUp() {
-    $this->app = new Test2_Application();
-  }
+    protected function setUp() {
+        Asar::setMode(Asar::MODE_PRODUCTION);
+        $this->app = new Test2_Application();
+    }
+    
+    protected function tearDown()
+    {
+        Asar::setMode(Asar::MODE_PRODUCTION);
+    }
+  
+  
   
 	public function testInvokingMustFirstRunIndexController()
 	{
@@ -121,18 +115,60 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     
   }*/
   
-  function testProcessingRequest() {
-    $req = new Asar_Request();
-	$testarray = array(
-                        'dirt' => 'cheap',
-                        'suck' => 'lick',
-                        'sup'  => 'Stupid Utility Padyaks',
-                        'ban'  => 1
-                      );
-    $req->setContent( $testarray );
-	$req->setMethod(Asar_Request::GET);
-    $response = $req->sendTo($this->app);
-    $this->assertTrue($response instanceof Asar_Response, 'Returned value is not an instance of Asar_Response');
-    $this->assertEquals('Hello World', $response->__toString(), 'Unexpected value for content');
-  }
+    function testProcessingRequest() {
+        $req = new Asar_Request();
+        $testarray = array(
+                            'dirt' => 'cheap',
+                            'suck' => 'lick',
+                            'sup'  => 'Stupid Utility Padyaks',
+                            'ban'  => 1
+                          );
+        $req->setContent( $testarray );
+        $req->setMethod(Asar_Request::GET);
+        $response = $req->sendTo($this->app);
+        $this->assertTrue($response instanceof Asar_Response, 'Returned value is not an instance of Asar_Response');
+        $this->assertEquals('Hello World', $response->__toString(), 'Unexpected value for content');
+    }
+    
+    /**
+     * Display execution times when in development mode
+     *
+     * @return void
+     **/
+    public function testAddingExecutionTimeWhenInDevelopmentMode()
+    {
+        Asar::setMode(Asar::MODE_DEVELOPMENT);
+        $req = new Asar_Request();
+		$req->setPath('/');
+		$req->sendTo($this->app);
+        $debug = Asar::getDebugMessages();
+        $this->assertArrayHasKey('Execution Time', $debug, 'Did not find execution time in debug message');
+        $this->assertRegExp('/[0-9]+\.[0-9]+ seconds/', $debug['Execution Time'], 'The message is not the execution time in seconds');
+    }
+    
+    function testApplicationMustInheritFromAsarRequestHandler() {
+        $reflection = new ReflectionClass('Asar_Application');
+        $this->assertTrue($reflection->isSubclassOf('Asar_Request_Handler'), 'Asar_Application must be a child class of Asar_Request_Handler');
+    }
+    
+    
+    function testApplicationShouldReturn404ResponseWhenThereIsNoRootControllerDefined()
+    {
+        $app = new Asar_ApplicationTest_Application;
+        $req = new Asar_Request;
+        $response = $req->sendTo($app);
+        $this->assertTrue($response instanceof Asar_Response, 'The application did not return an Asar_Response object');
+        $this->assertEquals(404, $response->getStatus(), 'The status should be 404 when there is no root controller defined');
+    }
+    
+    function testApplicationShouldSetAsarFilterCommonResponseFilterWhenInDevelopmentMode()
+    {
+        Asar::setMode(Asar::MODE_DEVELOPMENT);
+        $app = new Asar_ApplicationTest_Application;
+        $req = new Asar_Request();
+        $response = $req->sendTo($app);
+        $test = $app->getResponseFilters();
+        $this->assertFalse(empty($test), 'The filter response must not be empty at least');
+        $this->assertContains(array('Asar_Filter_Common', 'filterResponse'), $test, 'The Asar_Filter_Common::filterResponse was not set as a filter');
+    }
 }

@@ -18,7 +18,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		$this->response = new Asar_Response;
 	}
 	
-	function processRequest(Asar_Request $request, array $arguments = NULL) {
+	function handleRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
 		if (!$this->request->getType()) {
 		    $this->request->setType('html');
@@ -65,13 +65,12 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 			$template_file = $this->getViewPath() . 
 			                 $this->request->getMethod() .
 			                 '.' . $this->request->getType() . '.php';
-			//$this->exception('nononoooo');
 			if (Asar::fileExists($template_file)) {
+				$this->view->setTemplate($template_file);
 				$layout_file = $this->getViewLayout();
 				if ($this->request->getType() == 'html' && Asar::fileExists($layout_file)) {
                     $this->view->setLayout($layout_file);
                 }
-				$this->view->setTemplate($template_file);
 				$content = $this->view->fetch();
 			}
 		}
