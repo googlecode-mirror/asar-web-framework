@@ -219,6 +219,3 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	
 	
 }
-
-class Asar_Controller_Exception extends Asar_Base_Exception {}
-class Asar_Controller_ActionNotFound_Exception extends Asar_Controller_Exception {}

@@ -19,11 +19,6 @@ class Asar_Response extends Asar_Message {
   function getStatus() {
   	return $this->status_code;
   }
-	
-  function sendTo(Asar_Respondable $processor) {
-    $this->setContext($processor);
-    $processor->processResponse($this);
-  }
   
   function setStatusOk() {
   	$this->setStatus(200);

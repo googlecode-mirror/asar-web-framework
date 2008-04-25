@@ -65,5 +65,3 @@ abstract class Asar_Application extends Asar_Request_Handler {
         return $view.'.php';
     }
 }
-
-class Asar_Application_Exception extends Asar_Base_Exception {}
