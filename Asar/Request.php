@@ -69,19 +69,6 @@ class Asar_Request extends Asar_Message {
 	public function getUriAuthority() {
 		return $this->uri_authority;
 	}
-
-	protected function getTypeFromPath($path) {
-		// Remove the string after the '?'
-		if (strpos($path, '?')) {
-			$path = substr($path, 0, strpos($path, '?'));
-		}
-
-		// Remove the string before the last occurrence of the '/'
-		$fname = substr($path, strrpos($path, '/') + 1);
-
-		// Get the file extension
-		return substr($fname, strrpos($fname, '.') + 1);
-	}
   
 	public function setPath($path) {
 		if (strpos($path, '//') > -1) {
@@ -94,8 +81,6 @@ class Asar_Request extends Asar_Message {
 		$path_array = explode('/', $this->path);
 		$path_array[0] ='/';
 		$this->path_array = $path_array;
-		
-		$this->setType($this->getTypeFromPath($path));
 	}
   
 	public function getPath() {

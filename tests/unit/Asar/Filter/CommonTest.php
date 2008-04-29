@@ -110,4 +110,41 @@ DEBUG;
             }
         }
     }
+    
+    function testNoDebugInfoShouldAppearWhenOnProductionMode()
+    {
+        Asar::debug('testdebugkeya', 'testmessagea');
+        Asar::setMode(Asar::MODE_PRODUCTION);
+        $content = Asar_Filter_Common::filterResponse($this->response)->getContent();
+        $this->assertNotContains('testdebugkeya', $content, 'Debug key should not be found when on production mode');
+        $this->assertNotContains('testmessagea', $content, 'Debug message should not be found when on production mode');
+    }
+    
+    function testRequestFilterShouldSetTxtMimeTypeWhenResourceEndsWithATxtFileExtensionType()
+    {
+        /**
+         * @todo There could be aproblem with resource names ending in file-extensions but are not intended to invoke something like that
+         */
+        $request = new Asar_Request;
+        $request->setPath('/index.txt');
+        Asar_Filter_Common::filterRequestTypeNegotiation($request);
+        $this->assertEquals('txt', $request->getType(), 'The type should be "txt"');
+        $this->assertEquals('/index', $request->getPath(), 'The path should be "/index"');
+    }
+    
+    function testRequestFilterShouldNotSetEmptyStringWhenOriginalResourcePathIsJustASlash()
+    {
+        $request = new Asar_Request;
+        $request->setPath('/');
+        Asar_Filter_Common::filterRequestTypeNegotiation($request);
+        $this->assertEquals('/', $request->getPath(), 'The path should be "/index"');
+    }
+    
+    function testRequestFilterShouldSetRootPathWhenResourcePathIsNotSet()
+    {
+        $request = new Asar_Request;
+        Asar_Filter_Common::filterRequestTypeNegotiation($request);
+        $this->assertEquals('/', $request->getPath(), 'The path should be "/index"');
+    }
+    
 }

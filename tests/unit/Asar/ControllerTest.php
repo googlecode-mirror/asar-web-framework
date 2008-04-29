@@ -5,12 +5,15 @@ require_once 'Asar.php';
 
 class Test_Controller_Index extends Asar_Controller {
 	
+	public $test_value = null;
+	
 	protected $map = array(
 		'path' => 'Another',
 		'next' => 'Next'
 	);
 	
 	function GET() {
+		$this->test_value = 1000;
 		return 'hello there';
 	}
 	
@@ -120,6 +123,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 	
 	function testPassingARequestWithMethodPostInvokesMappedMethod() {
 		$this->R->setMethod(Asar_Request::POST);
+		$this->assertNotEquals(1000, $this->C->test_value, 'GET Method must not be run for Post requests');
 		$this->assertEquals('I am alright', $this->R->sendTo($this->C)->__toString(), 'Controller did not handle request');
 	}
 	
@@ -167,6 +171,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$this->R->setMethod(Asar_Request::HEAD);
 		$response = $this->R->sendTo($this->C);
 		$this->assertEquals(200, $response->getStatus(), 'Get method was not called');
+		$this->assertEquals(1000, $this->C->test_value, 'Get method was not called');
 		$this->assertEquals('', $response->__toString(), 'Returned content for HEAD!');
 	}
 	
@@ -327,30 +332,50 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		set_include_path($old_include_path); // reset path
 	}
 	
+	function testAttemptingToFindATxtTemplateWhentheRequestAcceptsATxtOnlyResponse()
+	{
+	    $this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/follow/');
+        $this->R->setType('txt');
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$template = self::newFile('Test/View/Follow/GET.txt.php', '{<?=$var?>}');
+		$response = $this->R->sendTo($this->C);
+		$this->assertContains('Followed GET',
+		                    $response->__toString(),
+		                    'Did not set the template variable');
+		$this->assertEquals('txt', $response->getType(), 'Type did not match');
+		set_include_path($old_include_path); // reset path
+	}
 	
-	/*
+	function testAttemptingToFindAXmlTemplateWhentheRequestAcceptsAXmlOnlyResponse()
+	{
+	    $this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/follow/');
+        $this->R->setType('xml');
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$template = self::newFile('Test/View/Follow/GET.xml.php', '{<?=$var?>}');
+		$response = $this->R->sendTo($this->C);
+		$this->assertContains('Followed GET',
+		                    $response->__toString(),
+		                    'Did not set the template variable');
+		$this->assertEquals('xml', $response->getType(), 'Type did not match');
+		set_include_path($old_include_path); // reset path
+	}
 	
-  
-  function testExposeRequestParamsAsParamsPropertyInController() {
-    $req = new Asar_Request();
-    $testcontent = array(
-     'bull' => 'dung',
-     'cat' => 'fight'
-    );
-    $this->R->setParams($testcontent);
-    $response = $this->R->sendTo($this->C, array('action' => 'action1'));
-    $this->assertEquals($testcontent, $response->getContent(), 'Unexpected Result');
-  }
-  
-  function testForwardingToInternalAction() {
-    $req = new Asar_Request();
-    $testcontent = array(
-     'bull' => 'cram',
-     'cat' => 'fits'
-    );
-    $this->R->setParams($testcontent);
-    $response = $this->R->sendTo($this->C, array('action' => 'action2'));
-    $this->assertEquals($testcontent, $response->getContent(), 'Unexpected Result');
-  }*/
-  
+	function testRequestSends406StatusCodeWhenViewTemplateIsNotFoundForThatType()
+	{
+		$this->R->setMethod(Asar_Request::GET);
+		$this->R->setPath('/next/follow/');
+        $this->R->setType('rss');
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		$response = $this->R->sendTo($this->C);
+		$this->assertEquals(406,
+		                    $response->getStatus(),
+		                    'Response did not return expected 406 response status');
+		set_include_path($old_include_path); // reset path
+	}
+	
 }

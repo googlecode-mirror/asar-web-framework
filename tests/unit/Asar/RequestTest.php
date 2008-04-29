@@ -216,17 +216,6 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$this->assertNotEquals('', $this->req->getPath(), 'Path is empty string');
 	}
 	
-	function testSetAndGetType() {
-		$path = '/test/testing/stupid.txt';
-		$this->req->setPath($path);
-		$this->assertEquals('txt', $this->req->getType(), 'Type did not match');
-	}
-	
-	function testSetAndGetRequestTypeTxt() {
-		$path = '/test/testing/stupid.txt';
-		$this->req->setPath($path);
-		$this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
-	}
 	
 	function testSetAndGetRequestTypeDefault() {
 		$path = '/test/testing/interesting';
@@ -238,48 +227,6 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 		$path = '/test/testing/interesting/';
 		$this->req->setPath($path);
 		$this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypePhp() {
-		$path = '/test/testing/cool.php';
-		$this->req->setPath($path);
-		$this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypeHtml() {
-		$path = '/test/testing/cool.html';
-		$this->req->setPath($path);
-		$this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypeHtm() {
-		$path = '/test/testing/cool.htm';
-		$this->req->setPath($path);
-		$this->assertEquals('text/html', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypeRss() {
-		$path = '/test/testing/cool.rss';
-		$this->req->setPath($path);
-		$this->assertEquals('application/xml', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypeXhtml() {
-		$path = '/test/testing/cool.xhtml';
-		$this->req->setPath($path);
-		$this->assertEquals('application/xhtml+xml', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypeXhr() {
-		$path = '/test/testing/cool.xhr';
-		$this->req->setPath($path);
-		$this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
-	}
-	
-	function testSetAndGetRequestTypeJson() {
-		$path = '/test/testing/cool.json';
-		$this->req->setPath($path);
-		$this->assertEquals('application/json', $this->req->getMimeType(), 'Mime-type did not match');
 	}
 	
 }

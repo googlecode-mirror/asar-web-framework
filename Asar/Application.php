@@ -14,6 +14,7 @@ abstract class Asar_Application extends Asar_Request_Handler {
         if (Asar::getMode() == Asar::MODE_DEVELOPMENT) {
             $this->response_filters[] = array('Asar_Filter_Common', 'filterResponse');
         }
+        $this->request_filters[] = array('Asar_Filter_Common', 'filterRequestTypeNegotiation');
     }
     
     function processRequest(Asar_Request $request, array $arguments = NULL) {

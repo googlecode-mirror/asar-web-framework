@@ -171,4 +171,12 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(empty($test), 'The filter response must not be empty at least');
         $this->assertContains(array('Asar_Filter_Common', 'filterResponse'), $test, 'The Asar_Filter_Common::filterResponse was not set as a filter');
     }
+    
+    function testApplicationShouldSetAsarFilterCommonRequestFilterContentNegotiation()
+    {
+        $app = new Asar_ApplicationTest_Application;
+        $test = $app->getRequestFilters();
+        $this->assertFalse(empty($test), 'The filter response must not be empty at least');
+        $this->assertContains(array('Asar_Filter_Common', 'filterRequestTypeNegotiation'), $test, 'The Asar_Filter_Common::filterRequestTypeNegotiation was not set as a filter');
+    }
 }

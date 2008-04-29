@@ -105,4 +105,31 @@ class Asar_BasicFTest extends Asar_Test_Helper
         $response = $this->request->sendTo($this->app);
         $this->assertContains('<title>Test Application</title>', $response->getContent(), 'The response expected string from Layout');
     }
+    
+    function testGettingSubpageTxtVersionWithJustTxtExtension()
+    {
+        $this->request->setPath('/subpage.txt');
+        $response = $this->request->sendTo($this->app);
+        $this->assertEquals(200, $response->getStatus(), 'The response status is not ok');
+        $this->assertEquals('text/plain', $response->getMimeType(), 'The mime-type is not text/plain but rather '. $response->getMimeType());
+		$this->assertContains('========', $response->getContent(), 'The expected content was not fund');
+    }
+    
+    function testGettingSubpageTxtVersionWithRequestType()
+    {
+        $this->request->setPath('/subpage');
+        $this->request->setMimeType('text/plain');
+        $response = $this->request->sendTo($this->app);
+        $this->assertEquals(200, $response->getStatus(), 'The response status is not ok');
+        $this->assertEquals('text/plain', $response->getMimeType(), 'The mime-type is not text/plain but rather '. $response->getMimeType());
+    }
+
+	function testGettingAnXmlRepresentationButNoTemplateShouldReturnA406()
+	{
+		$this->request->setPath('/subpage');
+        $this->request->setMimeType('application/xml');
+        $response = $this->request->sendTo($this->app);
+        $this->assertEquals(406, $response->getStatus(), 'The response status should be 406 when the appropriate representation could not be found');
+	}
+
 } // END class Asar_BasicFTest

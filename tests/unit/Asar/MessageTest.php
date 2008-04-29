@@ -152,7 +152,7 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
   
   function testSetAndGetRequestTypeRss() {
     $this->req->setType('rss');
-    $this->assertEquals('application/xml', $this->req->getMimeType(), 'Mime-type did not match');
+    $this->assertEquals('application/rss+xml', $this->req->getMimeType(), 'Mime-type did not match');
   }
   
   function testSetAndGetRequestTypeXhtml() {
@@ -177,7 +177,7 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     		'html'   => 'text/html',
     		'htm'    => 'text/html',
     		'php'    => 'text/html',
-    		'rss'    => 'application/xml',
+    		'rss'    => 'application/rss+xml',
     		'xml'    => 'application/xml',
     		'xhtml'  => 'application/xhtml+xml',
     		'txt'    => 'text/plain',
@@ -187,5 +187,52 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     		'json'   => 'application/json',
     		);
     	$this->assertEquals($types, Asar_Message::getSupportedTypes(), 'The list of supported types is not as expected');
+    }
+    
+    function testGettingHtmlTypeFromMimeType()
+    {
+        $this->req->setMimeType('text/html');
+        $this->assertEquals('html', $this->req->getType(), 'The type is not html after setting mime-type to "text/html"!');
+    }
+    
+    function testGettingRssTypeForMimeTypeRSS()
+    {
+        $this->req->setMimeType('application/rss+xml');
+        $this->assertEquals('rss', $this->req->getType(), 'The type is not rss after setting mime-type to "application/rss+xml"!');
+    }
+    
+    function testGettingXmlTypeForMimeTypeXml()
+    {
+        $this->req->setMimeType('application/xml');
+        $this->assertEquals('xml', $this->req->getType(), 'The type is not xml after setting mime-type to "application/xml"!');
+    }
+    
+    function testGettingTxtTypeForMimeTypeTxt()
+    {
+        $this->req->setMimeType('text/plain');
+        $this->assertEquals('txt', $this->req->getType(), 'The type is not txt after setting mime-type to "text/plain"!');
+    }
+    
+    function testGettingCssTypeForMimeTypeCss()
+    {
+        $this->req->setMimeType('text/css');
+        $this->assertEquals('css', $this->req->getType(), 'The type is not css after setting mime-type to "text/css"!');
+    }
+    
+    function testGettingJsTypeForMimeTypeJs()
+    {
+        $this->req->setMimeType('text/javascript');
+        $this->assertEquals('js', $this->req->getType(), 'The type is not js after setting mime-type to "text/javascript"!');
+    }
+    
+    function testGettingJsonTypeForMimeTypeJson()
+    {
+        $this->req->setMimeType('application/json');
+        $this->assertEquals('json', $this->req->getType(), 'The type is not json after setting mime-type to "application/json"!');
+    }
+    
+    function testGettingNullWhenThereIsNoMimeTypeSet()
+    {
+        $this->assertEquals(null, $this->req->getType(), 'The type is not null when there is no mime-type set');
     }
 }

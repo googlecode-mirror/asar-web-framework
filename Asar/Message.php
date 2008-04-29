@@ -15,8 +15,8 @@ abstract class Asar_Message extends Asar_Base {
 		'html'   => 'text/html',
 		'htm'    => 'text/html',
 		'php'    => 'text/html',
-		'rss'    => 'application/xml',
 		'xml'    => 'application/xml',
+		'rss'    => 'application/rss+xml',
 		'xhtml'  => 'application/xhtml+xml',
 		'txt'    => 'text/plain',
 		'xhr'    => 'text/plain',
@@ -108,6 +108,33 @@ abstract class Asar_Message extends Asar_Base {
 		} else {
 			return 'text/html';
 		}
+	}
+	
+	function setMimeType($mime_type)
+	{
+        switch ($mime_type) {
+            case 'text/html':
+                $this->type = 'html';
+                break;
+            case 'application/rss+xml':
+                $this->type = 'rss';
+                break;
+            case 'application/xml':
+                $this->type = 'xml';
+                break;
+            case 'text/plain':
+                $this->type = 'txt';
+                break;
+            case 'text/css':
+                $this->type = 'css';
+                break;
+            case 'text/javascript':
+                $this->type = 'js';
+                break;
+            case 'application/json':
+                $this->type = 'json';
+                break;
+        }
 	}
 
 	protected function setContext($processor) {
