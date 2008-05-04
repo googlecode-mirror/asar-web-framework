@@ -94,6 +94,17 @@ DEBUG;
             next($message);
         }
     }
+
+	function testHtmlDebugMessageMustBeProperlyContainedInHtmlBody()
+	{
+		Asar::debug('testdebugkey', 'testmessage');
+		$result = Asar_Filter_Common::filterResponse($this->response)->getContent();
+		$ending_body_tag_pos = strpos($result, '</body>');
+		$debug_div_tag_pos = strpos($result, '<div id="asar_debug">');
+		$this->assertFalse(strpos($result, '</body>', $ending_body_tag_pos + 2) > 0, 'Duplicate ending body tag!');
+		$this->assertTrue(strpos($result, '</html>') > $debug_div_tag_pos, 'Ending html tag should be after debug div!');
+		$this->assertTrue($ending_body_tag_pos > $debug_div_tag_pos, 'Debug div should occur before body tag');
+	}
     
     function testHtmlVersionOfDebugInfoShouldOnlyAppearForHtmlResponses()
     {

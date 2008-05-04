@@ -4,7 +4,8 @@ abstract class Asar_Filter_Common {
     
     static function filterResponse(Asar_Response $response) {
         if ($response->getMimeType() == 'text/html' && Asar::MODE_DEVELOPMENT == Asar::getMode()) {
-            $content = $response->getContent(). <<<DEBUGHEAD
+            
+			$debug = <<<DEBUGHEAD
 
 <div id="asar_debug">
     <h1>Asar Debugging Information</h1>
@@ -19,19 +20,22 @@ DEBUGHEAD;
                     $message = htmlentities($message);
                 }
                 $key = htmlentities($key);
-                $content .= <<<DEBUG
+                $debug .= <<<DEBUG
 
         <tr>
             <th scope="row">$key</th>
             <td>$message</td>
         </tr>
-
+    </table>
+</div>
+</body>
 DEBUG;
             endforeach;
             endif;
-            $response->setContent($content . "    </table>\n</div>\n</body>");
+			$response->setContent(str_replace('</body>', $debug, $response->getContent()) );
         }
         return $response;
+
     }
     
     static function filterRequestTypeNegotiation(Asar_Request $request)
