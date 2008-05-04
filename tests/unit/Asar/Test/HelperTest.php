@@ -28,7 +28,7 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
 	
 	function __construct() {
 		parent::__construct();
-		$this->temp_path = realpath(dirname(__FILE__).$this->upPath(4)).DIRECTORY_SEPARATOR.'_temp'.DIRECTORY_SEPARATOR;
+		$this->temp_path = realpath(dirname(__FILE__).$this->upPath(4)).DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'_temp'.DIRECTORY_SEPARATOR;
 	}
 	
 	protected function setUp() {
