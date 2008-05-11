@@ -10,7 +10,8 @@ class Asar_Client_Default extends Asar_Client {
 				'scheme' => 'http',
 				'path'   => $this->getUriFromServerVars(),
 	    		'method' => $_SERVER['REQUEST_METHOD'],
-				'params' => $_GET
+				'params' => $_GET,
+				'content' => $_POST
 	    	)
 		);
 	}

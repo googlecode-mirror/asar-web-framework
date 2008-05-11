@@ -12,6 +12,7 @@ class Asar_Helper_HtmlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('ul', $list->getName(), 'uList did not return a string that has an opening and closing ul tag');
         $list_items = $list->children();
         $this->assertEquals(4, count($list->children()), 'list must have 4 elements');
+		reset($arr);
         foreach ($list->li as $item) {
             $this->assertEquals('li', $item->getName(), 'uList did not return create list elements (li)');
             $this->assertEquals(current($arr), $item . '', 'uList did not set the list elements\' values properly;');

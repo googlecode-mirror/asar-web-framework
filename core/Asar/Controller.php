@@ -14,12 +14,10 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	protected $forward    = NULL;    // Controller to forward with the request when there are no mapped controllers/resources
 	protected $view       = NULL;    // Template object to use
   
-	function __construct() {
-		$this->response = new Asar_Response;
-	}
 	
 	function handleRequest(Asar_Request $request, array $arguments = NULL) {
 		$this->request = $request;
+		$this->response = new Asar_Response;
 		if (!$this->request->getType()) {
 		    $this->request->setType('html');
 		}
@@ -76,7 +74,9 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 				$this->response->setStatus(406);
 			}
 		}
-		$this->response->setType($this->request->getType());
+		if (is_null($this->response->getType())) {
+			$this->response->setType($this->request->getType());
+		}
 		$this->response->setContent( $content );
 	}
 	

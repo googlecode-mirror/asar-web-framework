@@ -143,7 +143,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
 		$req->sendTo($this->app);
         $debug = Asar::getDebugMessages();
         $this->assertArrayHasKey('Execution Time', $debug, 'Did not find execution time in debug message');
-        $this->assertRegExp('/[0-9]+\.[0-9]+ seconds/', $debug['Execution Time'], 'The message is not the execution time in seconds');
+        $this->assertRegExp('/[0-9]+\.[0-9]+[E]?[-]?[0-9]* seconds/', $debug['Execution Time'], 'The message is not the execution time in seconds');
     }
     
     function testApplicationMustInheritFromAsarRequestHandler() {

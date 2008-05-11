@@ -138,8 +138,8 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	$this->T['var'] = 'Testing';
 		$this->T['var2'] = 'TestingAgain';
     	$this->T->setTemplate(self::$template_path);
-    	$this->assertContains('<p>Testing</p>', $this->T, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $this->T, 'Unable to set variable for file');
+    	$this->assertContains('<p>Testing</p>', $this->T.'', 'Unable to set variable for file');
+    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $this->T.'', 'Unable to set variable for file');
     	
     }
     

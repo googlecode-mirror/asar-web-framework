@@ -93,6 +93,11 @@ class Test_Controller_Forwarded extends Asar_Controller {
 	function GET() {
 		return 'BBBB';
 	}
+	
+	function POST()
+	{
+		$this->response->setType('txt');
+	}
 }
 
 class Test_Controller_With_No_Methods extends Asar_Controller {}
@@ -376,6 +381,14 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		                    $response->getStatus(),
 		                    'Response did not return expected 406 response status');
 		set_include_path($old_include_path); // reset path
+	}
+	
+	function testSettingResponseTypeInController()
+	{
+		$this->R->setMethod(Asar_Request::POST);
+		$this->C = new Test_Controller_Forwarded;
+		$response = $this->R->sendTo($this->C);
+		$this->assertEquals('txt', $response->getType(), 'Response did not return expected response type');
 	}
 	
 }

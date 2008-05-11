@@ -38,6 +38,7 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 	protected function tearDown() {
 		$_SERVER = array();
 		$_GET = array();
+		$_POST = array();
 	}
 	
 	function testSendRequest() {
@@ -102,11 +103,16 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		$response = new Asar_Response;
 		$response->setType('txt');
 		$this->markTestIncomplete('Difficult to implement because code requires setting headers');
-		/*
-		$this->client->exportResponse($response);
-		$headers = headers_list();
-		$this->assertTrue(in_array('Content-Type: text/plain', $headers, 'The expected response header was not found'));
-		*/
+	}
+	
+	function testGettingRequestMethodPostShouldSetContentForPostValues()
+	{
+		$_POST['key'] = 'randomvalue';
+		$_POST['anotherkey'] = 'anothervalue';
+		$request = $this->client->createRequest();
+		$postvars = $request->getContent();
+		$this->assertEquals('randomvalue', $postvars['key'], 'Expected post value "randomvalue" not found in request content');
+		$this->assertEquals('anothervalue', $postvars['anotherkey'], 'Did not find "anothervalue" from request content');
 	}
 	
 }

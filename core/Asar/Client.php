@@ -9,7 +9,6 @@ class Asar_Client extends Asar_Base {
 	
 	function createRequest($arguments = NULL) {
 		$req = new Asar_Request();
-		
 		if (is_array($arguments)) {
 			$req->setUriAuthority($arguments['authority']);
 			$req->setUriScheme($arguments['scheme']);
@@ -38,6 +37,9 @@ class Asar_Client extends Asar_Base {
 			
 			if (array_key_exists('type', $arguments)) {
 				$req->setType($arguments['type']);
+			}
+			if (array_key_exists('content', $arguments)) {
+				$req->setContent($arguments['content']);
 			}
 		} else {
 			$req->setPath('/');

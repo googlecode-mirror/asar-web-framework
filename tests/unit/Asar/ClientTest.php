@@ -102,9 +102,22 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
 		$this->client->setName($testname);
 		$this->assertEquals($testname, $this->client->getName(), 'Client name did not match expected value');
 	}
-	/*
-	function testSendingRequestAcceptsAResponse() {
-		
-	}*/
+	
+	function testSettingContentForCreateRequest()
+	{
+		$arguments = array(
+			'scheme'    => 'http',
+			'authority' => 'example.host.com',
+			'method' => 'POST',
+			'path' => '/',
+			'content' => array(
+				'key1' => 'avalue',
+				'2key' => 'anothervalue'
+			)
+		);
+		$contents = $this->client->createRequest($arguments)->getContent();
+		$this->assertEquals('avalue', $contents['key1'], 'The first value was not found on request content');
+		$this->assertEquals('anothervalue', $contents['2key'], 'The second value was not found on request content');
+	}
 	
 }

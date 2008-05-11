@@ -135,7 +135,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	function testSendToWithArguments() {
-		//$arguments = array('test' => 'right', 'been' => array(1,2,3));
+		$arguments = array('test' => 'right', 'been' => array(1,2,3));
 		$respondent = $this->getMock('Asar_Requestable', array('handleRequest'));
 		$respondent->expects($this->once())
 		           ->method('handleRequest')
