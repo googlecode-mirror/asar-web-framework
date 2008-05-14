@@ -1,7 +1,10 @@
 <h1>Em Calculator</h1>
 <p>
 	Em Calculator is a tool to calculate em values given a base font-size.
-	It can also suggest to you a line-height value in ems if you want.
+	It can also suggest to you a line-height value in ems if you want. <br />
+	<?php if (false):?>
+	<a href="<?=$this->controller->getPath()?>">Back to parent...</a>
+	<?php endif; ?>
 </p>
 
 <form action="<?$_SERVER['PHP_SELF']?>" method="post" accept-charset="utf-8" id="emcalc">

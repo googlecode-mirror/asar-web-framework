@@ -60,9 +60,22 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		$this->view = new Asar_Template_Html;
 		$content = $this->{$this->request->getMethod()}();
 		if (is_null($content)) {
-			$template_file = $this->getViewPath() . 
+			/**
+			 * @todo Needs refactoring...
+			 */
+			if ($this->view->getTemplate()) {
+				$template_file = $this->view->getTemplate();
+				if (!Asar::fileExists($template_file)) {
+					$template_file = $this->getViewPath() . 
+						$template_file . '.' . $this->request->getType() . '.php';
+					
+				}
+			} else {	
+				$template_file = $this->getViewPath() . 
 			                 $this->request->getMethod() .
 			                 '.' . $this->request->getType() . '.php';
+			}
+			
 			if (Asar::fileExists($template_file)) {
 				$this->view->setTemplate($template_file);
 				$layout_file = $this->getViewLayout();

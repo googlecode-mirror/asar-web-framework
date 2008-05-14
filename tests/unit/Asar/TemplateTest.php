@@ -217,4 +217,10 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	$this->assertEquals('<h4>'.strtoupper($teststring).'</h4><p>'.strtolower($teststring).'</p>', $this->T->fetch(self::getPath($testf)), 'Unable to invoke the registered helper method');
     }
 	
+	function testGettingTemplateThatWasSet()
+	{
+		$this->T->setTemplate('yo.html');
+		$this->assertEquals('yo.html', $this->T->getTemplate(), 'Unable to get the template set using setTemplate()');
+	}
+	
 }

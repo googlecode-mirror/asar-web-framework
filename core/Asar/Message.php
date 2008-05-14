@@ -84,9 +84,8 @@ abstract class Asar_Message extends Asar_Base {
 	function getParam($key) {
 		if (array_key_exists($key, $this->params)) {
 			return $this->params[$key];
-		} else {
-			$this->exception("The parameter '$key' specified does not exist");
 		}
+		return null;
 	}
 
 

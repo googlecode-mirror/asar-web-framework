@@ -14,11 +14,19 @@ class Test_Controller_Index extends Asar_Controller {
 	
 	function GET() {
 		$this->test_value = 1000;
-		return 'hello there';
+		if ($this->request->getParam('change_template') == true) {
+			$this->view->setTemplate('Test/View/Index/POST.html.php');
+		} else {
+			return 'hello there';
+		}
 	}
 	
 	function POST() {
-		return 'I am alright';
+		if ($this->request->getParam('change_template') == true) {
+			$this->view->setTemplate('GET');
+		} else {
+			return 'I am alright';
+		}
 	}
 	
 	function PUT() {
@@ -389,6 +397,31 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$this->C = new Test_Controller_Forwarded;
 		$response = $this->R->sendTo($this->C);
 		$this->assertEquals('txt', $response->getType(), 'Response did not return expected response type');
+	}
+	
+	function testSettingViewTemplate()
+	{
+		$this->R->setParam('change_template', true);
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		self::newFile('Test/View/Index/GET.html.php', 'Hello');
+		self::newFile('Test/View/Index/POST.html.php', 'Yellow');
+		$response = $this->R->sendTo($this->C);
+		//$template = (self::readAttribute($this->C, 'view'));
+		$this->assertEquals('Yellow', $response->__toString(), 'The controller did not use a different template');
+	}
+	
+	function testSettingViewTemplateWithShortenedFileName()
+	{
+		$this->R->setParam('change_template', true);
+		$this->R->setMethod(Asar_Request::POST);
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		self::newFile('Test/View/Index/GET.html.php', 'Hello');
+		self::newFile('Test/View/Index/POST.html.php', 'Yellow');
+		$response = $this->R->sendTo($this->C);
+		//$template = (self::readAttribute($this->C, 'view'));
+		$this->assertEquals('Hello', $response->__toString(), 'The controller did not use a different template');
 	}
 	
 }

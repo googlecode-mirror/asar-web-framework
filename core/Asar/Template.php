@@ -71,6 +71,11 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	public function setTemplate($file) {
 		$this->template_file = $file;
 	}
+	
+	public function getTemplate()
+	{
+		return $this->template_file;
+	}
 
 	/**
 	 * Set a template variable.

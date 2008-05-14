@@ -57,6 +57,11 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($testval, $this->req->getParam($key), 'Parameter was not set');
   }
 	
+	function testGettingAParamThatDoesNotExistMustReturnNull()
+	{
+		$this->assertSame(null, $this->req->getParam('non-existent-param'), 'The non-existent parameter must return null');  
+	}
+	
 	function testInvokingToStringMethodOfMessageReturnsContent() {
 		$content = 'hello world';
 		$this->req->setContent($content);
