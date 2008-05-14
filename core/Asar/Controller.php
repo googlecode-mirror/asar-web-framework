@@ -39,6 +39,11 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		return $this->response;
 	}
 	
+	function getContext()
+	{
+		return $this->context;
+	}
+	
 	/**
 	 * Returns the subpath requested from request object
 	 * if available. Returns false if there's none
@@ -77,6 +82,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 			}
 			
 			if (Asar::fileExists($template_file)) {
+				$this->view->setController($this);
 				$this->view->setTemplate($template_file);
 				$layout_file = $this->getViewLayout();
 				if ($this->request->getType() == 'html' && Asar::fileExists($layout_file)) {

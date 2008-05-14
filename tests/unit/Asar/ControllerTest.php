@@ -409,6 +409,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$response = $this->R->sendTo($this->C);
 		//$template = (self::readAttribute($this->C, 'view'));
 		$this->assertEquals('Yellow', $response->__toString(), 'The controller did not use a different template');
+		set_include_path($old_include_path); // reset path
 	}
 	
 	function testSettingViewTemplateWithShortenedFileName()
@@ -422,6 +423,27 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$response = $this->R->sendTo($this->C);
 		//$template = (self::readAttribute($this->C, 'view'));
 		$this->assertEquals('Hello', $response->__toString(), 'The controller did not use a different template');
+		set_include_path($old_include_path); // reset path
+	}
+	
+	function testMakingControllerObjectAvailableOnTheController()
+	{
+		$this->R->setParam('change_template', true);
+		$old_include_path = get_include_path();
+		set_include_path($old_include_path . PATH_SEPARATOR . self::getTempDir());
+		self::newFile('Test/View/Index/POST.html.php', 'Yellow');
+		$this->R->sendTo($this->C);
+		$template = (self::readAttribute($this->C, 'view'));
+		$this->assertSame($this->C, $template->getController(), 'The controller was not set on the view template object');
+		set_include_path($old_include_path); // reset path
+	}
+	
+	
+	function testGettingContextThroughMethod()
+	{
+		$obj = $this->getMock('Asar_Controller');
+		$this->C->handleRequest($this->R, array('context' => $obj) );
+		$this->assertSame($obj, $this->C->getContext(), 'Unable to retrieve context');
 	}
 	
 }

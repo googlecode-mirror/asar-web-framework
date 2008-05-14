@@ -3,6 +3,7 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	protected $vars = array(); // Holds all the template variables
 	protected $path; // Path to the templates
 	protected $template_file; // Template file to use
+	protected $controller;
 	private static $helpers = array();
 	private static $helper_methods = array();
 	
@@ -75,6 +76,16 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	public function getTemplate()
 	{
 		return $this->template_file;
+	}
+	
+	public function setController($controller)
+	{
+		$this->controller = $controller;
+	}
+	
+	public function getController()
+	{
+		return $this->controller;
 	}
 
 	/**

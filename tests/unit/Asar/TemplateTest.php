@@ -223,4 +223,11 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 		$this->assertEquals('yo.html', $this->T->getTemplate(), 'Unable to get the template set using setTemplate()');
 	}
 	
+	function testGetController()
+	{
+		$controller = $this->getMock('Asar_Controller');
+		$this->T->setController($controller);
+		$this->assertSame($controller, $this->T->getController(), 'Unable to set controller');
+	}
+	
 }
