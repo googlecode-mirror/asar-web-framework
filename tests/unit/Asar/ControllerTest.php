@@ -40,6 +40,9 @@ class Test_Controller_Index extends Asar_Controller {
 
 class Test_Controller_Another extends Asar_Controller {
 	function GET() {
+		if ($this->request->getParam('geturl') == true) {
+			return $this->url();
+		}
 		return 'hello world';
 	}
 	
@@ -444,6 +447,28 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$obj = $this->getMock('Asar_Controller');
 		$this->C->handleRequest($this->R, array('context' => $obj) );
 		$this->assertSame($obj, $this->C->getContext(), 'Unable to retrieve context');
+	}
+	
+	function testGettingUrl()
+	{
+		$this->R->setUri('http://example.org/');
+		$this->R->sendTo($this->C);
+		$this->assertEquals('http://example.org/', $this->C->url(), 'Unable to obtain url from controller');
+	}
+	
+	function testGettingUrlFromDeeperController() {
+		$this->R->setUri('http://example.org/path');
+		$this->R->setParam('geturl', true);
+		$response = $this->R->sendTo($this->C);
+		$this->assertEquals('http://example.org/path', $response->__toString(), 'Unable to obtain url from a deeper controller');
+	}
+	
+	function testGettingUrlFromRootControllerWhilePassingRequestToDeeperController()
+	{
+		$this->R->setUri('http://example.org/path');
+		$this->R->setParam('geturl', true);
+		$this->R->sendTo($this->C);
+		$this->assertEquals('http://example.org/', $this->C->url(), 'Unable to obtain url from a deeper controller');
 	}
 	
 }

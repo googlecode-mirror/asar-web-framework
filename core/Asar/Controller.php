@@ -49,6 +49,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	 * if available. Returns false if there's none
 	 *
 	 * @return string or boolean false
+	 * @todo Could use optimzation
 	 **/
 	private function nextPath()
 	{
@@ -99,6 +100,14 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		$this->response->setContent( $content );
 	}
 	
+	
+	function url()
+	{
+		/**
+		 * @todo Could use some optimization
+		 */
+		return $this->request->getUriScheme() . '://' . $this->request->getUriAuthority() . $this->path;
+	}
 	
 	/**
 	 * Default PUT method handler

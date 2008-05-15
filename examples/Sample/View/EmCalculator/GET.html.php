@@ -4,6 +4,10 @@
 	It can also suggest to you a line-height value in ems if you want. <br />
 	<a href="<?=$this->getController()->getContext()->getPath()?>">Back to parent...</a>
 </p>
+<p>
+	This page can be found at:
+	<a href="<?=$this->getController()->url()?>"><?=$this->getController()->url()?></a>
+</p>
 
 <form action="<?$_SERVER['PHP_SELF']?>" method="post" accept-charset="utf-8" id="emcalc">
 	<ul class="form">
