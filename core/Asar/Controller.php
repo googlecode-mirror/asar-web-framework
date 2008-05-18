@@ -62,6 +62,37 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		}
 	}
 	
+	
+	
+	/**
+	 * See if there are mapped resources for the given uri
+	 *
+	 * @return bool
+	 **/
+	private function route()
+	{
+		$next = $this->nextPath();
+		if ($next) {
+			if ($this->isResourceMapped($next)) {
+				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$next]);
+				$this->response = $this->request->sendTo($controller, array('context'=>$this));
+				return true;
+			} elseif ($this->forward) {
+				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->forward);
+				$this->response = $this->request->sendTo($controller, array('context'=>$this));
+				return true;
+			} else {
+				$this->response->setStatus(404);
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * @todo Fix this logic
+	 */
 	private function callResourceAction() {
 		$this->view = new Asar_Template_Html;
 		$content = $this->{$this->request->getMethod()}();
@@ -182,33 +213,6 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	function getPath()
 	{
 		return $this->path;
-	}	 	 	
-	
-	
-	/**
-	 * See if there are mapped resources for the given uri
-	 *
-	 * @return bool
-	 **/
-	private function route()
-	{
-		$next = $this->nextPath();
-		if ($next) {
-			if ($this->isResourceMapped($next)) {
-				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->map[$next]);
-				$this->response = $this->request->sendTo($controller, array('context'=>$this));
-				return true;
-			} elseif ($this->forward) {
-				$controller = Asar::instantiate(Asar::getClassPrefix($this).'_Controller_'.$this->forward);
-				$this->response = $this->request->sendTo($controller, array('context'=>$this));
-				return true;
-			} else {
-				$this->response->setStatus(404);
-				return true;
-			}
-		} else {
-			return false;
-		}
 	}
 	
 	

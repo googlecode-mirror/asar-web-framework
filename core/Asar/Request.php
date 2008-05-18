@@ -118,14 +118,15 @@ class Asar_Request extends Asar_Message {
 		}
 		return $this->method;
 	}
-  
+    
+	/*
     public function setContent($contents) {
         if (is_array($contents)) {
             parent::setContent($contents);
         } else {
             $this->exception('Contents must be an associative array');
         }
-    }
+    }*/
   
     function sendTo(Asar_Requestable $handler, array $arguments = NULL) {
         $this->setContext($handler);

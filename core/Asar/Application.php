@@ -29,6 +29,14 @@ abstract class Asar_Application extends Asar_Request_Handler {
             $response = new Asar_Response;
             $response->setStatus(404);
         }
+		switch ($response->getStatus()) {
+			case 404:
+			case 405:
+				$request->setContent($response);
+				$response = $request->sendTo(new Asar_Controller_Default);
+				break;
+		}
+
         $this->debug('Execution Time', (microtime(true) - $time_start) . ' seconds');
         return $response;
         

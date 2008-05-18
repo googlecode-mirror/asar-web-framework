@@ -179,4 +179,22 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(empty($test), 'The filter response must not be empty at least');
         $this->assertContains(array('Asar_Filter_Common', 'filterRequestTypeNegotiation'), $test, 'The Asar_Filter_Common::filterRequestTypeNegotiation was not set as a filter');
     }
+
+	function testResponseStatusIs404SendProper404Message()
+	{
+		$req = new Asar_Request();
+		$req->setPath('/non-existent-path');
+		$response = $req->sendTo($this->app);
+		$this->assertContains('Sorry, we were unable to find the resource you were looking for. Please check that you got the address or URL correctly. If that is the case, please email the administrator. Thank you and please forgive the inconvenience.',
+			$response->__toString(), 'Application did not return a proper 404 message' );
+	}
+	
+	function testResponseStatusIs405SendProper405Message()
+	{
+		$req = new Asar_Request();
+		$req->setMethod('POST');
+		$response = $req->sendTo($this->app);
+		$this->assertContains("The HTTP Method 'POST' is not allowed for this resource.",
+			$response->__toString(), 'Application did not return a proper 405 message' );
+	}
 }

@@ -9,7 +9,7 @@ class Asar_Template_HtmlTest extends Asar_Test_Helper {
 	public static $layout_contents = '
 <html>
 <head>
-<title>This is the Title</title>
+<title><?= $this[\'title\'] ?> This is the Title</title>
 </head>
 <body>
 <h1>Main Template Here</h1>
@@ -29,13 +29,13 @@ class Asar_Template_HtmlTest extends Asar_Test_Helper {
 	    self::$template_path = self::getPath(self::$template_name);
 	    self::newFile(self::$layout_name,self::$layout_contents);
 	    self::$layout_path = self::getPath(self::$layout_name);
+		$this->T['var'] = 'This is a test';
+        $this->T['var2'] = 'Another test';
     }
     
     public function testLayout()
     {
         $this->T->setLayout(self::$layout_path);
-        $this->T['var'] = 'This is a test';
-        $this->T['var2'] = 'Another test';
         $haystack = $this->T->fetch(self::$template_path);
         $this->assertContains('<p>This is a test</p>', $haystack, 'Template variable was not set');
         $this->assertContains('<html>', $haystack, 'Did not include layout template');
@@ -47,4 +47,11 @@ class Asar_Template_HtmlTest extends Asar_Test_Helper {
         $this->T->setLayout($test_path);
         $this->assertEquals($test_path, $this->T->getLayout(), 'Layout path was not set');
     }
+
+	public function testSettingLayoutVariable()
+	{
+		$this->T->setLayout(self::$layout_path);
+		$this->T->setLayoutVar('title', 'TestTitle');
+		$this->assertContains('TestTitle', $this->T->fetch(self::$template_path), 'The layout property of the template is not a template object');
+	}
 }

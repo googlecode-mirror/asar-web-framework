@@ -23,7 +23,11 @@ class Asar_Template_Html extends Asar_Template
      **/
     public function setLayout($layout_path)
     {
-        $this->layout_path = $layout_path;
+        if (!$this->layout) {
+			$this->layout = new Asar_Template_Html;
+		}
+		$this->layout_path = $layout_path;
+		$this->layout->setTemplate($this->layout_path);
     }
     
     /**
@@ -48,12 +52,16 @@ class Asar_Template_Html extends Asar_Template
     public function fetch($_file = null)
     {
         $contents = parent::fetch($_file);
-        if ($this->layout_path === null) {
+        if (!$this->layout) {
             return $contents;
         } else {
-            $layout = new Asar_Template_Html;
-            $layout['contents'] = $contents;
-            return $layout->fetch($this->layout_path);
+            $this->layout['contents'] = $contents;
+            return $this->layout->fetch($this->layout_path);
         }
     }
+	
+	function setLayoutVar($var, $value)
+	{
+		$this->layout[$var] = $value;
+	}
 } // END class Asar_Template_Html extends Asar_Template
