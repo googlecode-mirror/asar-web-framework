@@ -7,6 +7,10 @@ require_once 'Asar/Application.php';
 class Test2_Application extends Asar_Application {}
 class Test2_Controller_Index extends Asar_Controller{
 	function GET() {
+	    if ($this->request->getParam('status')) {
+		    $this->response->setStatus($this->request->getParam('status'));
+		    return;
+		}
 		return 'Hello World';
 	}
 }
@@ -196,5 +200,14 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
 		$response = $req->sendTo($this->app);
 		$this->assertContains("The HTTP Method 'POST' is not allowed for this resource.",
 			$response->__toString(), 'Application did not return a proper 405 message' );
+	}
+	
+	function testResponseStatusIs500SendProper500Message()
+	{
+		$req = new Asar_Request();
+		$req->setParam('status', 500);
+		$response = $req->sendTo($this->app);
+		$this->assertContains('The application has encountered some problems. Please email the administrator.',
+			$response->__toString(), 'Application did not return a proper 500 message' );
 	}
 }

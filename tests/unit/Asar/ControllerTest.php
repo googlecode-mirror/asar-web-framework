@@ -43,6 +43,10 @@ class Test_Controller_Another extends Asar_Controller {
 		if ($this->request->getParam('geturl') == true) {
 			return $this->url();
 		}
+		if ($this->request->getParam('status')) {
+		    $this->response->setStatus($this->request->getParam('status'));
+		    return;
+		}
 		return 'hello world';
 	}
 	
@@ -469,6 +473,15 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		$this->R->setParam('geturl', true);
 		$this->R->sendTo($this->C);
 		$this->assertEquals('http://example.org/', $this->C->url(), 'Unable to obtain url from a deeper controller');
+	}
+	
+	function testWhenSettingTheStatusToNonDefaultInsideActionRespectIt()
+	{
+	    $expected_status = rand(100, 599);
+	    $this->R->setUri('http://example.org/path');
+		$this->R->setParam('status', $expected_status);
+        $response = $this->R->sendTo($this->C);
+        $this->assertEquals($expected_status, $response->getStatus(), 'The response did not return an expected status of ' . $expected_status);
 	}
 	
 }

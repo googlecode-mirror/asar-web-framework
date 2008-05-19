@@ -29,9 +29,13 @@ abstract class Asar_Application extends Asar_Request_Handler {
             $response = new Asar_Response;
             $response->setStatus(404);
         }
+        /**
+         * @todo Needs refactoring...
+         */
 		switch ($response->getStatus()) {
 			case 404:
 			case 405:
+			case 500:
 				$request->setContent($response);
 				$response = $request->sendTo(new Asar_Controller_Default);
 				break;

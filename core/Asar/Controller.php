@@ -121,7 +121,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
                     $this->view->setLayout($layout_file);
                 }
 				$content = $this->view->fetch();
-			} elseif (405 != $this->response->getStatus() && 'HEAD' != $this->request->getMethod() ) {
+			} elseif (405 != $this->response->getStatus() && 'HEAD' != $this->request->getMethod() && 200 == $this->response->getStatus()) {
 				$this->response->setStatus(406);
 			}
 		}

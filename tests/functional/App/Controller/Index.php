@@ -7,7 +7,8 @@
 class App_Controller_Index extends Asar_Controller 
 {
     protected $map = array(
-		'subpage' => 'Subpage'
+		'subpage' => 'Subpage',
+		'errors'  => 'Errors'
 		);
     
     /**
