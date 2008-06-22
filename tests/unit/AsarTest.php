@@ -63,14 +63,7 @@ class AsarTest extends Asar_Test_Helper {
 	}
 	
 	function testGetVersion() {
-		$this->assertEquals(Asar::getVersion(), '0.0.1pa', 'Unable to get proper version');
-	}
-	
-	function testSetAsarPath() {
-		$testpath = '/testpathxyz';
-		Asar::setAsarPath($testpath);
-		
-		$this->assertTrue( strpos(get_include_path(), $testpath) !== FALSE, 'Path setting not found');
+		$this->assertEquals(Asar::getVersion(), '0.1', 'Unable to get proper version');
 	}
 	
 	// @todo: Create test for the part of the code that includes the file

@@ -54,22 +54,6 @@ abstract class Asar_Application extends Asar_Request_Handler {
         return Asar::loadClass($this->getAppName().'_'.$type.'_'.$name);
     }
     
-    function loadController($name) {
-        return $this->loadClassResource('Controller', Asar::camelCase($name));
-    }
-    
-    function loadModel($name) {
-        return $this->loadClassResource('Model', Asar::camelCase($name));
-    }
-    
-    function loadFilter($name) {
-        return $this->loadClassResource('Filter', Asar::camelCase($name));
-    }
-    
-    function loadHelper($name) {
-        return $this->loadClassResource('Helper', Asar::camelCase($name));
-    }
-    
     function loadView($controller, $action = '') {
         $view = $this->getAppName().'/View/'.$controller;
         if ($action !== '') {

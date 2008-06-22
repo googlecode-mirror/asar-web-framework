@@ -53,12 +53,4 @@ class Asar_ErrorsFTest extends Asar_Test_Helper
 		$this->assertContains('The application has encountered some problems. Please email the administrator.',
 			$response->__toString(), 'Application did not return a proper 500 message' );
 	}
-	/*
-	function testResponseStatusIs500SendProper500Heading()
-	{
-		$this->request->setMethod('POST');
-		$response = $this->request->sendTo($this->app);
-		$this->assertContains("Method Not Allowed (405)",
-			$response->__toString(), 'Application did not return a proper 405 heading' );
-	}*/
 }

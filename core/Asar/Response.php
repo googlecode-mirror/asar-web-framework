@@ -29,5 +29,3 @@ class Asar_Response extends Asar_Message {
   }
   
 }
-
-class Asar_Response_Exception extends Asar_Message_Exception {}
