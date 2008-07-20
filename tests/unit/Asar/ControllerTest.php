@@ -115,6 +115,18 @@ class Test_Controller_Forwarded extends Asar_Controller {
 	}
 }
 
+class Test_Controller_For_Params extends Asar_Controller {
+	function GET() {
+		return $this->params['var1'] . ' ' . $this->params['var2'];
+	}
+}
+
+class Test_Controller_For_PostContents extends Asar_Controller {
+	function POST() {
+		return $this->data['var1'] . ' ' . $this->data['var2'];
+	}
+}
+
 class Test_Controller_With_No_Methods extends Asar_Controller {}
 
 
@@ -368,7 +380,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
 		set_include_path($old_include_path); // reset path
 	}
 	
-	function testAttemptingToFindAXmlTemplateWhentheRequestAcceptsAXmlOnlyResponse()
+	function testAttemptingToFindAnXmlTemplateWhentheRequestAcceptsAXmlOnlyResponse()
 	{
 	    $this->R->setMethod(Asar_Request::GET);
 		$this->R->setPath('/next/follow/');
@@ -484,4 +496,27 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         $this->assertEquals($expected_status, $response->getStatus(), 'The response did not return an expected status of ' . $expected_status);
 	}
 	
+	
+	function testExposingRequestParamsInController() {
+		$this->R->setParam('var1', 'Foo');
+		$this->R->setParam('var2', 'Bar');
+		$response = $this->R->sendTo(new Test_Controller_For_Params);
+		$this->assertEquals(
+			'Foo Bar',
+			$response->__toString(),
+			'Unable to access request params through $this->params in controller'
+		);
+	}
+	
+	function testExposingRequestContentInController() {
+		$postvariables = array('var1' => 'Foo', 'var2' => 'Bar');
+		$this->R->setContent($postvariables);
+		$this->R->setMethod('POST');
+		$response = $this->R->sendTo(new Test_Controller_For_PostContents);
+		$this->assertEquals(
+			'Foo Bar',
+			$response->__toString(),
+			'Unable to access request data through $this->data in controller'
+		);
+	}
 }

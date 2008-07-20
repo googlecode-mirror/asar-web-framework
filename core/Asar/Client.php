@@ -1,6 +1,4 @@
 <?php
-require_once 'Asar.php';
-
 class Asar_Client extends Asar_Base {
 	
 	private $name     = NULL;
@@ -61,9 +59,9 @@ class Asar_Client extends Asar_Base {
 	/**
 	 * Sends request to the application specified
 	 *
-	 * @returns Asar_Response An response object
-	 * @params mixed  The request. Can be an array for request arguments or an Asar_Request object itself
-	 * @params Asar_Application The application that will receive the request
+	 * @return Asar_Response An response object
+	 * @param mixed  The request. Can be an array for request arguments or an Asar_Request object itself
+	 * @param Asar_Application The application that will receive the request
 	 */
 	function sendRequestTo(Asar_Application $application) {
 		$this->response = $this->getRequest()->sendTo($application);
@@ -73,7 +71,7 @@ class Asar_Client extends Asar_Base {
 	/**
 	 * Retrieve response after request is sent to Application
 	 *
-	 * @returns Asar_Response An response object
+	 * @return Asar_Response An response object
 	 * 
 	 */
 	function getResponse() {

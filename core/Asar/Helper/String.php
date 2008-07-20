@@ -1,6 +1,6 @@
 <?php
 /**
- * Asar_Helper_String - Asar Web Framework Core
+ * Asar_Helper_String class definition - Asar Web Framework Core
  * 
  * LICENSE
  *
@@ -35,6 +35,7 @@ abstract class Asar_Helper_String {
 	 * For example, when passed 'foo_bar_yeah' or 'foo-bar-yeah' as argument, it will return
 	 * 'FooBarYeah'.
 	 * @param string str the underscored or dashed words
+	 * @return string the dashed or underscored string converted to UpperCamelCase
 	 */
 	static function camelCase($str) {
         return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $str)));
@@ -44,6 +45,7 @@ abstract class Asar_Helper_String {
 	 * Similar to Asar_Helper_String::camelCase but lower-cases the first character
 	 *
 	 * @param string str the underscored or dashed string
+	 * @return string the dashed or underscored string converted to lowerCamelCase
 	 * @see Asar_Helper_String::camelCase()
 	 */
 	static function lowerCamelCase($str) {
@@ -59,6 +61,7 @@ abstract class Asar_Helper_String {
 	 * with 'FooBarYeah', it will return 'foo_bar_yeah'.
 	 * @param string str the camelCased string to convert
 	 * @see  Asar_Helper_String::camelCase()
+	 * @return string the CamelCased string converted to a-dashed-string
 	 */
 	static function underscore($str) {
 	    return strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $str));
@@ -68,9 +71,10 @@ abstract class Asar_Helper_String {
 	 * Converts a camelCased string to a dashed_string
 	 *
 	 * Does the same as Asar_Helper_String::underscore() except
-	 * that instead of underscores, it uses dashes. hen passed
+	 * that instead of underscores, it uses dashes. When passed
 	 * with 'FooBarYeah', it will return 'foo-bar-yeah'.
 	 * @param string str the camelCased string to convert
+	 * @return string the CamelCased string converted to an_underscored_string
 	 * @see Asar_Helper_String::underscore()
 	 */
 	static function dash($str) {

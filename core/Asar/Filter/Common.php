@@ -26,11 +26,14 @@ DEBUGHEAD;
             <th scope="row">$key</th>
             <td>$message</td>
         </tr>
+DEBUG;
+            endforeach;
+$debug .= <<<DEBUGTAIL
+
     </table>
 </div>
 </body>
-DEBUG;
-            endforeach;
+DEBUGTAIL;
             endif;
 			$response->setContent(str_replace('</body>', $debug, $response->getContent()) );
         }

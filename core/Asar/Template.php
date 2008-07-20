@@ -4,58 +4,7 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	protected $path; // Path to the templates
 	protected $template_file; // Template file to use
 	protected $controller;
-	private static $helpers = array();
-	private static $helper_methods = array();
-	
-	
-	public function __construct() {
-		
-	}
-	
 
-	/**
-	 * Method that adds functionality to the template object.
-	 * Accepts a valid defined class name. Public static
-	 * methods defined in the class are added to the object's
-	 * method list and will be available to the calling object
-	 * as if it was defined as public function
-	 */
-	public static function registerHelper($class) {
-		if (!class_exists($class))
-			return false;
-		
-		$reflector = new ReflectionClass($class);
-		
-		foreach ($reflector->getMethods() as $method) {
-			if ($method->isStatic() && $method->isPublic()) {
-				self::$helper_methods[$method->getName()] = $method;
-			}
-		}
-		self::$helpers[] = $class;
-		return true;
-	}
-	
-	/**
-	 * Flush the list of helper methods. Use with caution.
-	 * The effect of executing this method is undoable.
-	 * You need to re-register the Helper methods again
-	 * to use those methods
-	 */
-	public static function clearHelperRegistry() {
-		self::$helpers = array();
-		self::$helper_methods = array();
-	}
-	
-	public function __call($name, $arguments) {
-		if (array_key_exists($name, self::$helper_methods)) {
-			return self::$helper_methods[$name]->invokeArgs(NULL, $arguments);
-		} else {
-			throw new Asar_Template_Exception('Undefined method "'.$name.'" or the helper method was not registered');
-			return NULL;
-		}
-	}
-	
-	
 	public function getPath() {
 		return $this->path;
 	}
@@ -160,7 +109,22 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 	}
 	
 	
-
+    /**
+     * Adds a file to the list of template files included on the debug
+     * messages
+     *
+     * @param string file the file to be added to the list of templates
+     * @todo needs refactoring
+     **/
+    private static function _logFile($file) {
+        $debug_array = Asar::getDebugMessages();
+        if (!array_key_exists('Templates', $debug_array)) {
+            Asar::debug('Templates', array(realpath(Asar::fileExists($file))));
+        } else {
+            $debug_array['Templates'][] = realpath(Asar::fileExists($file));
+            Asar::debug('Templates', $debug_array['Templates']);
+        }
+    }
 
 	/**
 	 * Open, parse, and return the template file.
@@ -175,6 +139,9 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 		}
 		
 		if (Asar::fileExists($this->path . $_file)) {
+		    if ($this->isDebugMode()) {
+		        self::_logFile($_file);
+	        }
 			extract($this->vars);           // Extract the variables set
 			ob_start();						// Start output buffering
 			include($this->path . $_file);	// Include the file
@@ -192,5 +159,3 @@ class Asar_Template extends Asar_Base implements ArrayAccess {
 		return $this->fetch();
 	}
 }
-
-class Asar_Template_Exception extends Asar_Base_Exception {}

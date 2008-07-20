@@ -1,6 +1,6 @@
 <?php
 /**
- * @todo: Application, Controller, & Action names validation
+ * @todo Application, Controller, & Action names validation
  */
 require_once 'Asar.php';
 

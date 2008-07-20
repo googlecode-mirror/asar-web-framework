@@ -1,5 +1,4 @@
 <?php
-require_once 'Asar.php';
 
 abstract class Asar_Application extends Asar_Request_Handler {
     private $root_controller = null;

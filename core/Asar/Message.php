@@ -1,6 +1,6 @@
 <?php
 /**
- * @todo: Application, Controller, & Action names validation
+ * @todo Application, Controller, & Action names validation
  */
 require_once 'Asar.php';
 
@@ -89,7 +89,7 @@ abstract class Asar_Message extends Asar_Base {
 	}
 
 
-	// @todo: Better mime-type setting ('text/plain', 'text/html', etc.)
+	// @todo Better mime-type setting ('text/plain', 'text/html', etc.)
 	function setType($type) {
 		$this->type = $type;
 	}

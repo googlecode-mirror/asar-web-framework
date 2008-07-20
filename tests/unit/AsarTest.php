@@ -66,7 +66,7 @@ class AsarTest extends Asar_Test_Helper {
 		$this->assertEquals(Asar::getVersion(), '0.1', 'Unable to get proper version');
 	}
 	
-	// @todo: Create test for the part of the code that includes the file
+	// @todo Create test for the part of the code that includes the file
 	function testLoadClass() {
 		try {
 			Asar::loadClass('Test_Dummy_Class');
@@ -268,7 +268,7 @@ class AsarTest extends Asar_Test_Helper {
 	    Asar::setMode(Asar::MODE_DEVELOPMENT);
 		Asar::debug('Yet Another Title', 'Yet another debug message');
 		Asar::clearDebugMessages();
-		$this->assertEquals(null, Asar::getDebugMessages(), 'The debug messages was not reset');
+		$this->assertEquals(array(), Asar::getDebugMessages(), 'The debug messages was not reset');
 	}
 	
 	/**
@@ -280,6 +280,6 @@ class AsarTest extends Asar_Test_Helper {
 	{
 	    Asar::setMode(Asar::MODE_PRODUCTION);
 	    Asar::debug('Another Title', 'Another debug message');
-		$this->assertEquals(null, Asar::getDebugMessages(), 'The debug messages was not reset');
+		$this->assertEquals(array(), Asar::getDebugMessages(), 'The debug messages was not reset');
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @todo: This class may be following the anti-pattern "BaseBean". Refactor to move methods in different classes?
+ * @todo This class may be following the anti-pattern "BaseBean". Refactor to move methods in different classes?
  * 
  */
 abstract class Asar_Base {

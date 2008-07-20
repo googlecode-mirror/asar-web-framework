@@ -13,15 +13,15 @@
 	<ul class="form">
 		<li>
 			<label for="emcalc_base-font-size">Base Font Size:</label>
-			<input type="text" name="emcalc_base-font-size" value="" id="ecalc_base-font-size" />
+			<input type="text" name="emcalc_base-font-size" value="<?= $this['base-font-size'] ?>" id="ecalc_base-font-size" />
 		</li>
 		<li>
 			<label for="emcalc_base-line-height">Base Line Height:</label>
-			<input type="text" name="emcalc_base-line-height" value="" id="emcalc_base-line-height" />
+			<input type="text" name="emcalc_base-line-height" value="<?= $this['base-line-height'] ?>" id="emcalc_base-line-height" />
 		</li>
 		<li>
 			<label for="emcalc_expected-font-size">Expected Font Size:</label>
-			<input type="text" name="emcalc_expected-font-size" value="" id="emcalc_expected-font-size" />
+			<input type="text" name="emcalc_expected-font-size" value="<?= $this['expected-font-size'] ?>" id="emcalc_expected-font-size" />
 		</li>
 		<li class="actions">
 			<input type="submit" name="emcalc_submit" value="Calculate" id="emcalc_submit" />

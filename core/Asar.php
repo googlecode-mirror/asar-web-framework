@@ -65,7 +65,7 @@ class Asar {
 	 * throughout the request that will be used later
 	 * usually for display.
 	 */
-	private static $debug    = null;
+	private static $debug    = array();
 	
 	/**
 	 * Production Mode
@@ -182,7 +182,7 @@ class Asar {
 	 * @see Asar::getDebugMessages()
 	 */
 	static function clearDebugMessages() {
-		self::$debug = null;
+		self::$debug = array();
 	}
 	
 	/**
@@ -222,7 +222,7 @@ class Asar {
 	 *
 	 * @param string application_name name of the application to start
 	 * @param Asar_Client client client the client to use; will default to Asar_Client_Default
-	 * @todo: Remove dependency on existing classes
+	 * @todo Remove dependency on existing classes
 	 */
 	static function start($application_name, Asar_Client $client = null) {
 		// $application_name must be found by ('ApplicationName_Application');
@@ -278,7 +278,7 @@ class Asar {
 			}
 		} elseif ($reflector->hasMethod('instance')) {
 			// We're assuming this is Singleton by convention
-			// @todo: what if we class didn't follow that convention?
+			// @todo what if we class didn't follow that convention?
 			$instanceMethod = $reflector->getMethod('instance');
 			$obj = $instanceMethod->invoke(null);
 		} else {

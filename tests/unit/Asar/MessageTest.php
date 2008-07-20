@@ -167,7 +167,7 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
   
   function testSetAndGetRequestTypeXhr() {
     $this->req->setType('xhr');
-    // @todo: make sure xhr is the right mime-type ('text/plain' or 'text/javascript') 
+    // @todo make sure xhr is the right mime-type ('text/plain' or 'text/javascript') 
     $this->assertEquals('text/plain', $this->req->getMimeType(), 'Mime-type did not match');
   }
   

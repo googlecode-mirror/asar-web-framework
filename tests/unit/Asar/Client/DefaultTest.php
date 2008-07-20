@@ -115,4 +115,8 @@ class Asar_Client_DefaultTest extends Asar_Test_Helper {
 		$this->assertEquals('anothervalue', $postvars['anotherkey'], 'Did not find "anothervalue" from request content');
 	}
 	
+	function testCreatingRequestDestroysGetGlobalVariables() {
+		$this->client->createRequest();
+		$this->assertEquals(0, count($_GET), 'There are still some values in $_GET global variable');
+	}
 }

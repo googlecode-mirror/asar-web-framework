@@ -55,11 +55,11 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 
     protected function tearDown() {
     	$this->T = null;
-    	Asar_Template::clearHelperRegistry();
+    	Asar::clearDebugMessages();
     }
     
     /**
-     * @todo: Create test to check if 'short tags' are enabled
+     * @todo Create test to check if 'short tags' are enabled
      */    
     public function testAlternativeSettingTemplateToUse() {
     	$this->T->setTemplate(self::$template_path);
@@ -166,55 +166,6 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     	
     	$this->assertContains('<p>'.$testr.'</p>', $haystack, 'Unable to set variable for file');
     	$this->assertContains('<p><strong></strong></p>', $haystack, 'Unable to set an empty string to an unitialized variable for file');
-    	
-    }
-    
-    public function testRegisterHelper() {
-    	Asar_Template::registerHelper('Asar_TemplateTest_TestHelper');
-    	
-    	$testf = 'temp/regtest.php';
-    	$testf_content = '<h4><?= $this->upperCase($psst) ?></h4>';
-    	self::newFile($testf, $testf_content);
-    	
-    	$teststring = 'Karasa';
-    	
-    	$this->T['psst'] = $teststring;
-    	$this->assertEquals('<h4>'.strtoupper($teststring).'</h4>', $this->T->fetch(self::getPath($testf)), 'Unable to invoke the registered helper method');
-    }
-    
-    
-	/**
-	 * Test for calling unregistered Method
-	 * 
-	 * @todo How to get the message from exception
-	 */
-	public function testCallingUnregisteredMethod() {
-		$testf = 'temp/regtest.php';
-		$testf_content = '<h4><?= $this->upperCase($psst) ?></h4>';
-		self::newFile($testf, $testf_content);
-		$teststring = 'Karasa';
-		
-		$this->T['psst'] = $teststring;
-		
-		$this->setExpectedException('Asar_Template_Exception');
-		ob_start();
-		$b = $this->T->fetch(self::getPath($testf));
-		ob_end_clean();
-		
-	}
-    
-    public function testRegisterManyHelpers() {
-    	Asar_Template::registerHelper('Asar_TemplateTest_TestHelper');
-    	Asar_Template::registerHelper('Asar_TemplateTest_TestHelper2');
-    	
-    	$testf = 'temp/regtest.php';
-    	$testf_content = '<h4><?= $this->upperCase($psst) ?></h4><p><?= $this->lowerCase($psst)?></p>';
-    	self::newFile($testf, $testf_content);
-    	
-    	$teststring = 'Karasa';
-    	
-    	$this->T['psst'] = $teststring;
-    	$this->assertEquals('<h4>'.strtoupper($teststring).'</h4><p>'.strtolower($teststring).'</p>', $this->T->fetch(self::getPath($testf)), 'Unable to invoke the registered helper method');
     }
 	
 	function testGettingTemplateThatWasSet()
@@ -229,5 +180,54 @@ class Asar_TemplateTest extends Asar_Test_Helper {
 		$this->T->setController($controller);
 		$this->assertSame($controller, $this->T->getController(), 'Unable to set controller');
 	}
+	
+	function testTemplateClassLogsIncludedTemplateFilesWhenInDevelopmentMode() {
+        Asar::setMode(Asar::MODE_DEVELOPMENT);
+        $this->T['var'] = 'testing';
+        $this->T->fetch(self::$template_path);
+        $debug_messages = Asar::getDebugMessages();
+        $this->assertTrue(array_key_exists('Templates', $debug_messages), "Unable to find 'Templates' title on debug messages");
+        $this->assertContains(self::$template_path, $debug_messages['Templates'][0], 'Did not find the template file location on Templates debug message');
+	}
+	
+	function testTemplateClassLogsMultipleIncludedTemplateFilesInDevelopmentMode() {
+        Asar::setMode(Asar::MODE_DEVELOPMENT);
+        
+        $old_include_path = get_include_path();
+        set_include_path($old_include_path . PATH_SEPARATOR . dirname(self::$template_path));
+        
+        $this->T['var'] = 'testing';
+        $this->T->fetch(self::$template_name);
+        $tpl = new Asar_Template();
+        self::newFile('inc2.php', 'nothing but net');
+        $tpl->fetch('inc2.php');
+        
+        $debug_messages = Asar::getDebugMessages();
+        $this->assertTrue(array_key_exists('Templates', $debug_messages), "Unable to find 'Templates' title on debug messages");
+        $this->assertContains(self::$template_name, $debug_messages['Templates'][0], 'Did not find the template file on Templates debug message');
+        $this->assertContains('inc2.php', $debug_messages['Templates'][1], 'Did not find the second template file on Templates debug message');
+        
+        set_include_path($old_include_path);
+	}
+	
+	function testTemplateClassLogsIncludedTemplateFilesFullPathWhenInDevelopmentMode() {
+	    Asar::setMode(Asar::MODE_DEVELOPMENT);
+        
+        $old_include_path = get_include_path();
+        set_include_path($old_include_path . PATH_SEPARATOR . dirname(self::$template_path));
+        
+        $this->T['var'] = 'testing';
+        $this->T->fetch(self::$template_name);
+        $tpl = new Asar_Template();
+        self::newFile('inc2.php', 'nothing but net');
+        $tpl->fetch('inc2.php');
+        
+        $debug_messages = Asar::getDebugMessages();
+        $this->assertTrue(array_key_exists('Templates', $debug_messages), "Unable to find 'Templates' title on debug messages");
+        $this->assertEquals(realpath(self::getPath(self::$template_name)), $debug_messages['Templates'][0], 'Did not find the template file on Templates debug message');
+        $this->assertEquals(realpath(self::getPath('inc2.php')), $debug_messages['Templates'][1], 'Did not find the second template file on Templates debug message');
+        
+        set_include_path($old_include_path);
+    }
 	
 }

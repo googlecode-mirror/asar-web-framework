@@ -1,6 +1,6 @@
 <?php
 /**
- * @todo: cookies and sessions
+ * @todo cookies and sessions
  */
 require_once 'Asar.php';
 

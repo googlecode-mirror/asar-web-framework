@@ -1,21 +1,53 @@
 <?php
-require_once 'Asar.php';
+/**
+ * Asar_Controller class definition - Asar Web Framework Core
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.opensource.org/licenses/bsd-license.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to wayne@asartalo.org so we can send you a copy immediately.
+ * 
+ * @package   Asar-Core
+ * @copyright Copyright (c) 2007-2008, Wayne Duran <wayne@asartalo.org>.
+ * @since     0.1
+ * @version   $Id$
+ * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @link      http://code.google.com/p/asar-web-framework
+ */
 
+/**
+ * Asar_Controller
+ *
+ * Asar_Controller is the basic request handler. In REST terms
+ * you can think of Asar_Controller as the resource, although
+ * this is not accurate.
+ *
+ * @package Asar-Core
+ * @todo Write a better description
+ * @todo How do we handle PUT request methods?
+ * @todo How do we handle files uploaded?
+ **/
 abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
-	protected $response   = NULL;    // Stores the current response object for the controller
-	protected $request    = NULL;    // The request object passed to controller
-	protected $actions    = NULL;    // A record for all the actions in the class;
-	protected $params     = NULL;    // Storage for the params from request object
+	protected $response   = null;    // Stores the current response object for the controller
+	protected $request    = null;    // The request object passed to controller
+	protected $actions    = null;    // A record for all the actions in the class;
+	protected $params     = array(); // Storage for the params from request object
+	protected $data       = array(); // Storage for the post contents of request object;
 	protected $map        = array(); // URI to Controller mappings
-	protected $context    = NULL;    // The object that called this controller
-	protected $depth      = NULL;    // How deep is the controller on the path
+	protected $context    = null;    // The object that called this controller
+	protected $depth      = null;    // How deep is the controller on the path
 	protected $path_array = array();
-	protected $path       = NULL;    // The path of the controller
-	protected $forward    = NULL;    // Controller to forward with the request when there are no mapped controllers/resources
-	protected $view       = NULL;    // Template object to use
+	protected $path       = null;    // The path of the controller
+	protected $forward    = null;    // Controller to forward with the request when there are no mapped controllers/resources
+	protected $view       = null;    // Template object to use
   
 	
-	function handleRequest(Asar_Request $request, array $arguments = NULL) {
+	function handleRequest(Asar_Request $request, array $arguments = null) {
 		$this->request = $request;
 		$this->response = new Asar_Response;
 		if (!$this->request->getType()) {
@@ -31,7 +63,8 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 		$this->path_array = array_slice($this->request->getPathArray(), 0, $this->depth + 1);
 		$this->path = str_replace('//', '/', implode('/', $this->path_array));
 		
-		//$this->params  = $this->request->getParams();
+		$this->params  = $this->request->getParams();
+		$this->data = $this->request->getContent();
 		if (!$this->route()) {
 			$this->callResourceAction();
 		}
@@ -245,6 +278,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	 * See if the resource is mapped
 	 *
 	 * @return bool
+	 * @param string resource the resource name
 	 **/
 	private function isResourceMapped($resource)
 	{

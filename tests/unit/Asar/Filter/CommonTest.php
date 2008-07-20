@@ -65,6 +65,51 @@ DEBUG;
         $this->assertContains($expected, $result->getContent(), 'Did not find debug key and message in response content that is properly formatted');
     }
     
+    function testDebugInfoForHtmlResponseWithMultipleDebugMessagesMustAppearAsDebugMessagePerRow()
+    {
+        // First Debug Message
+        $key1 = $this->generator->getAlphaNumeric(10);
+        $message1 = $this->generator->getAlphaNumeric(45);
+        Asar::debug($key1, $message1);
+        
+        // Second Debug Message
+        $key2 = $this->generator->getAlphaNumeric(10);
+        $message2 = $this->generator->getAlphaNumeric(45);
+        Asar::debug($key2, $message2);
+        
+        // Third Debug Message
+        $key3 = $this->generator->getAlphaNumeric(10);
+        $message3 = $this->generator->getAlphaNumeric(45);
+        Asar::debug($key3, $message3);
+
+$expected1 =  <<<DEBUG1
+        <tr>
+            <th scope="row">$key1</th>
+            <td>$message1</td>
+        </tr>
+DEBUG1;
+
+$expected2 =  <<<DEBUG1
+        <tr>
+            <th scope="row">$key2</th>
+            <td>$message2</td>
+        </tr>
+DEBUG1;
+
+$expected3 =  <<<DEBUG1
+        <tr>
+            <th scope="row">$key3</th>
+            <td>$message3</td>
+        </tr>
+DEBUG1;
+        $result = Asar_Filter_Common::filterResponse($this->response);
+        //echo $result->getContent();
+        $this->assertContains($expected1, $result->getContent(), 'Did not find debug '.$expected1.' in response content that is properly formatted');
+        $this->assertContains($expected2, $result->getContent(), 'Did not find debug '.$expected2.' in response content that is properly formatted');
+        $this->assertContains($expected3, $result->getContent(), 'Did not find debug '.$expected3.' in response content that is properly formatted');
+        $this->assertTrue(substr_count($result->getContent(), '</body>') == 1, 'Response contents contains more than 1 closing body tag');
+    }
+    
     function testDebugInfoForHtmlResponsMustProperlyEncodeValues()
     {
         $key = 'The <<&>>';

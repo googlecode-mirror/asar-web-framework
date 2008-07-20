@@ -1,6 +1,6 @@
 <?php
 /**
- * Asar_Helper_Html class definition - Asar Web Framework Core
+ * Asar_Client_Default_Exception class definition - Asar Web Framework Core
  * 
  * LICENSE
  *
@@ -21,28 +21,8 @@
  */
 
 /**
- * Asar_Helper_Html
- *
- * Helper class for Html output
+ * Asar_Client_Exception
  *
  * @package Asar-Core
- */
-abstract class Asar_Helper_Html {
-	
-	/**
-	 * Creates an unordered list from an array
-	 *
-	 * Each element in the array will be an element
-	 * of the list.
-	 * 
-	 * @param array array an array of elements
-	 * @return string An HTML unordered list
-	 */
-    static function uList(array $array) {
-        $list = '<ul>';
-        foreach ($array as $value) {
-            $list .= '<li>'.htmlentities($value).'</li>';
-        }
-        return $list.'</ul>';
-    }
-}
+ **/
+class Asar_Client_Default_Exception extends Asar_Client_Exception {}

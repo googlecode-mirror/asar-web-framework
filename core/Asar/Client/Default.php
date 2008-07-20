@@ -2,18 +2,21 @@
 
 class Asar_Client_Default extends Asar_Client {
 	
-	function createRequest($arguments = NULL) {
+	function createRequest($arguments = null) {
 
-		return parent::createRequest(
+		$request = parent::createRequest(
 	    	array(
 				'authority' => $_SERVER['SERVER_NAME'],
-				'scheme' => 'http',
-				'path'   => $this->getUriFromServerVars(),
-	    		'method' => $_SERVER['REQUEST_METHOD'],
-				'params' => $_GET,
-				'content' => $_POST
+				'scheme'    => 'http',
+				'path'      => $this->getUriFromServerVars(),
+	    		'method'    => $_SERVER['REQUEST_METHOD'],
+				'params'    => $_GET,
+				'content'   => $_POST
 	    	)
+	    	
 		);
+		$_GET = array();
+		return $request;
 	}
 	
 	/**
@@ -21,8 +24,7 @@ class Asar_Client_Default extends Asar_Client {
 	 *
 	 * @return string URI 
 	 **/
-	private function getUriFromServerVars()
-	{
+	private function getUriFromServerVars() {
 		if (array_key_exists('REDIRECT_URL', $_SERVER)) {
  			return $_SERVER['REDIRECT_URL'];
  		} else {
@@ -48,8 +50,7 @@ class Asar_Client_Default extends Asar_Client {
 	 * @return void
 	 * @param  Asar_Response response object
 	 **/
-	public function exportResponse(Asar_Response $response)
-	{
+	public function exportResponse(Asar_Response $response) {
 		if (!headers_sent()) {
 			header('Content-Type: ' . $response->getMimeType(), true, $response->getStatus());
 		}
@@ -62,11 +63,9 @@ class Asar_Client_Default extends Asar_Client {
 	 * @return Asar_Response
 	 * @param  Asar_Application
 	 **/
-	public function sendRequestTo(Asar_Application $application)
-	{
+	public function sendRequestTo(Asar_Application $application) {
 		$response = parent::sendRequestTo($application);
 		$this->exportResponse($response);
 		return $response;
 	}
 }
-class Asar_Client_Default_Exception extends Asar_Client_Exception {}
