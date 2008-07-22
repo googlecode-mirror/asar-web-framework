@@ -8,7 +8,7 @@
 ?>
 <html>
 <head>
-    <title>Sample Application</title>
+    <title>Sample Application for Asar Web Framework</title>
 </head>
 <body>
     <?= $contents ?>
