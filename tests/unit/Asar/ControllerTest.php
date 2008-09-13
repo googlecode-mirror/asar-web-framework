@@ -588,7 +588,8 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         );
         
         $content = $this->R->sendTo( Asar::instantiate($cname1) )->__toString();
-        $this->assertEquals('http://example.org/path', $content, 'Unable to obtain url from a deeper controller');
+        $this->assertEquals('http://example.org/path', $content, 
+            'Unable to obtain url from a deeper controller');
     }
     
     function testGettingUrlFromRootControllerWhilePassingRequestToDeeperController() {
@@ -637,7 +638,8 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         $this->R->setUri('http://example.org/path');
         $this->R->setParam('status', $expected_status);
         $response = $this->R->sendTo(Asar::instantiate($cname1));
-        $this->assertEquals($expected_status, $response->getStatus(), 'The response did not return an expected status of ' . $expected_status);
+        $this->assertEquals($expected_status, $response->getStatus(),
+            'The response did not return an expected status of ' . $expected_status);
     }
     
     function testExposingRequestParamsInController() {

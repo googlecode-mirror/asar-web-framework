@@ -1,7 +1,7 @@
 <?php
 
-require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
+require_once 'PHPUnit/Framework.php';
 
 
 
@@ -12,204 +12,119 @@ require_once 'Asar.php';
  */
 class Asar_ViewTest extends Asar_Test_Helper {
 
-    protected $cleanUpList = array();
-    
-    private static $template_path;
+	private static $template_path;
 	private static $template_name = 'inc.php';
 	private static $template_contents = '
 <h2>This is in included template</h2>
 <p><?= $var ?></p>
-<p><strong><?= $this[\'var2\'] ?></strong></p>
 ';
 
-    
-    public static function main() {
-        require_once "PHPUnit/TextUI/TestRunner.php";
-        $suite  = new PHPUnit_Framework_TestSuite("TemplateTest");
-        $result = PHPUnit_TextUI_TestRunner::run($suite);
-    }
-
     protected function setUp() {
-    	$this->T = new Asar_Template;
+    	$this->V = new Asar_View;
 		self::newFile(self::$template_name,self::$template_contents);
 		self::$template_path = self::getPath(self::$template_name);
     }
-
-    protected function tearDown() {
-    	$this->T = null;
-    	Asar::clearDebugMessages();
+    
+    function testSettingAVariableAndGettingItsOutputInATemplate() {
+        $this->V->var = 'Hello there';
+        $this->V->setTemplate(self::$template_path);
+        $contents = $this->V->render();
+        $this->assertContains('<p>Hello there</p>', $contents,
+                              'Did not find set variable inside template'
+        );
     }
     
-    /**
-     * @todo Create test to check if 'short tags' are enabled
-     */    
-    public function testAlternativeSettingTemplateToUse() {
-    	$this->T->setTemplate(self::$template_path);
-    	$this->T->set('var', 'Testing');
-    	$this->T->set('var2', 'TestingAgain');
-    	
-    	$haystack = $this->T->fetch();
-    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file'.$haystack);
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
-    }
-     
-    public function testThrowingErrorWhenMissingTemplateUsed() {
-    	$this->setExpectedException('Asar_Template_Exception');
-    	$this->T->fetch('NonexistentTemplateFile');
-    	$this->assertContains('NonexistingTemplateFile', $e->getMessage(), 'Asar_Template_Exception does not properly indicate which template it tried to include');
+    function testSettingAnotherVariableAndGettingItsOutputInATemplate() {
+        $this->V->var = 'We are the world';
+        $this->V->setTemplate(self::$template_path);
+        $contents = $this->V->render();
+        $this->assertContains('<p>We are the world</p>', $contents,
+                              'Did not find set variable inside template'
+        );
     }
     
-    public function testReturnsNullWhenMissingTemplateUsed() {
-		$this->setExpectedException('Asar_Template_Exception');    	
-		$haystack = $this->T->fetch('NonexistentTemplateFile');
-    	$this->assertEquals(null, $haystack, 'Template did not return null when including non-existentTemplateFile');
-    }
-
-    public function testSettingVariables() {
-    	$this->T->set('var', 'Testing');
-    	$this->T->set('var2', 'TestingAgain');
-    	
-    	$haystack = $this->T->fetch(self::$template_path);
-    	
-    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
+    function testSettingAVariableUsingMethodAndGettingItsOutputInATemplate() {
+        $this->V->set('var', 'Hello there');
+        $this->V->setTemplate(self::$template_path);
+        $contents = $this->V->render();
+        $this->assertContains('<p>Hello there</p>', $contents,
+                              'Did not find set variable inside template'
+        );
     }
     
-    public function testMultiSetVariables() {
-    	$this->T->setVars(array('var' => 'Testing',
-					            'var2'=> 'TestingAgain'));
-		
-    	$haystack = $this->T->fetch(self::$template_path);
-    	
-    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
-    }
-
-	public function testMultiSetVariablesUsingSetOnly() {
-    	$this->T->set(array('var' => 'Nesting',
-					        'var2'=> 'NestingAgain'));
-		
-    	$haystack = $this->T->fetch(self::$template_path);
-    	
-    	$this->assertContains('<p>Nesting</p>', $haystack, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>NestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
-    }
-    
-    public function testArrayTypeSettingAndGetting() {
-    	$this->T['var'] = 'Testing';
-		$this->T['var2'] = 'TestingAgain';
-		
-    	$haystack = $this->T->fetch(self::$template_path);
-    	
-    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
-    	
-    	$this->assertEquals('Testing', $this->T['var'], 'Unexpected value for template variable');
-    	$this->assertEquals('TestingAgain', $this->T['var2'], 'Unexpected value for template variable');
-    }
-    
-    public function test__ToString() {
-    	$ver = explode( '.', phpversion() );
-		$ver_num = $ver[0] . $ver[1] . $ver[2];
-    	if ($ver_num < 520) {
-    		$this->markTestSkipped(
-              'This test will only run correctly in PHP versions not less than 5.2.x'
-            );
-    	}
-    	
-    	$this->T['var'] = 'Testing';
-		$this->T['var2'] = 'TestingAgain';
-    	$this->T->setTemplate(self::$template_path);
-    	$this->assertContains('<p>Testing</p>', $this->T.'', 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $this->T.'', 'Unable to set variable for file');
-    	
+    function testSettingMultipleVariablesWithAttributeInterface() {
+        // Prepare the template file
+        self::newFile('multivar.php',
+            '<html>
+            <head><title><?= $var1 ?></title></head>
+            <body>
+                <h1><?= $var2 ?></h1>
+                <p><?= $var3 ?></p>
+            </body>
+            </html>'
+        );
+        
+        $this->V->var1 = 'This is a title';
+        $this->V->var2 = 'An Unsuspecting heading';
+        $this->V->var3 = 'The quick brown fox jumps over the lazy dog.';
+        
+        $this->V->setTemplate(self::getPath('multivar.php'));
+        $contents = $this->V->render();
+        
+        $this->assertContains('<head><title>This is a title</title></head>',
+                              $contents,
+                              'Did not find first variable set'
+        );
+        $this->assertContains('<h1>An Unsuspecting heading</h1>',
+                              $contents,
+                              'Did not find second variable set'
+        );
+        $this->assertContains('<p>The quick brown fox jumps over the lazy dog.</p>',
+                              $contents,
+                              'Did not find third variable set'
+        );
     }
     
-    public function testEcho__ToString() {
-    	
-    	$this->T['var'] = 'Testing';
-		$this->T['var2'] = 'TestingAgain';
-    	$this->T->setTemplate(self::$template_path);
-		ob_start();
-			echo $this->T;
-		$haystack = ob_get_contents();
-		ob_end_clean();
-    	$this->assertContains('<p>Testing</p>', $haystack, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong>TestingAgain</strong></p>', $haystack, 'Unable to set variable for file');
-    	
+    function testSettingMultipleVariables() {
+        // Prepare the template file
+        self::newFile('multivar.php',
+            '<html>
+            <head><title><?= $var1 ?></title></head>
+            <body>
+                <h1><?= $var2 ?></h1>
+                <p><?= $var3 ?></p>
+            </body>
+            </html>'
+        );
+        
+        $this->V->set(array(
+            'var1' => 'This is a test template',
+            'var2' => 'A heading',
+            'var3' => 'The quick brown fox jumps over the lazy dog.'
+        ));
+        
+        $this->V->setTemplate(self::getPath('multivar.php'));
+        $contents = $this->V->render();
+        
+        $this->assertContains('<head><title>This is a test template</title></head>',
+                              $contents,
+                              'Did not find first variable set'
+        );
+        $this->assertContains('<h1>A heading</h1>',
+                              $contents,
+                              'Did not find second variable set'
+        );
+        $this->assertContains('<p>The quick brown fox jumps over the lazy dog.</p>',
+                              $contents,
+                              'Did not find third variable set'
+        );
     }
     
-    public function testUninitializedVariables() {
-    	$testr = 'And If This Ain\'t Love, Why Does it Feel So Good?';
-    	
-    	$this->T['var'] = $testr;
-    	
-    	$haystack = $this->T->fetch(self::$template_path);
-    	
-    	$this->assertContains('<p>'.$testr.'</p>', $haystack, 'Unable to set variable for file');
-    	$this->assertContains('<p><strong></strong></p>', $haystack, 'Unable to set an empty string to an unitialized variable for file');
+    function testAsarViewImplementsAsarViewInterface() {
+        $this->assertTrue($this->V instanceof Asar_View_Interface,
+                          'View did not implement Asar_View_Interface'
+        );
     }
-	
-	function testGettingTemplateThatWasSet()
-	{
-		$this->T->setTemplate('yo.html');
-		$this->assertEquals('yo.html', $this->T->getTemplate(), 'Unable to get the template set using setTemplate()');
-	}
-	
-	function testGetController()
-	{
-		$controller = $this->getMock('Asar_Controller');
-		$this->T->setController($controller);
-		$this->assertSame($controller, $this->T->getController(), 'Unable to set controller');
-	}
-	
-	function testTemplateClassLogsIncludedTemplateFilesWhenInDevelopmentMode() {
-        Asar::setMode(Asar::MODE_DEVELOPMENT);
-        $this->T['var'] = 'testing';
-        $this->T->fetch(self::$template_path);
-        $debug_messages = Asar::getDebugMessages();
-        $this->assertTrue(array_key_exists('Templates', $debug_messages), "Unable to find 'Templates' title on debug messages");
-        $this->assertContains(self::$template_path, $debug_messages['Templates'][0], 'Did not find the template file location on Templates debug message');
-	}
-	
-	function testTemplateClassLogsMultipleIncludedTemplateFilesInDevelopmentMode() {
-        Asar::setMode(Asar::MODE_DEVELOPMENT);
-        
-        $old_include_path = get_include_path();
-        set_include_path($old_include_path . PATH_SEPARATOR . dirname(self::$template_path));
-        
-        $this->T['var'] = 'testing';
-        $this->T->fetch(self::$template_name);
-        $tpl = new Asar_Template();
-        self::newFile('inc2.php', 'nothing but net');
-        $tpl->fetch('inc2.php');
-        
-        $debug_messages = Asar::getDebugMessages();
-        $this->assertTrue(array_key_exists('Templates', $debug_messages), "Unable to find 'Templates' title on debug messages");
-        $this->assertContains(self::$template_name, $debug_messages['Templates'][0], 'Did not find the template file on Templates debug message');
-        $this->assertContains('inc2.php', $debug_messages['Templates'][1], 'Did not find the second template file on Templates debug message');
-        
-        set_include_path($old_include_path);
-	}
-	
-	function testTemplateClassLogsIncludedTemplateFilesFullPathWhenInDevelopmentMode() {
-	    Asar::setMode(Asar::MODE_DEVELOPMENT);
-        
-        $old_include_path = get_include_path();
-        set_include_path($old_include_path . PATH_SEPARATOR . dirname(self::$template_path));
-        
-        $this->T['var'] = 'testing';
-        $this->T->fetch(self::$template_name);
-        $tpl = new Asar_Template();
-        self::newFile('inc2.php', 'nothing but net');
-        $tpl->fetch('inc2.php');
-        
-        $debug_messages = Asar::getDebugMessages();
-        $this->assertTrue(array_key_exists('Templates', $debug_messages), "Unable to find 'Templates' title on debug messages");
-        $this->assertEquals(realpath(self::getPath(self::$template_name)), $debug_messages['Templates'][0], 'Did not find the template file on Templates debug message');
-        $this->assertEquals(realpath(self::getPath('inc2.php')), $debug_messages['Templates'][1], 'Did not find the second template file on Templates debug message');
-        
-        set_include_path($old_include_path);
-    }
-	
+    
+    
 }

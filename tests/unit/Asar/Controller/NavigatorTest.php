@@ -29,18 +29,18 @@ class Asar_Controller_NavigatorTest extends Asar_Test_Helper {
     }
     
     function testMultipleCallsForSameTypeOfContextForANavigatorWillUseTheSameNavigator() {
-        $controller_sample = $this->getMock('Some_Controller', array(), array(), 'Some_Controller_Index3', false, false, false);
+        $controller_sample1 = $this->getMock('Some_Controller', array(), array(), 'Some_Controller_Index3', false, false, false);
         $controller_sample2 = $this->getMock('Some_Controller', array(), array(), 'Some_Controller_Index4', false, false, false);
-        $navigator = Asar_Controller_Navigator::getNavigator($controller_sample);
+        $navigator1 = Asar_Controller_Navigator::getNavigator($controller_sample1);
         $navigator2 = Asar_Controller_Navigator::getNavigator($controller_sample2);
-        $this->assertSame($navigator, $navigator2, 'Navigator instances are different');
+        $this->assertSame($navigator1, $navigator2, 'Navigator instances are different');
     }
     
     function testCallsForANavigatorsWithDiferentContextsWillUseTheDifferentNavigators() {
-        $controller_sample = $this->getMock('Some_Controller', array(), array(), 'Some_Controller_Index5', false, false, false);
-        $controller_sample2 = $this->getMock('Some_Controller', array(), array(), 'Some1_Controller_Index2', false, false, false);
-        $navigator = Asar_Controller_Navigator::getNavigator($controller_sample);
+        $controller_sample1 = $this->getMock('Some_Controller', array(), array(), 'Some_Controller_Index5', false, false, false);
+        $controller_sample2 = $this->getMock('Some_Controller', array(), array(), 'A_Different_Controller_Index2', false, false, false);
+        $navigator1 = Asar_Controller_Navigator::getNavigator($controller_sample1);
         $navigator2 = Asar_Controller_Navigator::getNavigator($controller_sample2);
-        $this->assertNotSame($navigator, $navigator2, 'Navigator instances must be different');
+        $this->assertNotSame($navigator1, $navigator2, 'Navigator instances must be different');
     }
 }
