@@ -44,7 +44,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	protected $path       = null;    // The path of the controller
 	protected $forward    = null;    // Controller to forward with the request when there are no mapped controllers/resources
 	protected $view       = null;    // Template object to use
-	protected $navigator  = null;
+	protected $locator = null;
   
 	
 	function __construct() {
@@ -55,17 +55,18 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	    
 	}
 	
-	protected function setNavigator($navigator_name) {
-	    $this->navigator = call_user_func( array($navigator_name, 'getNavigator'), $this);
+	protected function setLocator($locator_name) {
+	    $this->locator = call_user_func( array($locator_name, 'getLocator'), $this);
 	}
 	
-	public function getNavigator() {
-	    return $this->navigator;
+	public function getLocator() {
+	    return $this->locator;
 	}
 	
 	function handleRequest(Asar_Request $request, array $arguments = null) {
 		$this->request = $request;
 		$this->response = new Asar_Response;
+		// TODO: Move this out of the controller
 		if (!$this->request->getType()) {
 		    $this->request->setType('html');
 		}
@@ -74,7 +75,7 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 			$this->depth = $this->context->getDepth() + 1;
 			
 			if ($this->context instanceof Asar_Controller) {
-			    $this->navigator = $this->context->getNavigator();
+			    $this->locator = $this->context->getLocator();
 			}
 			
 		} else {
@@ -125,28 +126,27 @@ abstract class Asar_Controller extends Asar_Base implements Asar_Requestable {
 	 **/
 	private function _route()
 	{
+		// TODO: This is confusing. Refactor, man!
 		$next = $this->_nextPath();
 		if ($next) {
 			if ($this->isResourceMapped($next)) {
 				$controller = Asar::instantiate( $this->_getControllerName($this->map[$next]) );
 				$this->response = $this->request->sendTo($controller, array('context'=>$this));
-				return true;
 			} elseif ($this->forward) {
 			    $controller = Asar::instantiate( $this->_getControllerName($this->forward) );
 				$this->response = $this->request->sendTo($controller, array('context'=>$this));
-				return true;
 			} else {
 				$this->response->setStatus(404);
-				return true;
 			}
+			return true;
 		} else {
 			return false;
 		}
 	}
 	
 	private function _getControllerName($original_name) {
-	    if ($this->navigator) {
-	        return $controller_name = $this->navigator->find($original_name);
+	    if ($this->locator) {
+	        return $controller_name = $this->locator->find($original_name);
         } else {
             return $original_name;
         }

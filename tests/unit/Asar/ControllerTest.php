@@ -423,14 +423,14 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         $this->assertEquals('bar', $this->R->sendTo( Asar::instantiate($cname1) )->__toString(), 'Unexpected response value');
     }
     
-    function testUsingANavigatorToRetrieveControllerToForwardToInMappedValues() {
+    function testUsingALocatorToRetrieveControllerToForwardToInMappedValues() {
         $nname = $this->_randomClassNameGenerator();
         $cname1 = $this->_randomClassNameGenerator();
         $cname_base = $this->_randomClassNameGenerator();
         $cname2 = 'Flock_' . $cname_base;
         
-        $sample_code = 'class '. $nname . ' extends Asar_Navigator {
-            static function getNavigator($context) {
+        $sample_code = 'class '. $nname . ' extends Asar_Locator {
+            static function getLocator($context) {
                 return new self;
             }
             
@@ -446,7 +446,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
             
             protected function initialize() {
                 $this->testvar = "bar";
-                $this->setNavigator("'. $nname .'");
+                $this->setLocator("'. $nname .'");
             }
         }
         
@@ -466,14 +466,14 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         );
     }
     
-    function testUsingANavigatorToRetrieveControllerToForwardToInPlainForwards() {
+    function testUsingALocatorToRetrieveControllerToForwardToInPlainForwards() {
         $nname = $this->_randomClassNameGenerator();
         $cname1 = $this->_randomClassNameGenerator();
         $cname_base = $this->_randomClassNameGenerator();
         $cname2 = 'Glock_' . $cname_base;
         
-        $sample_code = 'class '. $nname . ' extends Asar_Navigator {
-            static function getNavigator($context) {
+        $sample_code = 'class '. $nname . ' extends Asar_Locator {
+            static function getLocator($context) {
                 return new self;
             }
             
@@ -487,7 +487,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
             
             protected function initialize() {
                 $this->testvar = "bar";
-                $this->setNavigator("'. $nname .'");
+                $this->setLocator("'. $nname .'");
             }
         }
         
@@ -507,7 +507,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         );
     }
     
-    function testControllerInheritsNavigatorOfTheForwardingController() {
+    function testControllerInheritsLocatorOfTheForwardingController() {
         $nname = $this->_randomClassNameGenerator();
         $cname1 = $this->_randomClassNameGenerator();
         $cname2_base = $this->_randomClassNameGenerator();
@@ -515,8 +515,8 @@ class Asar_ControllerTest extends Asar_Test_Helper {
         $cname3_base = $this->_randomClassNameGenerator();
         $cname3 = 'Glock_' . $cname3_base;
         
-        $sample_code = 'class '. $nname . ' extends Asar_Navigator {
-            static function getNavigator($context) {
+        $sample_code = 'class '. $nname . ' extends Asar_Locator {
+            static function getLocator($context) {
                 return new self;
             }
             
@@ -530,7 +530,7 @@ class Asar_ControllerTest extends Asar_Test_Helper {
             
             protected function initialize() {
                 $this->testvar = "bar";
-                $this->setNavigator("'. $nname .'");
+                $this->setLocator("'. $nname .'");
             }
         }
         
