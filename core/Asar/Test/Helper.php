@@ -15,6 +15,8 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 {
 	private static $_temp_path = FALSE;
 	
+	private static $_asar_object_store = array();
+	
 	/**
 	 * See if watchErrors was called
 	 *
@@ -40,8 +42,10 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	{
 		self::clearTemp(); // Make sure we cleanup before we test
 		mkdir(self::getTempDir()); // Make the temp directory ready
+		self::purgeSavedObjects();
 		parent::runBare();
 		self::clearTemp(); // ...and after we test
+		self::purgeSavedObjects();
 		if (self::$error_handler_set) {
 		    self::stopWatchErrors();
 	    }
@@ -54,8 +58,7 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 **/
 	public function __destruct()
 	{
-		//self::clearTemp();
-		
+		self::clearTemp();
 	}
 	
 	/**
@@ -78,11 +81,12 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 **/
 	public static function custom_error_handler($errno, $errstr, $errfile, $errline)
 	{
-	    self::$watched_errors[] = array('type'     => $errno,
-	                                     'message' => $errstr,
-	                                     'file'    => $errfile,
-                                         'line'    => $errline
-                                         );
+	    self::$watched_errors[] = array(
+	    	'type'    => $errno,
+	        'message' => $errstr,
+	        'file'    => $errfile,
+            'line'    => $errline
+        );
 	}
 	
 	/**
@@ -117,9 +121,13 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 **/
 	public static function getTempDir()
 	{
+	    // TODO: Maybe there's a better place to put temp path
 		if (!self::$_temp_path) {
-			//self::$_temp_path = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
-			self::$_temp_path = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR.'_temp'.DIRECTORY_SEPARATOR;
+		    $_ = DIRECTORY_SEPARATOR;
+			self::$_temp_path = realpath(
+		        dirname(__FILE__) . $_ . '..' . $_ . '..' . $_ . '..' . 
+		        $_ . 'tests' . $_ . 'data'
+		    ) . $_ . '_temp' . $_;
 		}
 		return self::$_temp_path;
 	}
@@ -167,9 +175,11 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	 **/
 	public static function createDir($dirpath)
 	{
-		if (!file_exists(self::getTempDir().$dirpath)) {
-		    mkdir(self::getTempDir().$dirpath, 0777, true);
+	    $full_dirpath = self::getTempDir().$dirpath;
+		if (!file_exists($full_dirpath)) {
+		    mkdir($full_dirpath, 0777, true);
 	    }
+	    return $full_dirpath;
 	}
 	
 	/**
@@ -228,4 +238,44 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	{
 		return file_get_contents(self::getTempDir().'/'.$filename);
 	}
+	
+	public static function saveObject($key, $obj)
+	{
+	    self::$_asar_object_store[$key] = $obj;
+	}
+	
+	public static function getObject($key)
+	{
+	    return self::$_asar_object_store[$key];
+	}
+	
+	public static function purgeSavedObjects()
+	{
+	    self::$_asar_object_store = array();
+	}
+	
+	static function generateRandomClassName($prefix = 'Amock', $suffix = '') {
+	    if ($suffix)
+	      $suffix = '_' . $suffix;
+	    do {
+            $randomClassName = $prefix . '_' . 
+                substr(md5(microtime()), 0, 8) . $suffix;
+        } while ( class_exists($randomClassName, FALSE) );
+        return $randomClassName;
+	}
+	
+	public function isStartsWith($haystack, $needle)
+	{
+	    return (0 === strpos($haystack, $needle));
+	}
+	
+	public function isEndsWith($haystack, $needle)
+	{
+	    if (FALSE !== strpos($haystack, $needle)) {
+	        $nlength = strlen($needle);
+	        return ($needle === substr($haystack, strlen($haystack) - $nlength));
+	    }
+	    return FALSE;
+	}
+	
 } // END abstract class Asar_Test_Helper

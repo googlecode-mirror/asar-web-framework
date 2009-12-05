@@ -1,123 +1,137 @@
 <?php
 
+require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
 
-class Test3_Application extends Asar_Application {
-	
-	function __construct() {}
-	
-	function processRequest(Asar_Request $request, array $arguments = NULL) {
-		return new Asar_Response;
-	}
+class Asar_ClientTest extends Asar_Test_Helper
+{
+    
+    public function setUp()
+    {
+        $this->client  = new Asar_Client;
+        $this->app = $this->getMock('Asar_Application', array('handleRequest'));
+        $this->client->setServer($this->app);
+    }
+    
+    public function testClientShouldSetServer()
+    {
+        
+        $this->assertSame(
+            $this->app,
+            $this->client->getServer(),
+            'The client was not able to set the current server'
+        );
+    }
+    
+    // TODO: Maybe we can use dependency injection instead
+    public function testGetAnythingShouldSendTheCorrectAsarRequestObjectToServer()
+    {
+        $this->app->expects($this->once())
+             ->method('handleRequest')
+             ->will($this->returnCallBack(array($this, 'getFirstArg')));
+            
+        $this->client->setServer($this->app);
+        $this->client->GET('/');
+        $R = $this->getObject('arg');
+        $this->assertTrue(
+             $R instanceof Asar_Request_Interface,
+            "Passed argument not an instance of Asar_Request_Interface"
+        );
+        $this->assertEquals(
+            '/', $R->getPath(),
+            'Path was not properly set'
+        );
+        $this->assertEquals(
+            'GET', $R->getMethod(),
+            'Request method is not GET.'
+        );
+    }
+    
+    public function getFirstArg()
+    {
+        $args = func_get_args();
+        $this->saveObject('arg', $args[0]);
+    }
+    
+    public function testGetWithPathShouldSendRequestWithThatPath()
+    {
+        $this->app->expects($this->once())
+             ->method('handleRequest')
+             ->will($this->returnCallBack(array($this, 'getFirstArg')));
+            
+        $this->client->setServer($this->app);
+        $this->client->GET('/what');
+        $this->assertEquals(
+            '/what', $this->getObject('arg')->getPath(),
+            'Path was not properly set'
+        );
+    }
+    
+    public function testPostShouldSendRequestWithPostMethod()
+    {
+        $this->app->expects($this->once())
+             ->method('handleRequest')
+             ->will($this->returnCallBack(array($this, 'getFirstArg')));
+            
+        $this->client->setServer($this->app);
+        $this->client->POST('/somewhere', array('foo' => 'bar'));
+        $R = $this->getObject('arg');
+        $this->assertTrue(
+             $R instanceof Asar_Request_Interface,
+            "Passed argument not an instance of Asar_Request"
+        );
+        $this->assertEquals(
+            '/somewhere', $R->getPath(),
+            'Path was not properly set'
+        );
+        $this->assertEquals(
+            'POST', $R->getMethod(),
+            'Request method is not POST.'
+        );
+        $this->assertEquals(
+            array('foo'=>'bar'), $R->getContent(),
+            "The content of the request wasn't set."
+        );
+    }
+    
+    public function testSendingGetRequestWithParameters()
+    {
+        $this->app->expects($this->once())
+             ->method('handleRequest')
+             ->will($this->returnCallBack(array($this, 'getFirstArg')));
+            
+        $this->client->setServer($this->app);
+        $this->client->GET('/', array('var1' => 'value1', 'var2' => 'value2'));
+        $params = $this->getObject('arg')->getParams();
+        $this->assertEquals(
+            'value1', $params['var1'],
+            "First param was not found on request params."
+        );
+        $this->assertEquals(
+            'value2', $params['var2'],
+            "Second param was not found on request params."
+        );
+    }
+    
+    public function testSendingRequestType()
+    {
+        $this->app->expects($this->once())
+             ->method('handleRequest')
+             ->will($this->returnCallBack(array($this, 'getFirstArg')));
+            
+        $this->client->setServer($this->app);
+        $this->client->GET('/', array(), array('Accept' =>'application/xml'));
+        $R = $this->getObject('arg');
+        $this->assertTrue(
+             $R instanceof Asar_Request_Interface,
+            "Passed argument not an instance of Asar_Request"
+        );
+        $this->assertEquals(
+            'application/xml', $R->getHeader('Accept'),
+            "The content-type of the request wasn't set."
+        );
+    }
+    
+    
 }
 
-class Asar_ClientTest extends PHPUnit_Framework_TestCase {
-	private $temporary_storage = array();
-	
-	
-	function setUp() {
-		$this->client = new Asar_Client();
-	}
-	
-	private function arrayCopy(&$from, &$to) {
-		// clear destination array first
-		$to = array();
-		foreach ($from as $key => $value) {
-			$to[$key] = $value;
-		}
-	}
-	
-	
-	function arrayMatch($arr1, $arr2) {
-		if (count($arr1) !== count($arr2)) {
-			return false;
-		}
-		foreach($arr1 as $key => $val) {
-			if ($val !== $arr2[$key]) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	function testCreateRequest() {
-		$path = '/people/get/asartalo/tags/reallyStupid';
-		$arguments = array(
-			'scheme'    => 'http',
-			'authority' => 'example.host.com',
-			'path'      => $path,
-			'method'    => 'GET',
-			'headers'   => array(
-				'Accept'          => 'text/html',
-				'Accept-Encoding' => 'gzip,deflate'
-			),
-			'params' => array(
-				'var1'   => 'val1',
-				'var2'	 => 'val2',
-				'enter'  => 'true',
-				'center' => '1',
-				'stupid' => '',
-				'crazy'  => 'beautiful'
-			)
-		);
-		$r = $this->client->createRequest($arguments);
-		$this->assertEquals(Asar_Request::GET, $r->getMethod(), 'Method mismatch');
-		$this->assertEquals($path, $r->getPath(), 'Address mismatch');
-		$this->assertEquals('http', $r->getUriScheme(), 'Scheme mismatch');
-		$this->assertEquals('example.host.com', $r->getUriAuthority(), 'URI Authority mismatch');
-		$this->assertTrue($this->arrayMatch($arguments['params'], $r->getParams()), 'Parameters did not match');
-		$this->assertEquals($r, $this->client->getRequest(), 'Client did not set internal request property');
-	}
-	
-	function testCreatingARequestWithNoArgumentsPassedSendsDefaultPathAsIndex() {
-		$r = $this->client->createRequest();
-		$this->assertEquals('/', $r->getPath(), 'Path mismatch');
-	}
-	
-	function testSendRequestSendsNewlyCreatedRequestObjectToApplication() {
-		$address = '/people/get/asartalo/tags/reallyStupid/';
-		$arguments = array(
-			'method'  => 'GET',
-			'headers' => array(
-				'Accept'          => 'text/html',
-				'Accept-Encoding' => 'gzip,deflate'
-			),
-			'params' => array(
-				'var1'   => 'val1',
-				'var2'	 => 'val2',
-				'enter'  => 'true',
-				'center' => '1',
-				'stupid' => '',
-				'crazy'  => 'beautiful'
-			)
-		);
-		$this->client->createRequest($address, $arguments);
-		$this->assertTrue($this->client->sendRequestTo(new Test3_Application) instanceof Asar_Response, 'Response is not an instance of Asar_Response');
-		$this->assertTrue($this->client->getResponse() instanceof Asar_Response, 'Unable to set response property for client');
-	}
-	
-	
-	function testSetAndGetName() {
-		$testname = 'A really cool name for a client';
-		$this->client->setName($testname);
-		$this->assertEquals($testname, $this->client->getName(), 'Client name did not match expected value');
-	}
-	
-	function testSettingContentForCreateRequest()
-	{
-		$arguments = array(
-			'scheme'    => 'http',
-			'authority' => 'example.host.com',
-			'method' => 'POST',
-			'path' => '/',
-			'content' => array(
-				'key1' => 'avalue',
-				'2key' => 'anothervalue'
-			)
-		);
-		$contents = $this->client->createRequest($arguments)->getContent();
-		$this->assertEquals('avalue', $contents['key1'], 'The first value was not found on request content');
-		$this->assertEquals('anothervalue', $contents['2key'], 'The second value was not found on request content');
-	}
-	
-}

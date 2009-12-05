@@ -37,9 +37,9 @@
  * @todo       Making sure we point to the right file
  */
 
-require_once 'Base.php';
+//require_once 'Base.php';
 
-class Asar_File extends Asar_Base {
+class Asar_File {
 	
 	private $filename           = NULL;
 	private $content            = NULL;
@@ -51,17 +51,16 @@ class Asar_File extends Asar_Base {
 	public static function create ($filename) {
 		
 		if (file_exists($filename)) {
-			$this->exception("The file '$filename' already exists!");
+			throw new Asar_File_Exception("Asar_File::create failed. The file '$filename' already exists.");
 			return false;
 		}
 		$f = new self($filename, 'w+b');
-		//$f->setFileName();
 		return $f; 
 	}
 	
 	public static function open ($filename) {
 		if (!file_exists((string) $filename)) {
-			$this->exception('Attempting to open a file that does not exist.');
+			throw new Asar_File_Exception("Asar_File::open failed. The file '$filename' does not exist.");
 		} else {
 			$f = new self($filename, 'r+b');
 			return $f;
@@ -69,10 +68,10 @@ class Asar_File extends Asar_Base {
 	}
 	
 	public static function unlink ($filename) {
-    if (file_exists((string) $filename)) {
-        return unlink($filename);
+        if (file_exists((string) $filename)) {
+            return unlink($filename);
 		} else {
-			return true;
+			return false;
 		}
 	}
 	
@@ -87,10 +86,6 @@ class Asar_File extends Asar_Base {
 		}
 	}
 	
-	public function getMode() {
-		return $this->mode;
-	}
-	
 	public function appendMode() {
 		$this->mode = 'a+b';
 		$this->unsetResource();
@@ -103,7 +98,7 @@ class Asar_File extends Asar_Base {
 		if (!is_resource($this->resource)) {
 			// Attempt to create a resource using filename
 			if (!$this->getFileName()) {
-				$this->exception('No filename was specified when attempting to create file resource');
+				throw new Asar_File_Exception('Asar_File::getResource failed. The file object does not have a file name.');
 			}
 			$this->resource = fopen($this->filename, $this->mode);
 		}
@@ -118,7 +113,7 @@ class Asar_File extends Asar_Base {
 	
 	public function setFileName($filename) {
 		if (!is_string($filename) || $filename === '') {
-			$this->exception('Filename should be a non-empty string');
+			throw new Asar_File_Exception('Asar_File::setFileName failed. Filename should be a non-empty string.');
 		}
 		$this->filename = $filename;
 	}
@@ -130,7 +125,7 @@ class Asar_File extends Asar_Base {
 	
 	public function setContent($content) {
 		if (is_array($content)) {
-			$content = implode($content);
+			$content = implode("\n", $content);
 		}
 		$this->content = (string) $content;
 	}
@@ -161,21 +156,17 @@ class Asar_File extends Asar_Base {
 	}
 	
 	public function save() {
-		$test =fwrite($this->getResource(), $this->getContent());
-		if ($test !== FALSE) {
-			if (!$this->forced_append_mode) {
-				$this->unsetResource();
-			}
-			return $this;
-		} else {
-			$this->exception('Unable to save file');
+		$test = fwrite($this->getResource(), $this->getContent());
+		if (!$this->forced_append_mode) {
+			$this->unsetResource();
 		}
+		return $this;
+	
 	}
 	
 	public function delete() {
-    $this->unsetResource();
-    return unlink($this->getFileName());
-    //return self::unlink($this->getFileName(), $this->getResource());
+        $this->unsetResource();
+        return unlink($this->getFileName());
 	}
 	
 	public function __destruct() {
@@ -183,4 +174,3 @@ class Asar_File extends Asar_Base {
 	}
 }
 
-class Asar_File_Exception extends Asar_Base_Exception {}

@@ -2,7 +2,6 @@
 
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
-require_once 'Asar/Test/Helper.php';
 
 class Test_Parent_Class {
 	function throwException() {
@@ -37,7 +36,7 @@ class Test_Class_With_No_Exception {
 }
 
 class AsarTest_Application extends Asar_Application {}
-class AsarTest_Controller_Index extends Asar_Controller{
+class AsarTest_Controller_Index extends Asar_Resource{
 	function GET() {
 		return 'Hello World';
 	}
@@ -55,11 +54,13 @@ abstract class Uninstantiable_Class {}
 class AsarTest extends Asar_Test_Helper {
 	
 	protected function setUp() {
+	    $_SERVER = array();
 		$_SERVER['SERVER_NAME'] = 'sample.website';
+		Asar::setInterpreter(null);
 	}
 	
 	protected function tearDown() {
-		Asar::reset();
+		//Asar::reset();
 	}
 	
 	function testGetVersion() {
@@ -68,13 +69,10 @@ class AsarTest extends Asar_Test_Helper {
 	
 	// @todo Create test for the part of the code that includes the file
 	function testLoadClass() {
-		try {
-			Asar::loadClass('Test_Dummy_Class');
-			$this->fail('Must not reach this point');
-		} catch (Exception $e) {
-			$this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
-			$this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class Test_Dummy_Class does not exist.'), 'Did not attempt to load the class definition');
-		}
+		  $this->assertFalse(
+		      Asar::loadClass('Test_Dummy_Class'),
+			    'Did not attempt to load the class definition'
+		  );
 	}
 	
 	function testLoadingExistingClass() {
@@ -84,15 +82,20 @@ class AsarTest extends Asar_Test_Helper {
 		$this->assertFalse(class_exists($class_name, false), 'Class definition was loaded already!');
 		
 		// Create a file that follows naming convention
-		mkdir('Temp/Class', 0777, true);
-		$file = Asar_File::create('Temp/Class/Test.php');
-		
+		if (!file_exists('Temp/Class')) {
+			mkdir('Temp', 0777, true);
+			mkdir('Temp/Class', 0777, true);
+		}
+		$fname = 'Temp/Class/Test.php';
+		if (file_exists($fname)) {
+			$file = Asar_File::open($fname);
+		} else {
+			$file = Asar_File::create($fname);
+		}
+		ob_start();
 		// In its content, add a String for class definition
-		$file->write('
-			<?php
-			class Temp_Class_Test {}
-			?>
-		')->save();
+		$file->write('<?php class Temp_Class_Test {} ')->save();
+		ob_end_clean();
 		
 		// Test loading that class
 		Asar::loadClass($class_name);
@@ -105,7 +108,7 @@ class AsarTest extends Asar_Test_Helper {
 		rmdir('Temp/Class');
 		rmdir('Temp');
 	}
-	
+	/*
 	function testSimpleException() {
 		$obj = new Test_Parent_Class();
 		try {
@@ -154,7 +157,7 @@ class AsarTest extends Asar_Test_Helper {
 		$obj = new Test_Class_With_No_Exception();
 		$this->setExpectedException('Exception');
 		$obj->throwException();
-	}
+	}*/
 	
 	function testInstantiate() {
 		$testclass = 'Non_Existent_Class';
@@ -194,29 +197,118 @@ class AsarTest extends Asar_Test_Helper {
 	
 	function testUnInstantiableClass() {
 		$testclass = 'Uninstantiable_Class';
-		$this->setExpectedException('Asar_Exception');
-		$obj = Asar::instantiate($testclass);
-	}
-	
-	function testStartWithNonExistentApp() {
-		$dummyapp = 'DummyApp';
 		try {
-			Asar::start('DummyApp');
+			$obj = Asar::instantiate($testclass);
 		} catch (Exception $e) {
-			// must attempt to load application class
-			$this->assertEquals('Asar_Exception', get_class($e), 'Wrong exception thrown');
-			$this->assertEquals(0, strpos($e->getMessage(), 'Class definition file for the class DummyApp_Application does not exist.'), 'Did not attempt to load the class definition');
-			
+			$this->assertEquals(
+				'Asar_Exception', get_class($e),
+				'Asar did not raise the right exception for instantiating an uninstantiable class.'
+			);
+			$this->assertEquals(
+				"Asar::instantiate failed. Trying to instantiate the uninstantiable class '$testclass'.",
+				$e->getMessage(),
+				'Asar did not set the correct exception message for instantiating an uninstantiable class.'
+			);
 		}
 	}
 	
-	function testStartTestApplicationOnClientObjectSetsAResponseObjectOnClient() {
-		$testapp = 'AsarTest';
-		$client = new Asar_Client;
-		$client->createRequest('/', array('method'=>'GET'));
-		Asar::start('AsarTest', $client);
-		$this->assertTrue($client->getResponse() instanceof Asar_Response, 'start method did not set response for client');
+	public function testConstructPath()
+	{
+	    $_ = DIRECTORY_SEPARATOR;
+	    $this->assertEquals(
+	        Asar::constructPath('some', 'path', 'to', 'a', 'file.php'),
+	        'some'. $_ . 'path' . $_ . 'to' . $_ . 'a' . $_ . 'file.php',
+	        'Unable to create path using "constructPath".'
+        );
 	}
+	
+	public function testConstructPath2()
+	{
+	    $_ = DIRECTORY_SEPARATOR;
+	    $this->assertEquals(
+	        Asar::constructPath('a', 'path', 'to', 'a', 'a'),
+	        'a'. $_ . 'path' . $_ . 'to' . $_ . 'a' . $_ . 'a',
+	        'Unable to create path using "constructPath".'
+        );
+	}
+	
+	public function testConstructRealPath()
+	{
+	    $_ = DIRECTORY_SEPARATOR;
+	    $this->assertEquals(
+	        Asar::constructRealPath(dirname(__FILE__), '..', '..'),
+	        realpath(dirname(__FILE__) . $_  . '..' . $_ . '..'),
+	        'Unable to create path using "constructRealPath".'
+        );
+	}
+	
+	public function testAsarFrameworkPath()
+	{
+	    $framework_path = realpath(
+	        Asar::constructPath(dirname(__FILE__), '..', '..')
+        );
+	    $this->assertEquals(
+	        $framework_path, Asar::getFrameworkPath(),
+	        'Unable to get framework path.'
+	    );
+	        
+	}
+	
+	public function testAsarHasInterperterProperty()
+	{
+	    $this->assertClassHasAttribute(
+	        'interpreter', 'Asar', 'Asar class has no interpreter property.'
+        );
+	}
+	
+	
+	public function testSetsInterpreter()
+	{
+	    $interpreter = $this->getMock('Asar_Interprets');
+	    Asar::setInterpreter($interpreter);
+	    $this->assertSame(
+	        $interpreter, $this->readAttribute('Asar', 'interpreter'),
+	        'Unable to set interpreter.'
+        );
+	}
+
+	public function testStartPassesAnInstanceOfApplicationToInterpreter()
+	{
+	    // We show here that any object that implements the Asar_Requestable
+	    // interface can be started. Not just Asar_Application.
+	    $prefix = get_class($this). '_App1';
+	    $app = $this->getMock(
+	        'Asar_Requestable', array(), array(), $prefix . '_Application'
+        );
+        $interpreter = $this->getMock('Asar_Interprets', array('interpretFor'));
+        $interpreter->expects($this->once())
+            ->method('interpretFor')
+            ->with($this->isInstanceOf(get_class($app)));
+        Asar::setInterpreter($interpreter);
+        Asar::start($prefix);
+                
+	}
+	
+	public function testStartSetsDefaultInterpreterIfNoneWasSet()
+	{
+	    $prefix = get_class($this). '_App2';
+	    $class_name = $prefix . '_Application';
+	    eval("
+	        class $class_name implements Asar_Requestable {
+	            function handleRequest(Asar_Request_Interface \$request) {
+	                return new Asar_Response;
+	            }
+	        }
+	    ");
+        Asar::start($prefix);
+        $this->assertTrue(
+            $this->readAttribute('Asar', 'interpreter') 
+                instanceof Asar_Interprets,
+            'Asar::start() did not set a default interpreter.'
+        );
+	}
+	
+	/*
 	
 	function testStartTestApplicationOnClientObjectInvokesApplicationAndSetsResponseObjectOnClient() {
 		$testapp = 'AsarTest';
@@ -270,16 +362,19 @@ class AsarTest extends Asar_Test_Helper {
 		Asar::clearDebugMessages();
 		$this->assertEquals(array(), Asar::getDebugMessages(), 'The debug messages was not reset');
 	}
-	
+	*/
 	/**
 	 * Only use debug when in Development Mode
 	 *
 	 * @return void
 	 **/
+	
+	/*
 	public function testDebugOnlyWhenInDevelopmentMode()
 	{
 	    Asar::setMode(Asar::MODE_PRODUCTION);
 	    Asar::debug('Another Title', 'Another debug message');
 		$this->assertEquals(array(), Asar::getDebugMessages(), 'The debug messages was not reset');
 	}
+	*/
 }

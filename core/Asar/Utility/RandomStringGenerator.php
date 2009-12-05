@@ -19,11 +19,10 @@ class Asar_Utility_RandomStringGenerator {
 	
 	
 	public static function instance()	{
- 		if (self::$instance == null ) {
- 			self::$instance = new self();
+ 		if (self::$instance == NULL ) {
+ 			self::$instance = new self;
  			
-	 		//self::$characters    = str_split('_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
-	 		self::$characters    = str_split('_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
+	 		self::$characters    = str_split('_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
 	 		self::$lower_a_start = 1;
 	 		self::$lower_a_end   = 26;
 	 		self::$upper_a_start = 27;
@@ -40,13 +39,12 @@ class Asar_Utility_RandomStringGenerator {
  	
  	private function __clone() {}
  	
- 	
  	public function getValue($pos) {
  		
  		if (isset(self::$characters[$pos])) {
  			return self::$characters[$pos];
  		} else {
- 			false;
+ 			return FALSE;
  		}
  	}
  	
@@ -72,7 +70,15 @@ class Asar_Utility_RandomStringGenerator {
  	
  	
  	public function getNumeric($length) {
- 		return $this->getRandomString($length, self::$n_start, self::$n_end);
+ 	    if ($length > 1) {
+     	    $number = $this->getRandomString(1, self::$n_start + 1, self::$n_end) . 
+ 	        $this->getRandomString($length-1, self::$n_start, self::$n_end);
+        } else {
+            $number = $this->getRandomString(
+                1, self::$n_start, self::$n_end
+            );
+        }
+ 		return $number;
  	}
  	
  	

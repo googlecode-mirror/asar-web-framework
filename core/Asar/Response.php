@@ -1,31 +1,42 @@
 <?php
-/**
- * @todo Application, Controller, & Action names validation
- */
-require_once 'Asar.php';
-
-class Asar_Response extends Asar_Message {
-  private $status_code = 200;
-  
-  function setStatus($code) {
-  	// Check code against bounds 
-  	if ($code >= 100 && $code <= 599) {
-  	 $this->status_code = $code;
-  	} else {
-  		$this->exception('Attempting to set a status code that is unknown or out of bounds');
-  	}
-  }
-  
-  function getStatus() {
-  	return $this->status_code;
-  }
-  
-  function setStatusOk() {
-  	$this->setStatus(200);
-  }
-  
-  function setStatusNotFound() {
-    $this->setStatus(404);
-  }
-  
+class Asar_Response implements Asar_Response_Interface
+{
+    private $content = '';
+    private $status;
+    private $headers = array();
+    
+    function setContent($content) {
+        $this->content = $content;
+    }    
+    
+    function getContent() {
+        return $this->content;
+    }
+    
+    function setStatus($status) {
+        $this->status = $status;
+    }
+    
+    function getStatus() {
+        return $this->status;
+    }
+    
+    function setHeader($key, $value) {
+        $this->headers[$key] = $value;
+    }
+    
+    function getHeader($key) {
+        return $this->headers[$key];
+    }
+    
+    function setHeaders(array $headers){
+        foreach ($headers as $name => $value) {
+            $this->setHeader($name, $value);
+        }
+    }
+    
+    function getHeaders(){
+        return $this->headers;
+    }
 }
+

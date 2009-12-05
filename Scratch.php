@@ -2,24 +2,33 @@
 
 /* A sample interface for Asar_View */
 
-class Sample_View_Object implements Asar_View {
-    //..
+$config = array(
+    'default_template_engine' => 'Asar_Template_Interface',
+    'default_template_path'   => 'Representation',
+    
+);
+
+
+var_dump($config);
+
+class Churva {
+    private $config;
+    
+    function setConfig(&$conf) {
+        $this->config =& $conf;
+    }
+    
+    function getConfig() {
+        return $this->config;
+    }
 }
 
-$view = new Sample_View_Object;
-$view->setTemplateFile('template.php');
+$chuva = new Churva;
 
-$view->var_name = 'A variable name';
+$chuva->setConfig($config);
 
-// Multiple Setting example
-$view->set(
-    'var1' => 'A value',
-    'var2' => 'Another value',
-    'var3' => 'Yet another value'
-);
-echo $view->var_name; // outputs 'A variable name'
-echo $view->var1; // outputs 'A value'
-$view->render(); // displays the template output (without echo);
-$view->getTemplateFile(); // returns 'template.php'
+echo "\n\n************************\n\n";
 
+$config['nanana'] = 'lalalala';
 
+var_dump($chuva->getConfig());

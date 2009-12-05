@@ -1,63 +1,131 @@
 <?php
 
-abstract class Asar_Application extends Asar_Request_Handler {
-    private $root_controller = null;
+class Asar_Application implements Asar_Requestable {
+
+    private $map = array();
+    private $app_prefix = null;
+    private $router;
+    protected $config = array();
     
-    function __construct() {
-        $root_controller_class_name = $this->getAppName().'_Controller_Index';
-        try {
-            $this->root_controller = Asar::instantiate($root_controller_class_name);
-        } catch (Asar_Exception $e) {
-            
-        }
-        if (Asar::getMode() == Asar::MODE_DEVELOPMENT) {
-            $this->response_filters[] = array('Asar_Filter_Common', 'filterResponse');
-        }
-        $this->request_filters[] = array('Asar_Filter_Common', 'filterRequestTypeNegotiation');
+    function __construct()
+    {
+        $this->initialize();
     }
     
-    function processRequest(Asar_Request $request, array $arguments = NULL) {
-        $time_start = microtime(true);
-        if ($this->root_controller) {
-            $response = $request->sendTo($this->root_controller, $arguments);
-            if (!($response instanceof Asar_Response)) {
-                $this->exception('There was an error processing the request. The returned value must be a valid Asar_Response object');
-                return NULL;
-            }
-        } else {
+    protected function initialize(){ }
+    
+    function setRouter(Asar_Resource_Router $router) {
+      $this->router = $router;
+    }
+    
+    function handleRequest(Asar_Request_Interface $request) {
+        if (!$this->router) {
+            $this->router = new Asar_Resource_Router;
+        }
+        $r = $this->map[$request->getPath()];
+        
+        // Pass to router if one is defined
+        
+        if (!$r) {
+            try {
+                $r = Asar::instantiate(
+                  $this->router->getRoute($this, $request->getPath()
+                ));
+            } catch (Exception $e) {}
+        }
+        
+        // send a 404 response when no resource is found
+        if (!$r) {
             $response = new Asar_Response;
             $response->setStatus(404);
+            $response->setContent(
+                'File Not Found. ' .
+                'Sorry, we were unable to find the resource you were looking for. '.
+		          	'Please check that you got the address or URL correctly. If '.
+		          	'that is the case, please email the administrator. Thank you '.
+		          	'and please forgive the inconvenience.'
+	        	);
+            return $response;
         }
-        /**
-         * @todo Needs refactoring...
-         */
-		switch ($response->getStatus()) {
-			case 404:
-			case 405:
-			case 500:
-				$request->setContent($response);
-				$response = $request->sendTo(new Asar_Controller_Default);
-				break;
-		}
-
-        $this->debug('Execution Time', (microtime(true) - $time_start) . ' seconds');
+        if ($r instanceof Asar_Requestable) {
+            if (method_exists($r, 'setConfiguration')) {
+                $config = array(
+                    'context' => $this
+                );
+                if ($this->config['default_representation_dir']) {
+                    $config['default_representation_dir'] = 
+                        $this->config['default_representation_dir'];
+                }
+                $r->setConfiguration($config);
+            }
+            $response = $r->handleRequest($request);
+            
+            // TODO: See if there's a better way to do this:
+            if ($response instanceof Asar_Response) {
+                $status = $response->getStatus();
+                switch ($status) {
+                    case 405:
+                        $response->setContent(
+                            'Method Not Allowed (405).' .
+                            'The HTTP Method \'POST\' is not allowed for this resource.'
+                        );
+                        break;
+                    case 406:
+                        $response->setContent(
+                            'Not Acceptable (406).' .
+                            'An appropriate representation of the requested ' .
+		                        'resource could not be found.'
+                        );
+                        break;
+                    case 500:
+                        $response->setContent(
+                            'Internal Server Error (500)' .
+                            'The Server has encountered some problems. ' .
+                            'The resource returned: '. $response->getContent()
+                        );
+                        break;
+                }
+            } else {
+                //TODO: raise exception here!
+                return new Asar_Response;
+            }
+        }
         return $response;
-        
     }
     
-    protected function getAppName() {
-        return Asar::getClassPrefix($this);
+    function setIndex($resource) {
+        $this->setMap('/', $resource);
     }
     
-    protected function loadClassResource($type, $name) {
-        return Asar::loadClass($this->getAppName().'_'.$type.'_'.$name);
-    }
-    
-    function loadView($controller, $action = '') {
-        $view = $this->getAppName().'/View/'.$controller;
-        if ($action !== '') {
-            $view .= '/'.$action;
+    function setMap($key, $resource) {
+        if ($resource instanceof Asar_Requestable) {
+            $this->map[$key] = $resource;
+        } elseif (is_string($resource)) {
+            try {
+                $this->map[$key] = Asar::instantiate($resource);
+            } catch(Asar_Exception $e) {
+                $this->map[$key] = Asar::instantiate(
+                    $this->getResourceFullName($resource)
+                );
+            }
         }
-        return $view.'.php';
+    }
+    
+    private function getResourceFullName($name) {
+        return $this->getApplicationPrefix() .
+            '_Resource_' . $name;
+    }
+    
+    function setAppPrefix($prefix) {
+        $this->app_prefix = $prefix;
+    }
+    
+    private function getApplicationPrefix() {
+        if ($this->app_prefix) {
+            return $this->app_prefix;
+        } else {
+		    $classname = get_class($this);
+		    return substr($classname, 0, strrpos($classname, '_'));
+	    }
     }
 }

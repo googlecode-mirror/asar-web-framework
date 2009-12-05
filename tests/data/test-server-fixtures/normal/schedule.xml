@@ -1,0 +1,48 @@
+<schedule>
+    <day on="most-days">
+        <do at="5:00">Wake up.</do>
+        <do at="5:10">Prepare breakfast.</do>
+        <do at="5:45">Eat breakfast.</do>
+        <do at="6:00">Take a bath.</do>
+        <do at="16:00">Go back home.</do>
+        <do at="16:15">Prepare for home mode.</do>
+        <do at="16:25">Watch tv.</do>
+        <do at="17:25">Buy groceries.</do>
+        <do at="18:00">Prepare dinner.</do>
+        <do at="19:30">Eat dinner.</do>
+        <do at="20:30">Clean kitchen.</do>
+        <do at="21:30">Sleep.</do>
+    </day>
+    <day on="weekdays">
+        <do at="6:30">Prepare for work.</do>
+        <do at="6:45">Go to workplace.</do>
+        <do at="7:00">Work.</do>
+        <do at="12:00">Eat lunch.</do>
+        <do at="13:00">Work.</do>
+    </day>
+    <day on="saturdays">
+        <do at="6:30">Clean up house.</do>
+        <do at="9:30">Do laundry.</do>
+        <do at="11:00">Prepare lunch.</do>
+        <do at="12:00">Eat lunch.</do>
+        <do at="13:00">Clean kitchen.</do>
+        <do at="14:00">Prepare for fun mode.</do>
+        <do at="15:00">Have fun.</do>
+        <do at="18:00">Jog.</do>
+        <do at="19:00">Eat dinner.</do>
+        <do at="20:00">Go back home.</do>
+        <do at="20:30">Take a bath.</do>
+    </day>
+    <day on="sundays">
+        <do at="6:30">Have fun.</do>
+        <do at="11:00">Prepare lunch.</do>
+        <do at="12:00">Eat lunch.</do>
+        <do at="13:00">Clean kitchen.</do>
+        <do at="14:00">Prepare for fun mode.</do>
+        <do at="15:00">Have fun.</do>
+        <do at="16:45">Buy week's worth of groceries.</do>
+        <do at="17:45">Go back home.</do>
+    </day>
+    <do at="free-time">Have fun.</do>
+</schedule>
+

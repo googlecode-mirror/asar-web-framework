@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>Form Testing</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+</head>
+<body>
+    <h1>This is the Form</h1>
+    <form action="post.php" method="post">
+        <ul class="form">
+            <li>
+                <label for="name">Name</label>
+                <input type="text" value="" name="name" id="name">
+            </li>
+            <li>
+                <label for="summary">Summary</label>
+                <textarea name="summary" id="summary" rows="8" cols="40"></textarea>
+            </li>
+            <li>
+                <fieldset>
+                    <legend>Gender</legend>
+                    <input type="radio" name="radio" value="Male" id="radio_1">
+                    <label for="radio_1">Male</label> &nbsp;
+                    <input type="radio" name="radio" value="Female" id="radio_2">
+                    <label for="radio_2">Female</label>
+                </fieldset>
+            </li>
+            <li>
+                <fieldset>
+                    <legend>Favorite Fruits</legend>
+                    <ul class="choices">
+                        <li>
+                            <input type="checkbox" name="checkbox[]" value="Mango" id="checkbox_1">
+                            <label for="checkbox_1">Mango</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="checkbox[]" value="Orange" id="checkbox_2">
+                            <label for="checkbox_2">Orange</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="checkbox[]" value="Apple" id="checkbox_3">
+                            <label for="checkbox_1">Apple</label>
+                        </li>
+                    </ul>
+                </fieldset>
+            </li>
+            <li><input type="submit" value="Submit" name="submit"></li>
+        </ul>
+    </form>
+</body>
+</html>

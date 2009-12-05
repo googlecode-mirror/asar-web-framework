@@ -26,13 +26,6 @@
 spl_autoload_register(array('Asar', 'loadClass'));
 
 /**
- * Load the base class
- */
-if (!class_exists('Asar_Base', false)) {
-	require_once 'Asar/Base.php';
-}
-
-/**
  * Asar
  *
  * Asar arch-class provides static methods used throughout
@@ -41,181 +34,8 @@ if (!class_exists('Asar_Base', false)) {
  * @package Asar-Core
  **/
 class Asar {
-	/**
-	 * Asar Web Framework Version
-	 */
-	private static $version	= '0.1';
 	
-	/**
-	 * A collection of Applications that the framework
-	 * currently handles
-	 */
-	private static $apps     = array();
-	
-	/**
-	 * The environment mode on which the framework is
-	 * currently running. There are 3 possible values:
-	 * self::MODE_PRODUCTION, self::MODE_DEVELOPMENT, 
-	 * and self::MODE_TEST
-	 */
-	private static $mode     = 0;
-	
-	/**
-	 * Holds the collection of debug messages passed
-	 * throughout the request that will be used later
-	 * usually for display.
-	 */
-	private static $debug    = array();
-	
-	/**
-	 * Production Mode
-	 */
-	const MODE_PRODUCTION    = 0;
-	
-	/**
-	 * Development Mode. When the environment is set to
-	 * Development Mode, the framework allows the display
-	 * of debugging data and possibly, in the future,
-	 * a lot more...
-	 */
-	const MODE_DEVELOPMENT = 1;
-	
-	/**
-	 * Testing Mode (borrowed from Rails but isn't special.
-	 * Currently, this mode doesn't provide any additional
-	 * features.
-	 */ 
-	const MODE_TEST = 2;
-	
-	/**
-	 * Resets Asar arch Class State
-	 *
-	 * This method is for testing only and resets all
-	 * application and debug messages collections to 
-	 * the original state
-	 *
-	 * @return void
-	*/
-	static function reset() {
-		self::$apps = array();
-		self::clearDebugMessages();
-	}
-	
-	/**
-	 * Returns the version of the framework
-	 * 
-	 * @return string the current version of the framework
-	 */
-	static function getVersion() {
-		return self::$version;
-	}
-	
-	/**
-	 * Set the Environment Mode
-	 *
-	 * Sets the environment mode to either Development, 
-	 * Production, and Test Mode
-	 *
-	 * @param int mode the environment mode (Asar::MODE_DEVELOPMENT, Asar::MODE_TEST, or Asar::MODE_PRODUCTION)
-	 * @return void
-	 */
-	static function setMode($mode) {
-		switch ($mode) {
-			case self::MODE_DEVELOPMENT:
-			case self::MODE_TEST:
-				self::$mode = $mode;
-				break;
-			default:
-				self::$mode = self::MODE_PRODUCTION;
-		}
-		
-	}
-	
-	/**
-	 * Get the Environment Mode
-	 *
-	 * @return int the environment mode (Asar::MODE_DEVELOPMENT, Asar::MODE_TEST, or Asar::MODE_PRODUCTION)
-	 */
-	static function getMode() {
-		return self::$mode;
-	}
-	
-	/**
-	 * Add a Debug Message
-	 *
-	 * You can add your debugging messages through this
-	 * method. The framework uses this method to add its
-	 * own debug messages. When the environment is set
-	 * to development mode, these messages are then 
-	 * included in the  response and sometimes are displayed
-	 * on the page especially for HTML response types.
-	 * 
-	 * @param string name the debug message name used to identify this message
-	 * @param string message the debug message contents
-	 * @return void
-	 * @todo Move this to a separate class?
-	 */
-	static function debug($name, $message) {
-	    if (self::$mode == self::MODE_DEVELOPMENT) {
-		    self::$debug[$name] = $message;
-	    }
-	}
-	
-	/**
-	 * Get debug Messages
-	 * 
-	 * @return array An array of debug messages sent through Asar::debug()
-	 * @see Asar::debug()
-	 */
-	static function getDebugMessages() {
-		return self::$debug;
-	}
-	
-	/**
-	 * Clear the debug messages array
-	 *
-	 * All debug messages added through Asar::debug before this function
-	 * was invoked will be gone.
-	 *
-	 * @return void
-	 * @see Asar::debug()
-	 * @see Asar::getDebugMessages()
-	 */
-	static function clearDebugMessages() {
-		self::$debug = array();
-	}
-	
-	/**
-	 * Asar Class Loader
-	 * 
-	 * The class name must follow the Pear class name convention:
-	 * the class is named Foo_Bar_Class can be found on the file
-	 * somewhere in one of the include_paths as 'Foo/Bar/Class.php'
-	 *
-	 * @param string classname The class must follow the Pear class naming convention
-	 */
-	static function loadClass($class) {
-		if (self::_loadClass($class)) {
-			return true;
-		} else {
-			self::exception('Asar', "Class definition file for the class $class does not exist.");
-			return false;
-		}
-	}
-	
-	private static function _loadClass($class) {
-		if (class_exists($class, false)) {
-			return true;
-		}
-		$file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-		if (!self::fileExists($file)) {
-			return false;
-		} else {
-			include_once($file);
-			return true;
-		}
-	}
-  
+	//private static $parser;
 	
 	/**
 	 * Bootstraps the Application for a single Request 
@@ -224,20 +44,57 @@ class Asar {
 	 * @param Asar_Client client client the client to use; will default to Asar_Client_Default
 	 * @todo Remove dependency on existing classes
 	 */
-	static function start($application_name, Asar_Client $client = null) {
+	
+	static private $interpreter;
+	
+	static function setInterpreter($i)
+	{
+	  self::$interpreter = $i;
+	}
+	
+	static function start($application_name) {
 		// $application_name must be found by ('ApplicationName_Application');
 		// using naming convention
-		self::$apps[$application_name] = self::instantiate($application_name.'_Application');
-		if (!$client) {
-			$client = new Asar_Client_Default;
-			$client->createRequest();
-		}
-		$client->sendRequestTo(self::$apps[$application_name]);
-
-		//echo $req->sendTo(self::$apps[$application_name]);
-		//return self::$apps[$application_name];
+		if (!self::$interpreter)
+		  self::$interpreter = new Asar_Interpreter;
+		self::$interpreter->interpretFor(
+		  self::instantiate($application_name.'_Application')
+	  );
 	}
-
+	
+    /**
+	 * Asar Class Loader
+	 * 
+	 * The class name must follow the Pear class name convention:
+	 * the class named Foo_Bar_Class can be found on the file
+	 * somewhere in one of the include_paths as 'Foo/Bar/Class.php'
+	 *
+	 * @param string classname The class must follow the Pear class naming convention
+	 */
+	static function loadClass($class) {
+		if (self::_loadClass($class)) {
+			return true;
+		} else {
+			return false;
+			//self::exception('Asar', "Class definition file for the class $class does not exist.");
+		}
+	}
+	
+	private static function _loadClass($class) {
+		if (class_exists($class, false)) {
+			return true;
+		}
+		$file = str_replace(
+		  array('__', '_', '|'), 
+		  array('_|',DIRECTORY_SEPARATOR, '_'), $class
+	  ) . '.php';
+		if (!self::fileExists($file)) {
+			return false;
+		} else {
+			include_once($file);
+			return true;
+		}
+	}
 
 	/**
 	 * Returns the class prefix used for an object.
@@ -269,7 +126,11 @@ class Asar {
 	 * @return stdclass an instance of the class class_name
 	 */ 
 	static function instantiate($class_name, array $arguments = array()) {
-		$reflector = new ReflectionClass($class_name);
+    try {
+		  $reflector = new ReflectionClass($class_name);
+	  } catch (ReflectionException $e) {
+	    self::exception('Asar', "Class definition file for the class $class does not exist.");
+	  }
 		if ($reflector->isInstantiable()) {
 			if (count($arguments)) {
 				$obj = $reflector->newInstanceArgs($arguments);
@@ -278,11 +139,11 @@ class Asar {
 			}
 		} elseif ($reflector->hasMethod('instance')) {
 			// We're assuming this is Singleton by convention
-			// @todo what if we class didn't follow that convention?
+			// @todo what if the class didn't follow that convention?
 			$instanceMethod = $reflector->getMethod('instance');
 			$obj = $instanceMethod->invoke(null);
 		} else {
-			self::exception('Asar', 'Trying to instantiate the uninstantiable class '.$class_name);
+			self::exception('Asar', "Asar::instantiate failed. Trying to instantiate the uninstantiable class '$class_name'.");
 		}
 		return $obj;
 	}
@@ -346,6 +207,36 @@ class Asar {
 			return false;
 		}
 	}
+	
+	static function constructPath()
+	{
+	  $args = func_get_args();
+	  $last = count($args);
+	  $i = 0;
+    $path = '';
+    foreach ($args as $arg) {
+      $i++;
+      if ($i != $last) {
+        $path .= $arg . DIRECTORY_SEPARATOR;
+      } else {
+        $path .= $arg;
+      }
+    }
+    return $path;
+	}
+	
+	static function constructRealPath()
+	{
+	  $args = func_get_args();
+	  return realpath(
+	    call_user_func_array(array('self', 'constructPath'), $args)
+    );
+  }
+	
+	static function getFrameworkPath()
+	{
+	  return realpath(Asar::constructPath(dirname(__FILE__), '..'));
+	}
 
 	static function exception($obj, $msg) {
 		if (!is_object($obj) && is_string($obj)) {
@@ -362,5 +253,11 @@ class Asar {
 		// Resort to throwing Exception by default
 		throw new Exception ($msg);
 	}
+	
+	static function getVersion()
+	{
+		return '0.1';
+	}
+  
   
 }
