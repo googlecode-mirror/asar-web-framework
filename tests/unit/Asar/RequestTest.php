@@ -1,7 +1,6 @@
 <?php
 
-require_once 'PHPUnit/Framework.php';
-require_once 'Asar.php';
+require_once realpath(dirname(__FILE__). '/../../config.php');
 
 class Asar_RequestTest extends PHPUnit_Framework_TestCase
 {

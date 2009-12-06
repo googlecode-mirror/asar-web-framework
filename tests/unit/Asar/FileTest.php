@@ -4,8 +4,7 @@
  * 
  * @author     Wayne Duran
  */
-
-require_once 'Asar.php';
+require_once realpath(dirname(__FILE__). '/../../config.php');
 
 class Asar_FileTest extends Asar_Test_Helper {
 	

@@ -5,10 +5,7 @@
  * @author     Wayne Duran
  */
 
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
-
-require_once ('Asar.php');
+require_once realpath(dirname(__FILE__). '/../../config.php');
 
 /*
 class Asar_ViewTest_TestHelper {

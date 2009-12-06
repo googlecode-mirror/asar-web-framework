@@ -1,7 +1,5 @@
 <?php
-
-require_once 'PHPUnit/Framework.php';
-require_once 'Asar.php';
+require_once realpath(dirname(__FILE__). '/../../config.php');
 
 // This class is for testing purposes only
 class Asar_ResourceTest_DummyTemplateEngine implements Asar_Template_Interface

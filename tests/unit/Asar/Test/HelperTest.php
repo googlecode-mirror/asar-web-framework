@@ -1,4 +1,5 @@
 <?php
+require_once realpath(dirname(__FILE__). '/../../../config.php');
 require_once 'Asar/Test/Helper.php';
 
 
@@ -121,6 +122,7 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
   
   function testGettingTemporaryTestFilesDir() {
     $dir = Asar_Test_Helper::getTempDir();
+    //echo '----', $this->temp_path;
     $this->assertEquals($this->temp_path, $dir, 'Temp directory did not match expected path');
     
   }

@@ -1,5 +1,5 @@
 <?php
-require_once 'Asar.php';
+require_once realpath(dirname(__FILE__) . '/../../config.php');
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
 class FExample3_TemplatesTest extends PHPUnit_Framework_TestCase {

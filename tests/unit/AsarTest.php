@@ -1,5 +1,5 @@
 <?php
-
+require_once realpath(dirname(__FILE__). '/../config.php');
 require_once 'PHPUnit/Framework.php';
 require_once 'Asar.php';
 
@@ -64,7 +64,7 @@ class AsarTest extends Asar_Test_Helper {
 	}
 	
 	function testGetVersion() {
-		$this->assertEquals(Asar::getVersion(), '0.1', 'Unable to get proper version');
+		$this->assertEquals(Asar::getVersion(), '0.3', 'Unable to get proper version');
 	}
 	
 	// @todo Create test for the part of the code that includes the file

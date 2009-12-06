@@ -13,7 +13,7 @@
  * to wayne@asartalo.org so we can send you a copy immediately.
  * 
  * @package   Asar-Core
- * @copyright Copyright (c) 2007-2008, Wayne Duran <wayne@asartalo.org>.
+ * @copyright Copyright (c) 2007-2009, Wayne Duran <wayne@asartalo.org>.
  * @since     0.1
  * @version   $Id$
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -121,7 +121,7 @@ class Asar {
 	 * singleton object). If a class is uninstantiable, this method
 	 * will throw an exception.
 	 * 
-	 * @param string class_name the class name of the class you want to instantiate
+	 * @param string class_name the class name of the class to instantiate
 	 * @param array arguments the arguments needed
 	 * @return stdclass an instance of the class class_name
 	 */ 
@@ -256,7 +256,7 @@ class Asar {
 	
 	static function getVersion()
 	{
-		return '0.1';
+		return '0.3';
 	}
   
   
