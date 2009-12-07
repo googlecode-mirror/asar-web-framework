@@ -169,14 +169,14 @@ class Asar_InterpreterTest extends Asar_Test_Helper
 	
 	
 	public function testExportResponseHeadersUsesHeaderFunctionWrapper() {
-	    $I = $this->getMock('Asar_Interpreter', array('_header'));
+	    $I = $this->getMock('Asar_Interpreter', array('header'));
 	    $I->expects($this->exactly(2))
-	        ->method('_header');
+	        ->method('header');
         $I->expects($this->at(0))
-            ->method('_header')
+            ->method('header')
             ->with($this->equalTo('Content-Type: text/plain'));
         $I->expects($this->at(1))
-            ->method('_header')
+            ->method('header')
             ->with($this->equalTo('Content-Encoding: gzip'));
 	    $response = new Asar_Response;
 	    $response->setHeader('Content-Type', 'text/plain');
@@ -187,7 +187,7 @@ class Asar_InterpreterTest extends Asar_Test_Helper
 	public function testHeaderExecutionForCoverage() {
 	    // This is included just so the header function wrapper gets
 	    // included in the coverage test. Bad. Bad. Bad.
-	    @$this->I->_header('zzzz');
+	    @$this->I->header('zzzz');
 	}
 	
 	
