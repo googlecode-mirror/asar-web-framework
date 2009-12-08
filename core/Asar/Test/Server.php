@@ -36,9 +36,7 @@ class Asar_Test_Server {
       $test_data_path , 'test-server' 
     );
     
-    if (is_link($test_server_path) || file_exists($test_server_path)) {
-      unlink($test_server_path);
-    }
+    self::deleteIf($test_server_path);
     
     if (array_key_exists('fixture', $options)) {
       $server_dir = Asar::constructPath(
@@ -48,11 +46,17 @@ class Asar_Test_Server {
       $server_dir = $options['path'];
     }
     symlink($server_dir, $test_server_path);
-    // Check if it really worked.
-    if (realpath($server_dir) !== realpath($test_server_path)) {
+    if ($server_dir !== realpath($test_server_path)) {
+      self::deleteIf($test_server_path);
       $paths = self::absoluteToRelative($test_server_path, $server_dir);
       $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " . 'ln -s ' . escapeshellarg($paths['to']) . ' ' . escapeshellarg($paths['from']);
       exec($command);
+    }
+  }
+  
+  private static function deleteIf($path) {
+    if (is_link($path) || file_exists($path)) {
+      unlink($path);
     }
   }
   
