@@ -124,7 +124,7 @@ class Asar {
     try {
       $reflector = new ReflectionClass($class_name);
     } catch (ReflectionException $e) {
-      self::exception('Asar', "Class definition file for the class $class does not exist.");
+      self::exception('Asar', "Class definition file for the class $class_name does not exist.");
     }
     if ($reflector->isInstantiable()) {
       if (count($arguments)) {

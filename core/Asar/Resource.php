@@ -16,7 +16,7 @@ class Asar_Resource implements Asar_Requestable
     
     public function setConfiguration(array $config)
     {
-        if ($config['context']) {
+        if (array_key_exists('context', $config)) {
             $this->config['default_representation_dir'] = 
                 $this->createRepresentationDirectory($config['context']);
         }
@@ -70,10 +70,12 @@ class Asar_Resource implements Asar_Requestable
                         $this->constructTemplateFilePath()
                     );
                 }
-                $this->template->setLayout( Asar::constructPath(
-                    $this->config['default_representation_dir'],
-                    'Layout' . $this->getTemplateTypeToUse() . '.php'
-                ));
+                if (array_key_exists('default_representation_dir', $this->config)) {
+                  $this->template->setLayout( Asar::constructPath(
+                      $this->config['default_representation_dir'],
+                      'Layout' . $this->getTemplateTypeToUse() . '.php'
+                  ));
+                }
                 try {
                   $content = $this->template->render();
                   // TODO: Create more functional tests for content negotiation
@@ -100,21 +102,24 @@ class Asar_Resource implements Asar_Requestable
     
     protected function constructTemplateFilePath()
     {
-        $contextname = str_replace('_Application', '', get_class($this->config['context']));
-        $thisname = str_replace( '_', DIRECTORY_SEPARATOR,
-          substr_replace(get_class($this), '', 0, strlen($contextname) + 10)
-        );
-        $suffix = $this->request->getMethod() . $this->getTemplateTypeToUse() . '.php';
-        $path = Asar::constructPath(
-          $this->config['default_representation_dir'],
-          $thisname . '.' . $suffix
-        );
-        if (!file_exists($path)) {
-          $path = Asar::constructPath(
-            $this->config['default_representation_dir'], $thisname, $suffix
+        if (array_key_exists('context', $this->config)) {
+          $contextname = str_replace('_Application', '', get_class($this->config['context']));
+          $thisname = str_replace( '_', DIRECTORY_SEPARATOR,
+            substr_replace(get_class($this), '', 0, strlen($contextname) + 10)
           );
+          $suffix = $this->request->getMethod() . $this->getTemplateTypeToUse() . '.php';
+          $path = Asar::constructPath(
+            $this->config['default_representation_dir'],
+            $thisname . '.' . $suffix
+          );
+          if (!file_exists($path)) {
+            $path = Asar::constructPath(
+              $this->config['default_representation_dir'], $thisname, $suffix
+            );
+          }
+          return $path;
         }
-        return $path;
+        return false;
     }
     
     protected function getTemplateTypeToUse()

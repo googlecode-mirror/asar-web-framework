@@ -340,7 +340,6 @@ class Asar_ApplicationTest extends Asar_Test_Helper {
     $request = new Asar_Request;
     $path = '/mapped/path';
     $request->setPath($path);
-    $this->saveObject('response', $response);
     eval ('
       class Asar_ApplicationTest_Route_Resource extends Asar_Resource {
         function handleRequest(Asar_Request_Interface $request) {

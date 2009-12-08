@@ -25,14 +25,13 @@ class Asar_Test_ServerTest extends Asar_Test_Helper {
         Asar_Test_Server::setUp(array('fixture' => 'normal'));
         
         $this->assertEquals(
-            realpath($this->test_server_path),
             Asar::constructRealPath(
                 Asar::getFrameworkPath(), 'tests', 'data', 
                 'test-server-fixtures', 'normal'
             ),
+            realpath($this->test_server_path),
             'The test-server directory does not ' .
-                'point to the normal fixture directory.'
-            
+                'point to the normal fixture directory.'            
         );
     }
     

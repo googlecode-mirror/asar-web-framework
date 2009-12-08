@@ -9,15 +9,21 @@ class Asar_Interpreter implements Asar_Interprets {
   
   function createRequest() {
     $request = new Asar_Request;
-    $request->setMethod($_SERVER['REQUEST_METHOD']);
-    $request->setPath($this->createPathFromUri($_SERVER['REQUEST_URI']));
+    if (array_key_exists('REQUEST_METHOD', $_SERVER)) {
+      $request->setMethod($_SERVER['REQUEST_METHOD']);
+    }
+    if (array_key_exists('REQUEST_URI', $_SERVER)) {
+      $request->setPath($this->createPathFromUri($_SERVER['REQUEST_URI']));
+    }
     foreach ($_SERVER as $key => $value) {
       if (strpos($key, 'HTTP_') === 0) {
-          $request->setHeader(str_replace('HTTP_', '', $key), $value);
+        $request->setHeader(str_replace('HTTP_', '', $key), $value);
       }
     }
-    if ($_SERVER['REQUEST_METHOD'] === 'POST')
-        $request->setContent($_POST);
+    if (array_key_exists('REQUEST_METHOD', $_SERVER) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+      $request->setContent($_POST);
+    }
+    
     return $request;
   }
   

@@ -247,7 +247,10 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 	
 	public static function getObject($key)
 	{
-	    return self::$_asar_object_store[$key];
+	    if (array_key_exists($key, self::$_asar_object_store)) {
+	      return self::$_asar_object_store[$key];
+	    }
+	    return null;
 	}
 	
 	public static function purgeSavedObjects()

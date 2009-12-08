@@ -13,7 +13,7 @@ class Asar_InterpreterTest extends Asar_Test_Helper
 	    $app = $this->getMock('Asar_Requestable', array('handleRequest'));
 	    $app->expects($this->once())
 	        ->method('handleRequest')
-	        ->with($this->isInstanceOf(Asar_Request))
+	        ->with($this->isInstanceOf('Asar_Request'))
 	        ->will($this->returnValue(new Asar_Response));
         $this->I->interpretFor($app);
 	}

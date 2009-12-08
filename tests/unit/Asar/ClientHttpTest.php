@@ -14,7 +14,7 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
         $this->server  = 'http://asar-test.local';
         $this->client->setServer($this->server);
         if (!$this->_isCanConnectToTestServer())
-            $this->markTestSkipped('Unable to connect to test server.');
+            $this->markTestSkipped('Unable to connect to test server. Check server setup.');
         Asar_Test_Server::setUp(array('fixture' => 'normal'));
     }
     
@@ -23,11 +23,9 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
         if (is_null($this->can_connect_to_test_server)) {
             $this->can_connect_to_test_server = false;
             Asar_Test_Server::setUp(array('fixture' => 'normal'));
-            $fp = fsockopen('asar-test.local', 80, $errno, $errstr, 30);
+            $fp = @fsockopen('asar-test.local', 80, $errno, $errstr, 30);
             if (!$fp) {
-                /*echo
-                    'Could not connect to asar-test.local. Check server setup. ' .
-                    "$errstr ($errno)\n\n";*/
+                return false;
             } else {
                 $out = "GET / HTTP/1.1\r\n";
                 $out .= "Host: asar-test.local\r\n";

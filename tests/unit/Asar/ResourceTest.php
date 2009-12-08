@@ -549,7 +549,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
         $context = $this->createAppMock($prefix);
         $R = $this->createResourceMock($prefix, 'Index');
         $expected_exception = $this->getMock(
-          'Asar_Template_Exception_FileNotFound'
+          'Asar_Template_Exception_FileNotFound', array('__toString')
         );
         $template = $this->getMock('Asar_Template_Interface');
         $template->expects($this->once())

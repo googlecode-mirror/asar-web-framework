@@ -4,7 +4,7 @@ class Asar_Utility_CLI {
   
   function execute(array $arguments) {
     $exec = $this->interpret($arguments);
-    if ($exec['command']) {
+    if (is_array($exec) && array_key_exists('command', $exec)) {
       $method = 'task' . Asar_Utility_String::camelCase($exec['command']);
       call_user_func_array(
         array($this, $method), $exec['arguments']
@@ -19,22 +19,21 @@ class Asar_Utility_CLI {
     $flags = array();
     $arguments = array();
     $is_command_found = false;
+    $result = array();
     foreach ($args as $arg) {
       if ($is_command_found) {
         $arguments[] = $arg;
       } elseif (strpos($arg, '--') === 0) {
         $flags[] = substr($arg, 2);
       } else {
-        $command = $arg;
+        $result['command'] = $arg;
         $is_command_found = true;
       } 
     }
-    return array(
-      'caller'    => $caller,
-      'flags'     => $flags,
-      'command'   => $command,
-      'arguments' => $arguments
-    );
+    $result['caller']    = $caller;
+    $result['flags']     = $flags;
+    $result['arguments'] = $arguments;
+    return $result;
   }
   
   function __call($method, $args) {

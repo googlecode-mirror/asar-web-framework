@@ -26,7 +26,10 @@ class Asar_Response implements Asar_Response_Interface
     }
     
     function getHeader($key) {
-        return $this->headers[$key];
+        if (array_key_exists($key, $this->headers)) {
+          return $this->headers[$key];
+        }
+        return null;
     }
     
     function setHeaders(array $headers){

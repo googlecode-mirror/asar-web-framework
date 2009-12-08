@@ -22,7 +22,10 @@ class Asar_Application implements Asar_Requestable {
         if (!$this->router) {
             $this->router = new Asar_Resource_Router;
         }
-        $r = $this->map[$request->getPath()];
+        $r = null;
+        if (array_key_exists($request->getPath(), $this->map)) {
+          $r = $this->map[$request->getPath()];
+        }
         
         // Pass to router if one is defined
         
@@ -52,7 +55,7 @@ class Asar_Application implements Asar_Requestable {
                 $config = array(
                     'context' => $this
                 );
-                if ($this->config['default_representation_dir']) {
+                if (array_key_exists('default_representation_dir', $this->config)) {
                     $config['default_representation_dir'] = 
                         $this->config['default_representation_dir'];
                 }
