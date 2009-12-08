@@ -1,1 +1,3 @@
 
+[Wed Dec 09 05:17:25 2009] [error] [client 127.0.0.1] Symbolic link not allowed or link target not accessible: /home/wayne/Desktop/Projects/asar-web-framework/tests/data/test-server
+[Wed Dec 09 05:18:47 2009] [error] [client 127.0.0.1] Symbolic link not allowed or link target not accessible: /home/wayne/Desktop/Projects/asar-web-framework/tests/data/test-server
