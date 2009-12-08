@@ -3,9 +3,20 @@ require_once realpath(dirname(__FILE__) . '/../../../config.php');
 
 class Asar_Utility_CLITest extends Asar_Test_Helper {
 
+  private $htaccess_contents;
+
   function setUp() {
+    // This is so we put all created files in the temporary directory
     chdir(self::getTempDir());
     $this->cli = new Asar_Utility_CLI;
+    $this->htaccess_contents = 
+      "<IfModule mod_rewrite.c>\n" .
+      "RewriteEngine On\n".
+      "RewriteBase /\n".
+      "RewriteCond %{REQUEST_FILENAME} !-f\n".
+      "RewriteCond %{REQUEST_FILENAME} !-d\n".
+      "RewriteRule . /index.php [L]\n".
+      "</IfModule>\n";
   }
   
   function testInterpretingCommands() {
@@ -73,7 +84,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       'Asar_Utility_CLI', array('interpret')
     );
     $arguments = array(
-      '/cli/ui/front', '--version'
+      '/cli/ui/front', '--aflag'
     );
     $this->cli->expects($this->once())
       ->method('interpret')
@@ -82,11 +93,18 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
   
   function testGettingVersion() {
+    ob_start();
+    $this->cli->execute(array('/a/cli/front-controller', '--version'));
+    $output = ob_get_clean();
     $this->assertEquals(
+      'Asar Web Framework ' . Asar::getVersion(), $output
+    );
+  }
+  
+  function testVersionIsNotReturnedWhenVersionFlagIsNotPresent() {
+    $this->assertNotEquals(
       'Asar Web Framework ' . Asar::getVersion(),
-      $this->cli->execute(array(
-        '/a/cli/front-controller', '--version'
-      ))
+      $this->cli->execute(array('/a/cli/front-controller'))
     );
   }
   
@@ -114,16 +132,16 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
         'another-thing', 'arg1', 'arg2', '--flag1'
       )
     );
-    $this->cli = $this->getMock('Asar_Utility_CLI', array('__call'));
     foreach ($commands as $method => $args) {
+      $cli = $this->getMock('Asar_Utility_CLI', array('__call'));
       $command = array_shift($args);
-      $this->cli->expects($this->any())
+      $cli->expects($this->any())
         ->method('__call')
         ->with(
           $this->equalTo($method),
           $this->equalTo($args)
         );
-      $this->cli->execute(array_merge(
+      $cli->execute(array_merge(
         array('/su', $command), $args)
       );
     }
@@ -143,6 +161,159 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
     foreach ($directories as $directory) {
       $this->assertFileExists($directory);
     }
+  }
+  
+  function testCreatingProjectDirectoriesCreatesAppDirectoryWhenSpecified() {
+    $this->cli->taskCreateProjectDirectories('adir', 'TheApp');
+    $app_path = Asar::constructPath(
+      self::getTempDir() . 'adir', 'apps', 'TheApp'
+    );
+    $directories = array(
+      '', 'Resource', 'Representation'
+    );
+    foreach ($directories as $directory) {
+      $this->assertFileExists(Asar::constructPath($app_path, $directory));
+    }
+  }
+  
+  private function _testHtAccess($project_dir) {
+    // Create Project Directory
+    mkdir(Asar::constructPath(
+      self::getTempDir(), $project_dir
+    ));
+    mkdir(Asar::constructPath(
+      self::getTempDir(), $project_dir, 'web'
+    ));
+    ob_start(); // Suppress output
+    // The task to test
+    $this->cli->taskCreateHtaccessFile($project_dir);
+    ob_end_clean();
+    // The expected file
+    return Asar::constructPath(
+      self::getTempDir(), $project_dir, 'web', '.htaccess'
+    );
+  }
+  
+  function testCreatingHtaccessFileForProject() {
+    $this->assertFileExists(
+      $this->_testHtAccess('directory')
+    );
+  }
+  
+  function testCreatingHtaccessFileForProjectWithProperContents() {
+    $this->assertEquals(
+      $this->htaccess_contents,
+      file_get_contents($this->_testHtAccess('another-directory'))
+    );
+  }
+  
+  function testCreateFile() {
+    $path = self::getTempDir() . 'afile.txt';
+    $contents = "The path to the file. Hehehe.";
+    ob_start();
+    $this->cli->taskCreateFile( $path, $contents );
+    $feedback = ob_get_clean();
+    $this->assertFileExists($path);
+    $this->assertSame("\nCreated: /afile.txt", $feedback);
+    $this->assertEquals($contents, file_get_contents($path));
+  }
+  
+  function testCreatingHtaccessUsesCreateFileTask() {
+    $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateFile'));
+    $cli->expects($this->once())
+      ->method('taskCreateFile')
+      ->with(
+        Asar::constructPath(
+          self::getTempDir(), 'thedirectory', 'web', '.htaccess'
+        ), $this->htaccess_contents
+      );
+    $cli->taskCreateHtaccessFile('thedirectory');
+  }
+  
+  function testThrowAsarUtilityCLIExceptionWhenTaskMethodIsNotDefined() {
+    try {
+      $this->cli->taskSomethingToDoButCannotDo();
+    } catch(Asar_Utility_CLI_Exception_UndefinedTask $e) {
+      $this->assertEquals(
+        "The task method 'taskSomethingToDoButCannotDo' is not defined.",
+        $e->getMessage()
+      );
+      return;
+    }
+    $this->fail(
+      'Did not raise expected exception ' .
+      "'Asar_Utility_CLI_Exception_UndefinedTask'."
+    );
+  }
+  
+  function testCreatingProject() {
+    $cli = $this->getMock(
+      'Asar_Utility_CLI', array(
+        'taskCreateProjectDirectories', 'taskCreateApplication'
+      )
+    );
+    $cli->expects($this->once())
+      ->method('taskCreateProjectDirectories')
+      ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
+    $cli->expects($this->once())
+      ->method('taskCreateApplication')
+      ->with(
+        $this->equalTo('mydir'), $this->equalTo('AnApp')
+      );
+    $cli->taskCreateProject('mydir', 'AnApp');
+  }
+  
+  function testCreateApplicationFile() {
+    $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateFile'));
+    $cli->expects($this->once())
+      ->method('taskCreateFile')
+      ->with(
+        $this->equalTo(Asar::constructPath(
+          self::getTempDir(), 'thedir', 'apps', 'TheApp', 'Application.php'
+        )),
+        $this->equalTo(
+          "<?php\n" .
+          "class TheApp_Application extends Asar_Application {\n" .
+          "  \n".
+          "}\n"
+        )
+      );
+    $cli->taskCreateApplication('thedir', 'TheApp');
+  }
+  
+  function testCreateController() {
+    $cli = $this->getMock(
+      'Asar_Utility_CLI', array('taskCreateFile')
+    );
+    $cli->expects($this->once())
+      ->method('taskCreateFile')
+      ->with(
+        $this->equalTo(Asar::constructPath(
+          self::getTempDir(), 'project', 'apps', 'MyApp', 'Resource',
+          'Foo.php'
+        )),
+        $this->equalTo(
+          "<?php\n" .
+          "class MyApp_Resource_Foo extends Asar_Resource {\n" .
+          "  \n" .
+          "  function GET() {\n".
+          "    \n" .
+          "  }\n" .
+          "}\n"
+        )
+      );
+    $cli->taskCreateResource('project', 'MyApp', 'Foo');
+  }
+  
+  function testCreatingProjectCreatesFrontController() {
+    $this->markTestIncomplete();
+    $cli = $this->getMock(
+      'Asar_Utility_CLI', array('taskCreateProjectDirectories')
+    );
+    $cli->expects($this->once())
+      ->method('taskCreateProjectDirectories')
+      ->with($this->equalTo('adir'));
+    $cli->taskCreateProject('adir', 'MyApp');
   }
   
 }

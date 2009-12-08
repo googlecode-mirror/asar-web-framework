@@ -40,137 +40,142 @@
 //require_once 'Base.php';
 
 class Asar_File {
-	
-	private $filename           = NULL;
-	private $content            = NULL;
-	private $resource           = NULL;
-	private $mode               = 'a+b';
-	private $forced_append_mode = FALSE;
-	
-	
-	public static function create ($filename) {
-		
-		if (file_exists($filename)) {
-			throw new Asar_File_Exception("Asar_File::create failed. The file '$filename' already exists.");
-			return false;
-		}
-		$f = new self($filename, 'w+b');
-		return $f; 
-	}
-	
-	public static function open ($filename) {
-		if (!file_exists((string) $filename)) {
-			throw new Asar_File_Exception("Asar_File::open failed. The file '$filename' does not exist.");
-		} else {
-			$f = new self($filename, 'r+b');
-			return $f;
-		}
-	}
-	
-	public static function unlink ($filename) {
-        if (file_exists((string) $filename)) {
-            return unlink($filename);
-		} else {
-			return false;
-		}
-	}
-	
-	public function __construct($filename = NULL, $mode = 'a+b') {
-		if (is_string($filename)) {
-			$this->setFileName($filename);
-			$this->mode = $mode;
-			$this->getResource();
-			if (file_exists($this->getFileName())) {
-				$this->content = file_get_contents($this->getFileName());
-			}
-		}
-	}
-	
-	public function appendMode() {
-		$this->mode = 'a+b';
-		$this->unsetResource();
-		$this->getResource();
-		$this->forced_append_mode = TRUE;
-		return $this;
-	}
-	
-	private function getResource() {
-		if (!is_resource($this->resource)) {
-			// Attempt to create a resource using filename
-			if (!$this->getFileName()) {
-				throw new Asar_File_Exception('Asar_File::getResource failed. The file object does not have a file name.');
-			}
-			$this->resource = fopen($this->filename, $this->mode);
-		}
-		return $this->resource;
-	}
-	
-	private function unsetResource() {
-		if (is_resource($this->resource)) {
-			fclose($this->resource);
-		}
-	}
-	
-	public function setFileName($filename) {
-		if (!is_string($filename) || $filename === '') {
-			throw new Asar_File_Exception('Asar_File::setFileName failed. Filename should be a non-empty string.');
-		}
-		$this->filename = $filename;
-	}
+  
+  private $filename           = NULL;
+  private $content            = NULL;
+  private $resource           = NULL;
+  private $mode               = 'a+b';
+  private $forced_append_mode = FALSE;
+  
+  
+  public static function create ($filename) {
+    if (file_exists($filename)) {
+      throw new Asar_File_Exception(
+        "Asar_File::create failed. The file '$filename' already exists."
+      );
+    }
+    $f = new self($filename, 'w+b');
+    return $f; 
+  }
+  
+  public static function open ($filename) {
+    if (!file_exists((string) $filename)) {
+      throw new Asar_File_Exception(
+        "Asar_File::open failed. The file '$filename' does not exist."
+      );
+    } else {
+      $f = new self($filename, 'r+b');
+      return $f;
+    }
+  }
+  
+  public static function unlink ($filename) {
+    if (file_exists((string) $filename)) {
+      return unlink($filename);
+    } else {
+      return false;
+    }
+  }
+  
+  function __construct($filename = NULL, $mode = 'a+b') {
+    if (is_string($filename)) {
+      $this->setFileName($filename);
+      $this->mode = $mode;
+      $this->getResource();
+      if (file_exists($this->getFileName())) {
+        $this->content = file_get_contents($this->getFileName());
+      }
+    }
+  }
+  
+  function appendMode() {
+    $this->mode = 'a+b';
+    $this->unsetResource();
+    $this->getResource();
+    $this->forced_append_mode = TRUE;
+    return $this;
+  }
+  
+  private function getResource() {
+    if (!is_resource($this->resource)) {
+      // Attempt to create a resource using filename
+      if (!$this->getFileName()) {
+        throw new Asar_File_Exception(
+          'Asar_File::getResource failed. The file object ' .
+          'does not have a file name.'
+        );
+      }
+      $this->resource = fopen($this->filename, $this->mode);
+    }
+    return $this->resource;
+  }
+  
+  private function unsetResource() {
+    if (is_resource($this->resource)) {
+      fclose($this->resource);
+    }
+  }
+  
+  function setFileName($filename) {
+    if (!is_string($filename) || $filename === '') {
+      throw new Asar_File_Exception(
+        'Asar_File::setFileName failed. Filename should be a non-empty string.'
+      );
+    }
+    $this->filename = $filename;
+  }
 
-
-	public function getFileName() {
-		return $this->filename;
-	}
-	
-	public function setContent($content) {
-		if (is_array($content)) {
-			$content = implode("\n", $content);
-		}
-		$this->content = (string) $content;
-	}
-	
-	public function getContent() {
-		return $this->content;
-	}
-	
-	public function getContents() {
-		return $this->getContent();
-	}
-	
-	public function write($content) {
-		$this->setContent($content);
-		return $this;
-	}
-	
-	public function writeBefore($content) {
-		return $this->write($content.$this->getContent());
-	}
-	
-	public function writeAfter($content) {
-		return $this->write($this->getContent().$content);
-	}
-	
-	public function read() {
-		return $this->getContent();
-	}
-	
-	public function save() {
-		$test = fwrite($this->getResource(), $this->getContent());
-		if (!$this->forced_append_mode) {
-			$this->unsetResource();
-		}
-		return $this;
-	
-	}
-	
-	public function delete() {
-        $this->unsetResource();
-        return unlink($this->getFileName());
-	}
-	
-	public function __destruct() {
-		$this->unsetResource();
-	}
+  function getFileName() {
+    return $this->filename;
+  }
+  
+  function setContent($content) {
+    if (is_array($content)) {
+      $content = implode("\n", $content);
+    }
+    $this->content = (string) $content;
+  }
+  
+  function getContent() {
+    return $this->content;
+  }
+  
+  function getContents() {
+    return $this->getContent();
+  }
+  
+  function write($content) {
+    $this->setContent($content);
+    return $this;
+  }
+  
+  function writeBefore($content) {
+    return $this->write($content.$this->getContent());
+  }
+  
+  function writeAfter($content) {
+    return $this->write($this->getContent().$content);
+  }
+  
+  function read() {
+    return $this->getContent();
+  }
+  
+  function save() {
+    $test = fwrite($this->getResource(), $this->getContent());
+    if (!$this->forced_append_mode) {
+      $this->unsetResource();
+    }
+    return $this;  
+  }
+  
+  function delete() {
+    $this->unsetResource();
+    return unlink($this->getFileName());
+  }
+  
+  function __destruct() {
+    $this->unsetResource();
+  }
 }
 

@@ -20,9 +20,6 @@ class Asar_Test_Server {
       $n++;
     }
     $result_path = '';
-    foreach ($from_arr as $level) {
-      //$result_path .= '..' . DIRECTORY_SEPARATOR;
-    }
     $result_path .= implode( DIRECTORY_SEPARATOR, $to_arr);
     return array(
       'base_path' => implode(DIRECTORY_SEPARATOR, $similarity),
@@ -50,11 +47,13 @@ class Asar_Test_Server {
     } else {
       $server_dir = $options['path'];
     }
-    
-    $paths = self::absoluteToRelative($test_server_path, $server_dir);
-    $old_cwd = getcwd();
-    $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " . 'ln -s ' . escapeshellarg($paths['to']) . ' ' . escapeshellarg($paths['from']);
-    exec($command);
+    symlink($server_dir, $test_server_path);
+    // Check if it really worked.
+    if (realpath($server_dir) !== realpath($test_server_path)) {
+      $paths = self::absoluteToRelative($test_server_path, $server_dir);
+      $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " . 'ln -s ' . escapeshellarg($paths['to']) . ' ' . escapeshellarg($paths['from']);
+      exec($command);
+    }
   }
   
   

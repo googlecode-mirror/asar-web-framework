@@ -250,6 +250,15 @@ class AsarTest extends Asar_Test_Helper {
     );
   }
   
+  function testConstructPath3() {
+    $_ = DIRECTORY_SEPARATOR;
+    $this->assertEquals(
+      Asar::constructPath('a/', 'path', 'to\\', 'a', 'a'),
+      'a'. $_ . 'path' . $_ . 'to' . $_ . 'a' . $_ . 'a',
+      'Unable to create path using "constructPath".'
+    );
+  }
+  
   function testConstructRealPath() {
     $_ = DIRECTORY_SEPARATOR;
     $this->assertEquals(

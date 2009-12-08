@@ -205,7 +205,12 @@ class Asar {
   
   static function constructPath() {
     $args = func_get_args();
+    array_walk($args, array(self, stripEndSlashes));
     return implode(DIRECTORY_SEPARATOR, $args);
+  }
+  
+  static private function stripEndSlashes(&$string) {
+    $string = rtrim($string, '\\/');
   }
   
   static function constructRealPath() {
