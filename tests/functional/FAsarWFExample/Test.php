@@ -1,8 +1,10 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../config.php');
 
-class FAsarWFExample_Test extends PHPUnit_Framework_TestCase {
+class FAsarWFExample_Test extends Asar_Test_Helper {
   function setUp() {
+    // This is so we put all created files in the temporary directory
+    chdir(self::getTempDir());
     $this->asarwf = realpath(dirname(__FILE__) . '/../../../bin/asarwf');
   }
   

@@ -2,7 +2,7 @@
 
 class Asar_Test_Server {
   
-  static function absoluteToRelative($from, $to) {
+  private static function absoluteToRelative($from, $to) {
     $from_arr = explode(DIRECTORY_SEPARATOR, $from);
     $to_arr = explode(DIRECTORY_SEPARATOR, $to);
     
@@ -39,17 +39,19 @@ class Asar_Test_Server {
     self::deleteIf($test_server_path);
     
     if (array_key_exists('fixture', $options)) {
-      $server_dir = Asar::constructPath(
+      $server_dir = Asar::constructRealPath(
         $test_data_path, 'test-server-fixtures', $options['fixture']
       );
     } else {
-      $server_dir = $options['path'];
+      $server_dir = realpath($options['path']);
     }
     symlink($server_dir, $test_server_path);
     if ($server_dir !== realpath($test_server_path)) {
       self::deleteIf($test_server_path);
       $paths = self::absoluteToRelative($test_server_path, $server_dir);
-      $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " . 'ln -s ' . escapeshellarg($paths['to']) . ' ' . escapeshellarg($paths['from']);
+      $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " . 
+        'ln -s ' . escapeshellarg($paths['to']) . ' ' . 
+        escapeshellarg($paths['from']);
       exec($command);
     }
   }

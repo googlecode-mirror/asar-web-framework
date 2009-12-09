@@ -52,6 +52,7 @@ class Asar_Utility_CLI {
   function taskCreateProject($directory, $appname) {
     $this->taskCreateProjectDirectories($directory, $appname);
     $this->taskCreateApplication($directory, $appname);
+    $this->taskCreateResource($directory, $appname, '/');
   }
   
   function taskCreateApplication($directory, $appname) {
@@ -66,15 +67,30 @@ class Asar_Utility_CLI {
     );
   }
   
-  function taskCreateResource($directory, $appname) {
+  function taskCreateResource($directory, $appname, $url) {
+    if ($url == '/') {
+      $resource_name = '_Index';
+      $resource_path = 'Index';
+    } else {
+      $resource_name_arr = explode('/', $url);
+      $resource_name_arr = array_map(
+        array('Asar_Utility_String', 'camelCase'), $resource_name_arr
+      );
+      $resource_name = implode('_', $resource_name_arr);
+      $resource_path = implode('/', $resource_name_arr);
+    }
     $this->taskCreateFile(
       Asar::constructPath(
         $this->getProjectPath($directory), 'apps', $appname, 
-        'Resource', 'Application.php'
+        'Resource', ltrim($resource_path, '/') . '.php'
       ),
       "<?php\n" .
-        "class " . $appname . "_Application extends Asar_Application {\n" .
-        "  \n".
+        "class " . $appname . "_Resource" . $resource_name . " extends Asar_Resource {\n" .
+        "  \n" .
+        "  function GET() {\n".
+        "    \n" .
+        "  }\n" .
+        "  \n" .
         "}\n"
     );
   }

@@ -249,7 +249,8 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   function testCreatingProject() {
     $cli = $this->getMock(
       'Asar_Utility_CLI', array(
-        'taskCreateProjectDirectories', 'taskCreateApplication'
+        'taskCreateProjectDirectories', 'taskCreateApplication',
+        'taskCreateResource'
       )
     );
     $cli->expects($this->once())
@@ -259,6 +260,12 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       ->method('taskCreateApplication')
       ->with(
         $this->equalTo('mydir'), $this->equalTo('AnApp')
+      );
+    $cli->expects($this->once())
+      ->method('taskCreateResource')
+      ->with(
+        $this->equalTo('mydir'), $this->equalTo('AnApp'),
+        $this->equalTo('/')
       );
     $cli->taskCreateProject('mydir', 'AnApp');
   }
@@ -281,7 +288,16 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
     $cli->taskCreateApplication('thedir', 'TheApp');
   }
   
-  function testCreateController() {
+  function testCreateResource(array $data = array()) {
+    if (empty($data)) {
+      $data = array(
+        'project' => 'project',
+        'app' => 'MyApp',
+        'url' => '/foo',
+        'expected_resource_name' => 'Foo',
+        'expected_resource_path' => 'Foo'
+      );
+    }
     $cli = $this->getMock(
       'Asar_Utility_CLI', array('taskCreateFile')
     );
@@ -289,21 +305,44 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       ->method('taskCreateFile')
       ->with(
         $this->equalTo(Asar::constructPath(
-          self::getTempDir(), 'project', 'apps', 'MyApp', 'Resource',
-          'Foo.php'
+          self::getTempDir(), $data['project'], 'apps', $data['app'], 'Resource',
+          $data['expected_resource_path'] . '.php'
         )),
         $this->equalTo(
           "<?php\n" .
-          "class MyApp_Resource_Foo extends Asar_Resource {\n" .
+          "class " . $data['app'] . "_Resource_" . 
+            $data['expected_resource_name'] . " extends Asar_Resource {\n" .
           "  \n" .
           "  function GET() {\n".
           "    \n" .
           "  }\n" .
+          "  \n" .
           "}\n"
         )
       );
-    $cli->taskCreateResource('project', 'MyApp', 'Foo');
+    $cli->taskCreateResource($data['project'], $data['app'], $data['url']);
   }
+  
+  function testCreateResourceIndex() {
+    $this->testCreateResource(array(
+      'project' => 'aproject',
+      'app' => 'AnApp',
+      'url' => '/',
+      'expected_resource_name' => 'Index',
+      'expected_resource_path' => 'Index'
+    ));
+  }
+  
+  function testCreateResourceMultiLevelPath() {
+    $this->testCreateResource(array(
+      'project' => 'foo',
+      'app' => 'BarApp',
+      'url' => '/foo/bar/baz',
+      'expected_resource_name' => 'Foo_Bar_Baz',
+      'expected_resource_path' => 'Foo/Bar/Baz'
+    ));
+  }
+  
   
   function testCreatingProjectCreatesFrontController() {
     $this->markTestIncomplete();
