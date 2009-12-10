@@ -251,7 +251,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       'Asar_Utility_CLI', array(
         'taskCreateProjectDirectories', 'taskCreateApplication',
         'taskCreateResource', 'taskCreateFrontController',
-        'taskCreateHtaccessFile', 'taskCreateTaskFile'
+        'taskCreateHtaccessFile', 'taskCreateTasksFile'
       )
     );
     $cli->expects($this->once())
@@ -267,7 +267,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       ->method('taskCreateHtaccessFile')
       ->with( $this->equalTo('mydir') );
     $cli->expects($this->once())
-      ->method('taskCreateTaskFile')
+      ->method('taskCreateTasksFile')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
     $cli->expects($this->once())
       ->method('taskCreateResource')
