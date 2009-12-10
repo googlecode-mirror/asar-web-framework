@@ -250,7 +250,8 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
     $cli = $this->getMock(
       'Asar_Utility_CLI', array(
         'taskCreateProjectDirectories', 'taskCreateApplication',
-        'taskCreateResource'
+        'taskCreateResource', 'taskCreateFrontController',
+        'taskCreateHtaccessFile', 'taskCreateTaskFile'
       )
     );
     $cli->expects($this->once())
@@ -258,9 +259,16 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
     $cli->expects($this->once())
       ->method('taskCreateApplication')
-      ->with(
-        $this->equalTo('mydir'), $this->equalTo('AnApp')
-      );
+      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
+    $cli->expects($this->once())
+      ->method('taskCreateFrontController')
+      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
+    $cli->expects($this->once())
+      ->method('taskCreateHtaccessFile')
+      ->with( $this->equalTo('mydir') );
+    $cli->expects($this->once())
+      ->method('taskCreateTaskFile')
+      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
     $cli->expects($this->once())
       ->method('taskCreateResource')
       ->with(
@@ -270,21 +278,24 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
     $cli->taskCreateProject('mydir', 'AnApp');
   }
   
-  function testCreateApplicationFile() {
+  function _testCreatingAFile($file, $contents ) {
     $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateFile'));
     $cli->expects($this->once())
       ->method('taskCreateFile')
-      ->with(
-        $this->equalTo(Asar::constructPath(
-          self::getTempDir(), 'thedir', 'apps', 'TheApp', 'Application.php'
-        )),
-        $this->equalTo(
-          "<?php\n" .
-          "class TheApp_Application extends Asar_Application {\n" .
-          "  \n".
-          "}\n"
-        )
-      );
+      ->with( $this->equalTo($file), $this->equalTo($contents) );
+    return $cli;
+  }
+  
+  function testCreateApplicationFile() {
+    $cli = $this->_testCreatingAFile(
+      Asar::constructPath(
+        self::getTempDir(), 'thedir', 'apps', 'TheApp', 'Application.php'
+      ),
+      "<?php\n" .
+      "class TheApp_Application extends Asar_Application {\n" .
+      "  \n".
+      "}\n"
+    );
     $cli->taskCreateApplication('thedir', 'TheApp');
   }
   
@@ -298,28 +309,21 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
         'expected_resource_path' => 'Foo'
       );
     }
-    $cli = $this->getMock(
-      'Asar_Utility_CLI', array('taskCreateFile')
+    $cli = $this->_testCreatingAFile(
+      Asar::constructPath(
+        self::getTempDir(), $data['project'], 'apps', $data['app'], 'Resource',
+        $data['expected_resource_path'] . '.php'
+      ),
+      "<?php\n" .
+      "class " . $data['app'] . "_Resource_" . 
+        $data['expected_resource_name'] . " extends Asar_Resource {\n" .
+      "  \n" .
+      "  function GET() {\n".
+      "    \n" .
+      "  }\n" .
+      "  \n" .
+      "}\n"
     );
-    $cli->expects($this->once())
-      ->method('taskCreateFile')
-      ->with(
-        $this->equalTo(Asar::constructPath(
-          self::getTempDir(), $data['project'], 'apps', $data['app'], 'Resource',
-          $data['expected_resource_path'] . '.php'
-        )),
-        $this->equalTo(
-          "<?php\n" .
-          "class " . $data['app'] . "_Resource_" . 
-            $data['expected_resource_name'] . " extends Asar_Resource {\n" .
-          "  \n" .
-          "  function GET() {\n".
-          "    \n" .
-          "  }\n" .
-          "  \n" .
-          "}\n"
-        )
-      );
     $cli->taskCreateResource($data['project'], $data['app'], $data['url']);
   }
   
@@ -345,14 +349,31 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   
   
   function testCreatingProjectCreatesFrontController() {
-    $this->markTestIncomplete();
-    $cli = $this->getMock(
-      'Asar_Utility_CLI', array('taskCreateProjectDirectories')
+    $cli = $this->_testCreatingAFile(
+      Asar::constructPath(
+        self::getTempDir(), 'mydir', 'web', 'index.php'
+      ),
+      "<?php\n" .
+      "set_include_path(\n" .
+      "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n" .
+      "  realpath(dirname(__FILE__) . '/../vendor') . PATH_SEPARATOR .\n" .
+      "  get_include_path()\n" .
+      ");\n" .
+      "require_once 'Asar.php';\n" .
+      "Asar::start('MyApp');\n"
     );
-    $cli->expects($this->once())
-      ->method('taskCreateProjectDirectories')
-      ->with($this->equalTo('adir'));
-    $cli->taskCreateProject('adir', 'MyApp');
+    $cli->taskCreateFrontController('mydir', 'MyApp');
+  }
+  
+  function testCreatingProjectCreatesTaskFile() {
+    $cli = $this->_testCreatingAFile(
+      Asar::constructPath(
+        self::getTempDir(), 'project', 'tasks.php'
+      ),
+      "<?php\n" .
+      '$main_app = \'FooApp\';' . "\n"
+    );
+    $cli->taskCreateTasksFile('project', 'FooApp');
   }
   
 }

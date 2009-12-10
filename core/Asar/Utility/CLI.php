@@ -52,7 +52,26 @@ class Asar_Utility_CLI {
   function taskCreateProject($directory, $appname) {
     $this->taskCreateProjectDirectories($directory, $appname);
     $this->taskCreateApplication($directory, $appname);
+    $this->taskCreateFrontController($directory, $appname);
     $this->taskCreateResource($directory, $appname, '/');
+    $this->taskCreateTasksFile($directory, $appname);
+    $this->taskCreateHtaccessFile($directory);
+  }
+  
+  function taskCreateFrontController($directory, $appname) {
+    $this->taskCreateFile(
+      Asar::constructPath(
+        $this->getProjectPath($directory), 'web', 'index.php'
+      ),
+      "<?php\n" .
+      "set_include_path(\n" .
+      "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n" .
+      "  realpath(dirname(__FILE__) . '/../vendor') . PATH_SEPARATOR .\n" .
+      "  get_include_path()\n" .
+      ");\n" .
+      "require_once 'Asar.php';\n" .
+      "Asar::start('$appname');\n"
+    );
   }
   
   function taskCreateApplication($directory, $appname) {
@@ -128,6 +147,16 @@ class Asar_Utility_CLI {
         "RewriteCond %{REQUEST_FILENAME} !-d\n".
         "RewriteRule . /index.php [L]\n".
         "</IfModule>\n"
+    );
+  }
+  
+  function taskCreateTasksFile($directory, $appname) {
+    $this->taskCreateFile(
+      Asar::constructPath(
+        $this->getProjectPath($directory), 'tasks.php'
+      ),
+      "<?php\n" .
+        '$main_app = \'' . $appname . '\';' . "\n"
     );
   }
   
