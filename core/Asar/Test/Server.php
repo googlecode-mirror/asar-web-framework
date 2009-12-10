@@ -49,7 +49,8 @@ class Asar_Test_Server {
     if ($server_dir !== realpath($test_server_path)) {
       self::deleteIf($test_server_path);
       $paths = self::absoluteToRelative($test_server_path, $server_dir);
-      $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " . 
+      chdir($paths['base_path']);
+      $command = 'cd ' . escapeshellarg($paths['base_path']) . " ; " .
         'ln -s ' . escapeshellarg($paths['to']) . ' ' . 
         escapeshellarg($paths['from']);
       exec($command);
@@ -57,7 +58,7 @@ class Asar_Test_Server {
   }
   
   private static function deleteIf($path) {
-    if (is_link($path) || file_exists($path)) {
+    if (is_link($path) || file_exists(realpath($path))) {
       unlink($path);
     }
   }
