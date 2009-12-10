@@ -32,7 +32,7 @@ class Asar_ViewTest extends Asar_Test_Helper {
 	private static $template_contents = '
 <h2>This is in included template</h2>
 <p><?= $var ?></p>
-<p><strong><?= $var2 ?></strong></p>
+<p><strong><?= $this->var2 ?></strong></p>
 ';
 
     protected function setUp() {

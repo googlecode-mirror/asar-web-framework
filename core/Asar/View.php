@@ -49,6 +49,13 @@ class Asar_View {
 		return $this->vars;
 	}
 	
+	function __get($name) {
+	  if (array_key_exists($name, $this->vars)) {
+	    return $this->vars[$name];
+	  }
+	  return NULL;
+	}
+	
 	
 	
     /**

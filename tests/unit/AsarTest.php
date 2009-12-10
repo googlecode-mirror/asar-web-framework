@@ -85,6 +85,7 @@ class AsarTest extends Asar_Test_Helper {
     $this->assertFalse(class_exists($class_name, false), 'Class definition was loaded already!');
     
     // Create a file that follows naming convention
+    chdir(dirname(__FILE__)); // Fixes getcwd problems. 
     if (!file_exists('Temp/Class')) {
       mkdir('Temp', 0777, true);
       mkdir('Temp/Class', 0777, true);
@@ -401,7 +402,8 @@ class AsarTest extends Asar_Test_Helper {
    **/
   
   /*
-  function testDebugOnlyWhenInDevelopmentMode() {
+  function testDebugOnlyWhenInDevelopmentMode()
+ {
     Asar::setMode(Asar::MODE_PRODUCTION);
     Asar::debug('Another Title', 'Another debug message');
     $this->assertEquals(array(), Asar::getDebugMessages(), 'The debug messages was not reset');
