@@ -78,4 +78,22 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
     );
   }
   
+  function testCreateMultiLevelResource() {
+    $this->execute('create-project aproject AnApp');
+    chdir('aproject');
+    $this->execute('create-resource /foo/bar/baz');
+    $files = array(
+      'Foo.php'         => 'Foo',
+      'Foo/Bar.php'     => 'Foo_Bar',
+      'Foo/Bar/Baz.php' => 'Foo_Bar_Baz'
+    );
+    foreach ($files as $file => $name) {
+      $this->assertFileExists('apps/AnApp/Resource/' . $file);
+      $this->assertContains(
+        "class AnApp_Resource_$name extends Asar_Resource {",
+        file_get_contents('apps/MyApp/Resource/Foo.php')
+      );
+    }
+  }
+  
 }

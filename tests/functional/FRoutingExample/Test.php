@@ -48,14 +48,6 @@ class FRoutingExample_Test extends PHPUnit_Framework_TestCase {
     );
   }
   
-  function testGetMultiLevelPath1b() {
-    /** Should we redirect? **/
-    $this->testGetAResource(
-      '/root/a_branch/',
-      'RoutingExample_Resource_Root_ABranch'
-    );
-  }
-  
   function testGetMultiLevelPath3() {
     $this->testGetAResource(
       '/root/a_branch/another-branch/leaf',

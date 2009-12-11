@@ -287,7 +287,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
     $cli->expects($this->once())
       ->method('taskCreateApplication')
-      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
+      ->with( $this->equalTo('AnApp'), $this->equalTo('mydir') );
     $cli->expects($this->once())
       ->method('taskCreateFrontController')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
@@ -306,10 +306,18 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
   
   function _testCreatingAFile($file, $contents ) {
+    return $this->_testCreatingMultipleFiles(array($file => $contents));
+  }
+  
+  function _testCreatingMultipleFiles(array $files ) {
     $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateFile'));
-    $cli->expects($this->at(0))
-      ->method('taskCreateFile')
-      ->with( $this->equalTo($file), $this->equalTo($contents) );
+    $i = 0;
+    foreach ($files as $file => $contents) {
+      $cli->expects($this->at($i))
+        ->method('taskCreateFile')
+        ->with( $this->equalTo($file), $this->equalTo($contents) );
+      $i++;
+    }
     return $cli;
   }
   
@@ -323,7 +331,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       "  \n".
       "}\n"
     );
-    $cli->taskCreateApplication('thedir', 'TheApp');
+    $cli->taskCreateApplication('TheApp', 'thedir');
   }
   
   function testCreateResource(array $data = array()) {
@@ -336,21 +344,28 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
         'expected_resource_path' => 'Foo'
       );
     }
-    $cli = $this->_testCreatingAFile(
-      Asar::constructPath(
-        self::getTempDir(), $data['project'], 'apps', $data['app'], 'Resource',
-        $data['expected_resource_path'] . '.php'
-      ),
-      "<?php\n" .
-      "class " . $data['app'] . "_Resource_" . 
-        $data['expected_resource_name'] . " extends Asar_Resource {\n" .
-      "  \n" .
-      "  function GET() {\n".
-      "    \n" .
-      "  }\n" .
-      "  \n" .
-      "}\n"
+    $names  = explode('_', str_replace('__', '_|', $data['expected_resource_name']));
+    $levels = explode('/', $data['expected_resource_path']);
+    $files = array();
+    $current_path = Asar::constructPath(
+      self::getTempDir(), $data['project'], 'apps', $data['app'], 'Resource'
     );
+    $current_name = $data['app'] . "_Resource";
+    for ($i = 0; $i < count($names); $i++) {
+      $current_path .= DIRECTORY_SEPARATOR . $levels[$i];
+      $current_name .= '_' . str_replace('|', '_', $names[$i]);
+      $files[$current_path . '.php'] = 
+        "<?php\n" .
+        "class " . $current_name . " extends Asar_Resource {\n" .
+        "  \n" .
+        "  function GET() {\n".
+        "    \n" .
+        "  }\n" .
+        "  \n" .
+        "}\n";
+    }
+    //var_dump($files);
+    $cli = $this->_testCreatingMultipleFiles($files);
     $cli->taskCreateResource($data['url'], $data['app'], $data['project']);
   }
   

@@ -51,7 +51,7 @@ class Asar_Utility_CLI {
   
   function taskCreateProject($directory, $appname) {
     $this->taskCreateProjectDirectories($directory, $appname);
-    $this->taskCreateApplication($directory, $appname);
+    $this->taskCreateApplication($appname, $directory);
     $this->taskCreateFrontController($directory, $appname);
     $this->taskCreateResource('/', $appname, $directory);
     $this->taskCreateTasksFile($directory, $appname);
@@ -74,7 +74,7 @@ class Asar_Utility_CLI {
     );
   }
   
-  function taskCreateApplication($directory, $appname) {
+  function taskCreateApplication($appname, $directory) {
     $this->taskCreateFile(
       Asar::constructPath(
         $this->getProjectPath($directory), 'apps', $appname, 'Application.php'
