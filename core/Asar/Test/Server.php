@@ -8,7 +8,6 @@ class Asar_Test_Server {
     
     $similarity = array();
     $len = count($from_arr);
-    $i = 0;
     $n = 0;
     while (count($from_arr) !== 0 && $n != 1000) {
       if ($from_arr[0] == $to_arr[0]) {
@@ -20,6 +19,9 @@ class Asar_Test_Server {
       $n++;
     }
     $result_path = '';
+    for ($i = 0; $i < count($from_arr) - 1; $i++) {
+      $result_path .= '..' . DIRECTORY_SEPARATOR;
+    }
     $result_path .= implode( DIRECTORY_SEPARATOR, $to_arr);
     return array(
       'base_path' => implode(DIRECTORY_SEPARATOR, $similarity),

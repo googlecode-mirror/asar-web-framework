@@ -6,7 +6,7 @@ require_once 'Asar.php';
 class Asar_ClientHttpTest extends Asar_Test_Helper
 {
     
-    private $can_connect_to_test_server = null;
+    private static $can_connect_to_test_server = null;
     
     public function setUp()
     {
@@ -20,12 +20,12 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
     
     private function _isCanConnectToTestServer()
     {
-        if (is_null($this->can_connect_to_test_server)) {
+        if (is_null(self::$can_connect_to_test_server)) {
             $this->can_connect_to_test_server = false;
             Asar_Test_Server::setUp(array('fixture' => 'normal'));
             $fp = @fsockopen('asar-test.local', 80, $errno, $errstr, 30);
             if (!$fp) {
-                return false;
+                self::$can_connect_to_test_server = false;
             } else {
                 $out = "GET / HTTP/1.1\r\n";
                 $out .= "Host: asar-test.local\r\n";
@@ -33,15 +33,14 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
                 fwrite($fp, $out);
                 $test = stream_get_contents($fp);
                 if (strpos($test,'<h1>This is the Great HTML</h1>') > 0) {
-                    $this->can_connect_to_test_server = true;
+                    self::$can_connect_to_test_server = true;
                 } else {
-                    /*echo 'Was able to connect to asar-test.local but did not ' .
-                        "find test fixtures. Please check server setup.\n\n";*/
+                    self::$can_connect_to_test_server = false;
                 }
+                fclose($fp);
             }
-            fclose($fp);
         }
-        return $this->can_connect_to_test_server;
+        return self::$can_connect_to_test_server;
     }
     
     public function testClientShouldSetServer()
@@ -261,7 +260,10 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
     {
         $client = $this->getMock(
             'Asar_Client', 
-            array('createRawHttpRequestString', 'sendRawHttpRequest')
+            array(
+              'createRawHttpRequestString', 'sendRawHttpRequest', 
+              'exportRawHttpResponse'
+            )
         );
         $R = array('yoyo');
         $client->expects($this->once())
