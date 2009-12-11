@@ -236,8 +236,8 @@ class AsarTest extends Asar_Test_Helper {
   function testConstructPath() {
     $_ = DIRECTORY_SEPARATOR;
     $this->assertEquals(
-      Asar::constructPath('some', 'path', 'to', 'a', 'file.php'),
       'some'. $_ . 'path' . $_ . 'to' . $_ . 'a' . $_ . 'file.php',
+      Asar::constructPath('some', 'path', 'to', 'a', 'file.php'),
       'Unable to create path using "constructPath".'
     );
   }
@@ -245,8 +245,8 @@ class AsarTest extends Asar_Test_Helper {
   function testConstructPath2() {
     $_ = DIRECTORY_SEPARATOR;
     $this->assertEquals(
-      Asar::constructPath('a', 'path', 'to', 'a', 'a'),
       'a'. $_ . 'path' . $_ . 'to' . $_ . 'a' . $_ . 'a',
+      Asar::constructPath('a', 'path', 'to', 'a', 'a'),
       'Unable to create path using "constructPath".'
     );
   }
@@ -254,8 +254,17 @@ class AsarTest extends Asar_Test_Helper {
   function testConstructPath3() {
     $_ = DIRECTORY_SEPARATOR;
     $this->assertEquals(
-      Asar::constructPath('a/', 'path', 'to\\', 'a', 'a'),
       'a'. $_ . 'path' . $_ . 'to' . $_ . 'a' . $_ . 'a',
+      Asar::constructPath('a/', 'path', 'to\\', 'a', 'a'),
+      'Unable to create path using "constructPath".'
+    );
+  }
+  
+  function testConstructPath4() {
+    $_ = DIRECTORY_SEPARATOR;
+    $this->assertEquals(
+      'a'. $_ . 'to' . $_ . 'c',
+      Asar::constructPath('a', '', 'to', '', 'c'),
       'Unable to create path using "constructPath".'
     );
   }
@@ -263,8 +272,8 @@ class AsarTest extends Asar_Test_Helper {
   function testConstructRealPath() {
     $_ = DIRECTORY_SEPARATOR;
     $this->assertEquals(
-      Asar::constructRealPath(dirname(__FILE__), '..', '..'),
       realpath(dirname(__FILE__) . $_  . '..' . $_ . '..'),
+      Asar::constructRealPath(dirname(__FILE__), '..', '..'),
       'Unable to create path using "constructRealPath".'
     );
   }

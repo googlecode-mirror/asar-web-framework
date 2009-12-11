@@ -206,7 +206,11 @@ class Asar {
   static function constructPath() {
     $args = func_get_args();
     array_walk($args, array('self', 'stripEndSlashes'));
-    return implode(DIRECTORY_SEPARATOR, $args);
+    // Join everything and replace occurences of double slashes ('//') with '/'
+    return str_replace(
+      DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR,
+      implode(DIRECTORY_SEPARATOR, $args)
+    );
   }
   
   static private function stripEndSlashes(&$string) {

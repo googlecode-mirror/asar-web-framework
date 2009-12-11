@@ -53,7 +53,7 @@ class Asar_Utility_CLI {
     $this->taskCreateProjectDirectories($directory, $appname);
     $this->taskCreateApplication($directory, $appname);
     $this->taskCreateFrontController($directory, $appname);
-    $this->taskCreateResource($directory, $appname, '/');
+    $this->taskCreateResource('/', $appname, $directory);
     $this->taskCreateTasksFile($directory, $appname);
     $this->taskCreateHtaccessFile($directory);
   }
@@ -86,14 +86,25 @@ class Asar_Utility_CLI {
     );
   }
   
-  function taskCreateResource($directory, $appname, $url) {
+  static function _formatPathLevel($path) {
+    if ($path == '*') {
+      return '_Item';
+    }
+    return Asar_Utility_String::camelCase($path);
+  }
+  
+  function taskCreateResource($url, $appname = '', $directory = '') {
+    if (file_exists('tasks.php')) {
+      include 'tasks.php';
+      $appname = $main_app;
+    }
     if ($url == '/') {
       $resource_name = '_Index';
       $resource_path = 'Index';
     } else {
       $resource_name_arr = explode('/', $url);
       $resource_name_arr = array_map(
-        array('Asar_Utility_String', 'camelCase'), $resource_name_arr
+        array('self', '_formatPathLevel'), $resource_name_arr
       );
       $resource_name = implode('_', $resource_name_arr);
       $resource_path = implode('/', $resource_name_arr);
@@ -132,7 +143,7 @@ class Asar_Utility_CLI {
     }
     
     foreach ($directories as $directory) {
-      mkdir(Asar::constructPath($project_path, $directory));
+      $this->taskCreateDirectory(Asar::constructPath($project_path, $directory));
     }
   }
   
@@ -162,7 +173,12 @@ class Asar_Utility_CLI {
   
   function taskCreateFile($path, $contents) {
     Asar_File::create($path)->write($contents)->save();
-    echo "\nCreated: " . str_replace($this->cwd, '', $path);
+    echo "\nCreated: " . str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
+  }
+  
+  function taskCreateDirectory($path) {
+    mkdir($path);
+    echo "\nCreated: " . str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
   }
 
 }
