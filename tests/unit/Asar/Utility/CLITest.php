@@ -19,6 +19,10 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       "</IfModule>\n";
   }
   
+  function mock($methods = array()) {
+    return $this->getMock('Asar_Utility_CLI', $methods);
+  }
+  
   function testInterpretingCommands() {
     $arguments = array(
       '/the/cli/caller', '--flag1', '--flag2', 'the-command', 'arg1', 'arg2'
@@ -80,9 +84,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
 
   function testExecutePassesArgumentsToInterpret() {
-    $this->cli = $this->getMock( 
-      'Asar_Utility_CLI', array('interpret')
-    );
+    $this->cli = $this->mock(array('interpret'));
     $arguments = array(
       '/cli/ui/front', '--aflag'
     );
@@ -109,9 +111,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
   
   function testCreatingProjectDirectoriesThroughExecute() {
-    $this->cli = $this->getMock(
-      'Asar_Utility_CLI', array('taskCreateProjectDirectories')
-    );
+    $this->cli = $this->mock(array('taskCreateProjectDirectories'));
     $this->cli->expects($this->once())
       ->method('taskCreateProjectDirectories')
       ->with($this->equalTo('adirectory'));
@@ -133,7 +133,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
       )
     );
     foreach ($commands as $method => $args) {
-      $cli = $this->getMock('Asar_Utility_CLI', array('__call'));
+      $cli = $this->mock(array('__call'));
       $command = array_shift($args);
       $cli->expects($this->any())
         ->method('__call')
@@ -149,44 +149,86 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   
   function testCreateFile() {
     $path = self::getTempDir() . 'afile.txt';
-    $contents = "The path to the file. Hehehe.";
+    $contents = "The contents of the file. Hehehe.";
     ob_start();
     $this->cli->taskCreateFile( $path, $contents );
     $feedback = ob_get_clean();
-    $this->assertFileExists($path);
     $this->assertSame("\nCreated: afile.txt", $feedback);
-    $this->assertEquals($contents, file_get_contents($path));
+  }
+  
+  function testCreateFileWhenFileExists() {
+    $subpath = 'adifferentfile.txt';
+    $path = self::getTempDir() . $subpath;
+    $contents = "Foo Hehehe.";
+    Asar_File::create($path)->write($contents)->save();
+    ob_start();
+    $this->cli->taskCreateFile( $subpath, $contents );
+    $feedback = ob_get_clean();
+    $this->assertFileExists($path);
+    $this->assertSame(
+      "\nSkipped - File exists: $subpath", $feedback
+    );
+  }
+  
+  private function _createDirectory($subpath) {
+    $path = self::getTempDir() . $subpath;
+    ob_start();
+    $this->cli->taskCreateDirectory($path);
+    return array('feedback' => ob_get_clean(), 'full_path' => $path);
   }
   
   function testCreateDirectory() {
-    $path = self::getTempDir() . 'adirectory';
-    ob_start();
-    $this->cli->taskCreateDirectory( $path );
-    $feedback = ob_get_clean();
-    $this->assertFileExists($path);
-    $this->assertSame("\nCreated: adirectory", $feedback);
+    $subpath = 'adirectory';
+    $data = $this->_createDirectory($subpath);
+    $this->assertFileExists($data['full_path']);
+    $this->assertSame("\nCreated: " . $subpath, $data['feedback']);
+  }
+  
+  function testCreateDirectoryWhenDirectoryExists() {
+    $subpath = 'some-directory';
+    mkdir(self::getTempDir() . $subpath);
+    $data = $this->_createDirectory($subpath);
+    $this->assertSame(
+      "\nSkipped - Directory exists: $subpath", $data['feedback']
+    );
+  }
+  
+  function testCreateFileAndDirectory() {
+    $cli = $this->mock(array('taskCreateDirectory', 'taskCreateFile'));
+    $path = Asar::constructPath(
+      self::getTempDir(), 'folder', 'thefile.txt'
+    );
+    $contents = 'Foo Bar.';
+    $cli->expects($this->at(0))
+      ->method('taskCreateDirectory')
+      ->with($this->equalTo(dirname($path)));
+    $cli->expects($this->at(1))
+      ->method('taskCreateFile')
+      ->with($this->equalTo($path), $this->equalTo($contents));
+    $cli->taskCreateFileAndDirectory($path, $contents);
   }
   
   function testCreatingProjectDirectories() {
-    $project_path = self::getTempDir() . 'adir';
+    $project_path = self::getTempDir() . 'xdir';
     $directories = array(
       '', // $project_path
-      'apps', 'vendor', 'web', 'tests', 'logs'
+      'apps', 'lib', 'lib/vendor', 'web', 'tests', 'logs'
     );
     ob_start();
-    $this->cli->taskCreateProjectDirectories('adir');
+    $this->cli->taskCreateProjectDirectories('xdir');
     ob_end_clean();
     foreach ($directories as $directory) {
-      $this->assertFileExists(Asar::constructPath($project_path), $directory);
+      $this->assertFileExists(Asar::constructPath($project_path, $directory));
     }
   }
   
   function testCreatingProjectDirectoriesUsesCreateDirectory() {
-    $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateDirectory'));
+    $cli = $this->mock(array('taskCreateDirectory'));
     $project_path = self::getTempDir() . 'adir';
     $directories = array(
       '', // $project_path
-      'apps', 'vendor', 'web', 'tests', 'logs'
+      'apps', 'lib', 'lib/vendor', 'web', 'tests', 'tests/data', 
+      'tests/functional', 'tests/unit', 'logs'
     );
     $i = 0;
     foreach ($directories as $directory) {
@@ -247,7 +289,7 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
   
   function testCreatingHtaccessUsesCreateFileTask() {
-    $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateFile'));
+    $cli = $this->mock(array('taskCreateFile'));
     $cli->expects($this->once())
       ->method('taskCreateFile')
       ->with(
@@ -275,14 +317,12 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
   
   function testCreatingProject() {
-    $cli = $this->getMock(
-      'Asar_Utility_CLI', array(
-        'taskCreateProjectDirectories', 'taskCreateApplication',
-        'taskCreateResource', 'taskCreateFrontController',
-        'taskCreateHtaccessFile', 'taskCreateTasksFile'
-      )
-    );
-    $cli->expects($this->once())
+    $cli = $this->mock(array(
+      'taskCreateProjectDirectories', 'taskCreateApplication',
+      'taskCreateResource', 'taskCreateFrontController',
+      'taskCreateHtaccessFile', 'taskCreateTasksFile'
+    ));
+    $cli->expects($this->at(0))
       ->method('taskCreateProjectDirectories')
       ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
     $cli->expects($this->once())
@@ -309,12 +349,14 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
     return $this->_testCreatingMultipleFiles(array($file => $contents));
   }
   
-  function _testCreatingMultipleFiles(array $files ) {
-    $cli = $this->getMock('Asar_Utility_CLI', array('taskCreateFile'));
+  function _testCreatingMultipleFiles(array $files, $use_alternative = false ) {
+    $create_method = $use_alternative ? 
+      'taskCreateFileAndDirectory' : 'taskCreateFile';
+    $cli = $this->mock(array($create_method));
     $i = 0;
     foreach ($files as $file => $contents) {
       $cli->expects($this->at($i))
-        ->method('taskCreateFile')
+        ->method($create_method)
         ->with( $this->equalTo($file), $this->equalTo($contents) );
       $i++;
     }
@@ -364,9 +406,12 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
         "  \n" .
         "}\n";
     }
-    //var_dump($files);
-    $cli = $this->_testCreatingMultipleFiles($files);
-    $cli->taskCreateResource($data['url'], $data['app'], $data['project']);
+    $cli = $this->_testCreatingMultipleFiles($files, true);
+    if (array_key_exists('project_context', $data) && $data['project_context']) {
+      $cli->taskCreateResource($data['url']);
+    } else {
+      $cli->taskCreateResource($data['url'], $data['app'], $data['project']);
+    }
   }
   
   function testCreateResourceIndex() {
@@ -403,23 +448,15 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
     Asar_File::create('tasks.php')
       ->write('<?php $main_app = "TestApp";')
       ->save();
-    $cli = $this->_testCreatingAFile(
-      Asar::constructPath(
-        self::getTempDir(), 'apps', 'TestApp', 'Resource',
-        'Foo', 'Bar.php'
-      ),
-      "<?php\n" .
-      "class TestApp_Resource_Foo_Bar extends Asar_Resource {\n" .
-      "  \n" .
-      "  function GET() {\n".
-      "    \n" .
-      "  }\n" .
-      "  \n" .
-      "}\n"
-    );
-    $cli->taskCreateResource('/foo/bar');
+    $this->testCreateResource(array(
+      'project' => '',
+      'app' => 'TestApp',
+      'url' => '/foo/bar',
+      'expected_resource_name' => 'Foo_Bar',
+      'expected_resource_path' => 'Foo/Bar',
+      'project_context' => true
+    ));
   }
-  
   
   function testCreatingProjectCreatesFrontController() {
     $cli = $this->_testCreatingAFile(

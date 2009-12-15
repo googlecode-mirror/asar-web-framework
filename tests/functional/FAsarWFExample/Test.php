@@ -27,7 +27,10 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
     $this->execute('create-project dummy_project DummyApp');
     $expected_files = array(
       'dummy_project/apps/DummyApp/Application.php',
-      'dummy_project/vendor',
+      'dummy_project/lib/vendor',
+      'dummy_project/tests/data',
+      'dummy_project/tests/functional',
+      'dummy_project/tests/unit',
       'dummy_project/apps/DummyApp/Resource/Index.php',
       'dummy_project/web/index.php',
       'dummy_project/web/.htaccess',
@@ -91,7 +94,7 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
       $this->assertFileExists('apps/AnApp/Resource/' . $file);
       $this->assertContains(
         "class AnApp_Resource_$name extends Asar_Resource {",
-        file_get_contents('apps/MyApp/Resource/Foo.php')
+        file_get_contents('apps/AnApp/Resource/' . $file)
       );
     }
   }

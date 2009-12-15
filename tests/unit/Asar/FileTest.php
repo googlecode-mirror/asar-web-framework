@@ -247,6 +247,23 @@ class Asar_FileTest extends Asar_Test_Helper {
 		}
 	}
 	
+	function testRaiseExceptionWhenCreatingAFileOnANonExistentDirectory() {
+	  try {
+	    Asar_File::create('a/non-existent/directory/file.txt');
+    } catch (Asar_File_Exception $e) {
+      $this->assertEquals(
+        'Asar_File_Exception_DirectoryNotFound', get_class($e)
+      );
+      $this->assertEquals(
+				'Asar_File::create failed. Unable to find the directory to create the '.
+				'file to (a/non-existent/directory).',
+				$e->getMessage()
+			);
+			return;
+    }
+    $this->fail('Did not raise expected exception (Asar_File_Exception).');
+	}
+	
 	public function testSettingContentUsingArrayAsArgument() {
 	    $content = array('AA', 'BB', 'CC', 'DD');
 		$testFileName = self::getTempDir().'temp/XXXXXXtest.txt';
