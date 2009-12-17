@@ -52,8 +52,9 @@ class Asar {
   static function start($application_name) {
     // $application_name must be found by ('ApplicationName_Application');
     // using PEAR naming convention
-    if (!self::$interpreter)
+    if (!self::$interpreter) {
       self::$interpreter = new Asar_Interpreter;
+    }
     self::$interpreter->interpretFor(
       self::instantiate($application_name.'_Application')
     );

@@ -22,14 +22,11 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$testFileName = self::getTempDir().'Asar_FileTesting.txt';
 		
 		$file = Asar_File::create($testFileName);
-		
-		//$this->assertFalse(file_exists($testFileName), 'Created file  prematurely or was unable to cleanup properly');
-		
 		$file->write($testString)
 		     ->save();
     
-    	$this->assertTrue(file_exists($testFileName), 'Unable to create file');
-	    $this->assertEquals($testString, file_get_contents($testFileName), 'Contents of file is not correct');
+    $this->assertFileExists($testFileName, 'Unable to create file');
+	  $this->assertEquals($testString, file_get_contents($testFileName), 'Contents of file is not correct');
 	}
 	
 	public function testLongWayToCreateFile() {

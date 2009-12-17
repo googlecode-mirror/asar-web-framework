@@ -69,20 +69,20 @@ class Asar_Application implements Asar_Requestable {
                 switch ($status) {
                     case 405:
                         $response->setContent(
-                            'Method Not Allowed (405).' .
+                            'Method Not Allowed (405). ' .
                             'The HTTP Method \'POST\' is not allowed for this resource.'
                         );
                         break;
                     case 406:
                         $response->setContent(
-                            'Not Acceptable (406).' .
+                            'Not Acceptable (406). ' .
                             'An appropriate representation of the requested ' .
 		                        'resource could not be found.'
                         );
                         break;
                     case 500:
                         $response->setContent(
-                            'Internal Server Error (500)' .
+                            'Internal Server Error (500). ' .
                             'The Server has encountered some problems. ' .
                             'The resource returned: '. $response->getContent()
                         );

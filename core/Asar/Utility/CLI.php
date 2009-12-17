@@ -66,7 +66,7 @@ class Asar_Utility_CLI {
       "<?php\n" .
       "set_include_path(\n" .
       "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n" .
-      "  realpath(dirname(__FILE__) . '/../vendor') . PATH_SEPARATOR .\n" .
+      "  realpath(dirname(__FILE__) . '/../lib/vendor') . PATH_SEPARATOR .\n" .
       "  get_include_path()\n" .
       ");\n" .
       "require_once 'Asar.php';\n" .
@@ -99,23 +99,31 @@ class Asar_Utility_CLI {
       $appname = $main_app;
     }
     if ($url == '/') {
-      $resource_name = '_Index';
-      $resource_path = 'Index';
+      $this->_createResourceFile(array('Index'), $appname,  $directory);
     } else {
-      $resource_name_arr = explode('/', $url);
+      $resource_name_arr = explode('/', ltrim($url, '/'));
+      //array_shift($resource_name_arr);
       $resource_name_arr = array_map(
         array('self', '_formatPathLevel'), $resource_name_arr
       );
-      $resource_name = implode('_', $resource_name_arr);
-      $resource_path = implode('/', $resource_name_arr);
+      $resource_name = array();
+      foreach ($resource_name_arr as $level) {
+        $resource_name[] = $level;
+        $this->_createResourceFile(
+          $resource_name, $appname, $directory
+        );
+      }
     }
-    $this->taskCreateFile(
+  }
+  
+  private function _createResourceFile($name, $app, $directory) {
+    $this->taskCreateFileAndDirectory(
       Asar::constructPath(
-        $this->getProjectPath($directory), 'apps', $appname, 
-        'Resource', ltrim($resource_path, '/') . '.php'
+        $this->getProjectPath($directory), 'apps', $app, 
+        'Resource', ltrim(implode('/', $name), '/') . '.php'
       ),
       "<?php\n" .
-        "class " . $appname . "_Resource" . $resource_name . " extends Asar_Resource {\n" .
+        "class " . $app . "_Resource_" . implode('_', $name) . " extends Asar_Resource {\n" .
         "  \n" .
         "  function GET() {\n".
         "    \n" .
@@ -132,8 +140,9 @@ class Asar_Utility_CLI {
   function taskCreateProjectDirectories($root, $app_name = '') {
     $project_path = $this->getProjectPath($root);
     $directories = array(
-      '', // project_root
-      'apps', 'vendor', 'web', 'tests', 'logs'
+      '', // $project_path
+      'apps', 'lib', 'lib/vendor', 'web', 'tests', 'tests/data',
+      'tests/functional', 'tests/unit', 'logs'
     );
     if ($app_name) {
       $app_path = Asar::constructPath('apps', $app_name);
@@ -172,13 +181,31 @@ class Asar_Utility_CLI {
   }
   
   function taskCreateFile($path, $contents) {
-    Asar_File::create($path)->write($contents)->save();
-    echo "\nCreated: " . str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
+    if (!file_exists($path)) {
+      Asar_File::create($path)->write($contents)->save();
+      echo "\nCreated: " . str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
+    } else {
+      echo "\nSkipped - File exists: " .
+        str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);;
+    }
   }
   
   function taskCreateDirectory($path) {
-    mkdir($path);
-    echo "\nCreated: " . str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
+    if (!file_exists($path)) {
+      mkdir($path);
+      echo "\nCreated: " . 
+        str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
+    } else {
+      echo "\nSkipped - Directory exists: " . 
+        str_replace($this->cwd . DIRECTORY_SEPARATOR, '', $path);
+    }
+  }
+  
+  function taskCreateFileAndDirectory($path, $contents) {
+    //if (!file_exists(dirname($path))) {
+      $this->taskCreateDirectory(dirname($path));
+    //}
+    $this->taskCreateFile($path, $contents);
   }
 
 }

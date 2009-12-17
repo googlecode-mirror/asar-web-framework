@@ -44,7 +44,7 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
       "<?php\n" .
       "set_include_path(\n" .
       "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n" .
-      "  realpath(dirname(__FILE__) . '/../vendor') . PATH_SEPARATOR .\n" .
+      "  realpath(dirname(__FILE__) . '/../lib/vendor') . PATH_SEPARATOR .\n" .
       "  get_include_path()\n" .
       ");\n" .
       "require_once 'Asar.php';\n" .

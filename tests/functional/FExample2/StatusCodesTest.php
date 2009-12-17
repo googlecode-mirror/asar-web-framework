@@ -30,8 +30,7 @@ class FExample2_StatusCodesTest extends PHPUnit_Framework_TestCase
         );
     }*/
     
-    function testStatus404()
-	{
+  function testStatus404() {
 		$response = $this->client->GET('/non-existent-path');
 		$this->assertEquals(
 			404, $response->getStatus(),

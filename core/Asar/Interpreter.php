@@ -1,6 +1,8 @@
 <?php
 class Asar_Interpreter implements Asar_Interprets {
   
+  private $response;  
+    
   function interpretFor(Asar_Requestable $requestable) {
     //TODO: How will this behave if $response is not an Asar_Response
     $response = $requestable->handleRequest($this->createRequest());
@@ -30,17 +32,32 @@ class Asar_Interpreter implements Asar_Interprets {
   function exportResponse(Asar_Response $response) {
     $this->exportResponseHeaders($response);
     echo $response->getContent();
+    //var_dump($response);
+    //var_dump(headers_list());
   }
   
   function exportResponseHeaders($response) {
     $headers = $response->getHeaders();
+    $this->response = $response;
+    $i = 0;
+    $length = count($headers);
     foreach ($headers as $name => $value) {
+      $i++;
       $this->header($name . ': ' . $value);
     }
+    $messages = array(
+      200 => 'OK',
+      404 => 'Not Found'
+    );
+    $this->header(
+      'HTTP/1.1 ' . $response->getStatus() . ' '. 
+      $messages[$response->getStatus()]
+    );
   }
   
-  function header($header) {
-    header($header);
+  function header() {
+    $args = func_get_args();
+    @call_user_func_array('header', $args);
   }
   
   private static function createPathFromUri($uri) {

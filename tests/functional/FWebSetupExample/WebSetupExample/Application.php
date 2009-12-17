@@ -1,8 +1,7 @@
 <?php
 class WebSetupExample_Application extends Asar_Application {
 
-    protected function initialize()
-    {
+    protected function initialize() {
         $this->setMap('/', 'Index');
     }
 
