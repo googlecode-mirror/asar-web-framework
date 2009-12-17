@@ -195,6 +195,22 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
 	  $I->exportResponseHeaders($response);
 	}
 	
+	function testExportResponseHeadersUsesResonseStatusMessages() {
+    $status_tests = array(200, 201, 100, 300, 303, 400, 404, 500);
+    $response = new Asar_Response;
+    foreach ($status_tests as $status) {
+      $response->setStatus($status);
+      $I = $this->getMock('Asar_Interpreter', array('header'));
+      $I->expects($this->any())
+        ->method('header')
+        ->with($this->equalTo(
+          "HTTP/1.1 $status " . Asar_Response::getStatusMessage($status)
+        ));
+      $I->exportResponseHeaders($response);
+    }
+	  
+	}
+	
 	
 	function testExportResponseUsesExportResponseHeaders() {
 	  $response = new Asar_Response;

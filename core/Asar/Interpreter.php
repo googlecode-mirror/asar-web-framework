@@ -45,14 +45,9 @@ class Asar_Interpreter implements Asar_Interprets {
       $i++;
       $this->header($name . ': ' . $value);
     }
-    $messages = array(
-      200 => 'OK',
-      404 => 'Not Found'
-    );
-    $this->header(
-      'HTTP/1.1 ' . $response->getStatus() . ' '. 
-      $messages[$response->getStatus()]
-    );
+    $status = $response->getStatus();
+    $message = Asar_Response::getStatusMessage($status);
+    $this->header("HTTP/1.1 $status $message");
   }
   
   function header() {
