@@ -82,4 +82,11 @@ class FWebSetupExample_Test extends PHPUnit_Framework_TestCase
     $this->assertEquals( 406, $response->getStatus());
   }
   
+  function testRequestWithComplexAcceptHeader() {
+    $response = $this->client->GET('/', array(), array('Accept' => 
+      'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    ));
+    $this->assertEquals( 200, $response->getStatus());
+  }
+  
 }
