@@ -30,7 +30,7 @@ class Asar_Utility_CLI {
     if (is_array($exec) && array_key_exists('command', $exec)) {
       $method = 'task' . Asar_Utility_String::camelCase($exec['command']);
       $method_called = false;
-      if (array_key_exists($exec['namespace'], $this->tasklists)) {
+      if (isset($exec['namespace']) && array_key_exists($exec['namespace'], $this->tasklists)) {
         $method_called = $this->invokeTaskMethod(
           $this->tasklists[$exec['namespace']], $method, $exec['arguments']
         );
