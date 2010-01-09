@@ -6,7 +6,13 @@ set_include_path(
 );
 
 require_once 'Asar.php';
-$cli = new Asar_Utility_CLI;
+$cli = Asar_Utility_CLI::instance();
+$cli->register(new Asar_Utility_CLI_BaseTasks);
+
+// Load other tasks
+if (file_exists('tasks.php')) {
+  include_once 'tasks.php';
+}
 $cli->execute($argv);
 ?>
 

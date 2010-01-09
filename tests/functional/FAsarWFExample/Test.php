@@ -7,6 +7,7 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
     // This is so we put all created files in the temporary directory
     chdir(self::getTempDir());
     $this->asarwf = realpath(dirname(__FILE__) . '/../../../bin/asarwf');
+    $this->current_path = dirname(__FILE__);
   }
   
   private function execute($command) {
@@ -22,51 +23,32 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
     );
   }
   
-  function testCreatingProject() {
-    
-    $this->execute('create-project dummy_project DummyApp');
-    $expected_files = array(
-      'dummy_project/apps/DummyApp/Application.php',
-      'dummy_project/lib/vendor',
-      'dummy_project/tests/data',
-      'dummy_project/tests/functional',
-      'dummy_project/tests/unit',
-      'dummy_project/apps/DummyApp/Resource/Index.php',
-      'dummy_project/web/index.php',
-      'dummy_project/web/.htaccess',
-      'dummy_project/tasks.php'
-    );
-    foreach ($expected_files as $file) {
-      $this->assertFileExists($file);
+  protected function _matchPaths($basis, $test) {
+    foreach (scandir($basis) as $file) {
+      // Skip '.' and '..'
+      if (preg_match('/^.{1,2}$/', $file)) {
+        continue;
+      }
+      
+      $base_file = Asar::constructPath($basis, $file);
+      $test_file = Asar::constructPath($test, $file);
+      $this->assertFileExists($test_file);
+      $this->assertEquals(
+        str_replace("\n", '\n', file_get_contents($base_file)),
+        str_replace("\n", '\n', file_get_contents($test_file)),
+        "Failed matching contents of '$test_file'."
+      );
+      if (is_dir($base_file)) {
+        $this->_matchPaths( $base_file, $test_file );
+      }
     }
-    
-    $index_contents = 
-      "<?php\n" .
-      "set_include_path(\n" .
-      "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n" .
-      "  realpath(dirname(__FILE__) . '/../lib/vendor') . PATH_SEPARATOR .\n" .
-      "  get_include_path()\n" .
-      ");\n" .
-      "require_once 'Asar.php';\n" .
-      "Asar::start('DummyApp');\n";
-    $this->assertEquals(
-      $index_contents, file_get_contents('dummy_project/web/index.php')
-    );
-    $htaccess_contents = "<IfModule mod_rewrite.c>\n" .
-      "RewriteEngine On\n".
-      "RewriteBase /\n".
-      "RewriteCond %{REQUEST_FILENAME} !-f\n".
-      "RewriteCond %{REQUEST_FILENAME} !-d\n".
-      "RewriteRule . /index.php [L]\n".
-      "</IfModule>\n";
-    $this->assertEquals(
-      $htaccess_contents, file_get_contents('dummy_project/web/.htaccess')
-    );
-    
-    $task_file_contents = file_get_contents('dummy_project/tasks.php');
-    $this->assertContains("<?php\n", $task_file_contents);
-    $this->assertContains(
-      '$main_app = \'DummyApp\';' . "\n", $task_file_contents
+  }
+  
+  function testCreatingProject() {
+    $this->execute('create-project dummy_project DummyApp');
+    $this->_matchPaths(
+      Asar::constructPath($this->current_path, 'base_project'),
+      Asar::constructPath(self::getTempDir(), 'dummy_project')
     );
   }
   
@@ -100,3 +82,4 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
   }
   
 }
+
