@@ -299,6 +299,15 @@ class AsarTest extends Asar_Test_Helper {
     );
   }
   
+  function testGetFilePathIfFoundInIncludePaths() {
+    $asar_path = realpath(
+      Asar::constructPath(dirname(__FILE__), '..', '..', 'core', 'Asar.php')
+    );
+    $this->assertEquals(
+      $asar_path, Asar::getFilePath('Asar.php')
+    );
+  }
+  
   function testAsarHasInterperterProperty() {
     $this->assertClassHasAttribute(
       'interpreter', 'Asar', 'Asar class has no interpreter property.'

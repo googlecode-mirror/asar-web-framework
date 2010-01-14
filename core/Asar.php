@@ -179,6 +179,10 @@ class Asar {
     return false;
   }
   
+  static function getFilePath($file) {
+    return self::fileExists($file);
+  }
+  
   /**
    * A wrapper method for throwing exceptions
    *
