@@ -25,8 +25,8 @@ class FAsarWFExample_Test extends Asar_Test_Helper {
   
   protected function _matchPaths($basis, $test) {
     foreach (scandir($basis) as $file) {
-      // Skip '.' and '..'
-      if (preg_match('/^.{1,2}$/', $file) || $file == '.svn') {
+      // Skip '.svn',  '.' and '..'
+      if ($file == '.svn' || preg_match('/^.{1,2}$/', $file)) {
         continue;
       }
       
