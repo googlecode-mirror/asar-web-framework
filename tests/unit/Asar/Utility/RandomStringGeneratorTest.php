@@ -104,14 +104,18 @@ class Asar_Utility_RandomStringGeneratorTest extends Asar_Test_Helper {
   
   
   public function testGetRandomNumeric() {
-      if ($this->StrLength == 1)
+      if ($this->StrLength == 1) {
           $this->StrLength == 2;
+      }
       for ($i = 0; $i < 100; $i++) {
         $test = $this->RSG->getNumeric($this->StrLength);
         $this->assertEquals(
           strlen($test), $this->StrLength, 
           'Returned string of different length'
         );
+        if ($test === 0) {
+          continue;
+        }
         $this->assertTrue(
           preg_match('/^[1-9][0-9]*/', $test) > 0, 
           "The result '$test' is not considered numeric."
