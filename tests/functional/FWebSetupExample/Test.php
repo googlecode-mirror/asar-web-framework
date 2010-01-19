@@ -19,7 +19,7 @@ class FWebSetupExample_Test extends PHPUnit_Framework_TestCase
   // Copied from Asar_Unit_ClientHttpTest
   private function _isCanConnectToTestServer() {
     if (is_null(self::$can_connect_to_test_server)) {
-      $this->can_connect_to_test_server = false;
+      self::$can_connect_to_test_server = false;
       Asar_Test_Server::setUp(array('fixture' => 'normal'));
       $fp = @fsockopen('asar-test.local', 80, $errno, $errstr, 30);
       if (!$fp) {

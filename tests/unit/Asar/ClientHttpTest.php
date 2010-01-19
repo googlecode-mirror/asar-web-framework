@@ -21,7 +21,7 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
     private function _isCanConnectToTestServer()
     {
         if (is_null(self::$can_connect_to_test_server)) {
-            $this->can_connect_to_test_server = false;
+            self::$can_connect_to_test_server = false;
             Asar_Test_Server::setUp(array('fixture' => 'normal'));
             $fp = @fsockopen('asar-test.local', 80, $errno, $errstr, 30);
             if (!$fp) {

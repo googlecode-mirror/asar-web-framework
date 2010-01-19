@@ -3,6 +3,9 @@ require_once realpath(dirname(__FILE__). '/../../../config.php');
 require_once 'Asar/Test/Helper.php';
 
 
+// FOR Testing purposes only:
+class Asar_Test_HelperTest_E extends Asar_Test_Helper {}
+
 /**
  * Test for Asar_Test_Helper
  **/
@@ -209,7 +212,6 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
     $file = 'aFolder/anotherFolder/thefile.txt';
     Asar_Test_Helper::newFile($file, '');
     Asar_Test_Helper::newFile('anotherfile', 'some content');
-    eval('class Asar_Test_HelperTest_E extends Asar_Test_Helper {}');
     $testobj = new Asar_Test_HelperTest_E;
     unset($testobj);
     $this->assertFalse(
@@ -366,10 +368,19 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
   function testRandomClassNameGeneratorSettingSuffix() {
     $class_name = Asar_Test_Helper::generateRandomClassName('', 'Rapplication');
     $this->assertTrue(
-      Asar_Test_Helper::isEndsWith($class_name, '_Rapplication'),
+      self::isEndsWith($class_name, '_Rapplication'),
       'Did not set suffix on the generated class name.'
     );
   }
+  
+  function isEndsWith($haystack, $needle)
+	{
+	    if (FALSE !== strpos($haystack, $needle)) {
+	        $nlength = strlen($needle);
+	        return ($needle === substr($haystack, strlen($haystack) - $nlength));
+	    }
+	    return FALSE;
+	}
   
   // TODO: Write custom assertions for these and convert functions
   // that depend on these to the custom assertions
@@ -380,10 +391,11 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
       'churpi-churpi-churpi'  => 'churpi-',
       'AAAAANNNOOOOTTHHHEERR' => 'A'
     );
+    $helper = new Asar_Test_HelperTest_E;
     foreach ($tests as $haystack => $needle)
     {
       $this->assertTrue(
-        Asar_Test_Helper::isStartsWith($haystack, $needle),
+        $helper->isStartsWith($haystack, $needle),
         "Asar_Test_Helper::isStartsWith() should say that '$needle' " .
         "is found at the beginning of '$haystack'."
       );
@@ -398,10 +410,11 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
       'churpi-churpi-churpi'  => '-churpi',
       'AAAAANNNOOOOTTHHHEERR' => 'AN',
     );
+    $helper = new Asar_Test_HelperTest_E;
     foreach ($tests as $haystack => $needle)
     {
       $this->assertFalse(
-        Asar_Test_Helper::isStartsWith($haystack, $needle),
+        $helper->isStartsWith($haystack, $needle),
         "Asar_Test_Helper::isStartsWith() should say that '$needle' " .
         "is NOT found at the beginning of '$haystack'."
       );
@@ -416,9 +429,10 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
       'AAAAANNNOOOOTTHHHEERR' => 'THHHEERR',
       'jumps over the lazy'   => 'e lazy'
     );
+    $helper = new Asar_Test_HelperTest_E;
     foreach ($tests as $haystack => $needle) {
       $this->assertTrue(
-        Asar_Test_Helper::isEndsWith($haystack, $needle),
+        $helper->isEndsWith($haystack, $needle),
         "Asar_Test_Helper::isEndsWith() should say that '$needle' " .
         "is found at the end of '$haystack'."
       );
@@ -435,9 +449,10 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
       'AAAAANNNOOOOTTHHHEERR' => 'A',
       'jumps over the lazy'   => 'over'
     );
+    $helper = new Asar_Test_HelperTest_E;
     foreach ($tests as $haystack => $needle) {
       $this->assertFalse(
-        Asar_Test_Helper::isEndsWith($haystack, $needle),
+        $helper->isEndsWith($haystack, $needle),
         "Asar_Test_Helper::isEndsWith() should say that '$needle' " .
         "is NOT found at the end of '$haystack'."
       );
