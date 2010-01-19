@@ -122,6 +122,9 @@ class Asar {
    * @return stdclass an instance of the class class_name
    */ 
   static function instantiate($class_name, array $arguments = array()) {
+    if (!is_string($class_name)) {
+      return null;
+    }
     try {
       $reflector = new ReflectionClass($class_name);
     } catch (ReflectionException $e) {
