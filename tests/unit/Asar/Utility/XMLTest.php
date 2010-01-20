@@ -1,11 +1,11 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../config.php');
 
+
+
 class Asar_Utility_XMLTest extends PHPUnit_Framework_TestCase
 {
-    public function setUp()
-    {
-        $xmlstr = '
+  const XMLSTR = '
 <html>
 <head>
   <title>This is an example HTML document</title>
@@ -17,7 +17,7 @@ class Asar_Utility_XMLTest extends PHPUnit_Framework_TestCase
       a line break.
     </p>
     <h2>The following is a complicated list</h2>
-    <ul>
+    <ul id="foo">
       <li>One</li>
       <li>Two</li>
       <li>
@@ -30,7 +30,7 @@ class Asar_Utility_XMLTest extends PHPUnit_Framework_TestCase
         Four
         <ul>
           <li>Four - One</li>
-          <li>Four - Two</li>
+          <li id="bar">Four - Two</li>
         </ul>
       </li>
       <li>Five</li>
@@ -39,23 +39,35 @@ class Asar_Utility_XMLTest extends PHPUnit_Framework_TestCase
   </div>
 </body>
 </html>
-';
-        $this->xml = new Asar_Utility_XML($xmlstr);
-    }
-    
-    function testGettingStringValue() {
-        $this->assertEquals(
-            'This is an example HTML document',
-            $this->xml->head->title->stringValue(),
-            'Unable to get string value of xml title element.'
-        );
-    }
-    
-    function testGettingNestedElementValue() {
-        $this->assertEquals(
-            'Three - One',
-            $this->xml->body->div->ul->li[2]->ul->li->stringValue(),
-            'Unable to get string value of a deeply nested li element.'
-          );
-    }
+';  
+  
+  public function setUp()
+  {
+    $this->xml = new Asar_Utility_XML(self::XMLSTR);
+  }
+  
+  function testGettingStringValue() {
+      $this->assertEquals(
+        'This is an example HTML document',
+        $this->xml->head->title->stringValue(),
+        'Unable to get string value of xml title element.'
+      );
+  }
+  
+  function testGettingNestedElementValue() {
+    $this->assertEquals(
+      'Three - One',
+      $this->xml->body->div->ul->li[2]->ul->li->stringValue(),
+      'Unable to get string value of a deeply nested li element.'
+    );
+  }
+  
+  function testGettingElementById() {
+    $this->assertEquals(
+      'Four - Two',
+      $this->xml->getElementById('bar')->stringValue(),
+      'Unable to get element by id.'
+    );
+  }
+  
 }
