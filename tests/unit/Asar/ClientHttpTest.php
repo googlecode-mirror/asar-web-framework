@@ -91,6 +91,7 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
             self::isStartsWith($str, "GET /a/path/to/a/resource.html HTTP/1.1\r\n"),
             'Did not find request line in generated Raw HTTP Request string.'
         );
+        $headers['Accept'] = 'text\/html';
         $this->_testHeaders($headers, $str);
         // Last characters should be \r\n\r\n
         $this->assertTrue(
@@ -102,9 +103,14 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
     protected function _testHeaders($headers, $str)
     {
         foreach ($headers as $key => $value) {
-            $this->assertContains(
-                "\r\n" . Asar_Utility_String::dashCamelCase($key) . 
-                    ": $value\r\n", $str,
+            $pattern = "/\r\n" . 
+                str_replace(
+                  array('.', '-'), array('\.', '\-'),
+                  Asar_Utility_String::dashCamelCase($key)
+                ) . 
+                ": $value\r\n/";
+            $this->assertRegExp(
+                $pattern, $str,
                 "Did not find the $key header that was set."
             );
         }
@@ -146,7 +152,7 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
         $expected = 'foo=bar&' . urlencode('goo[]') . '=jazz&good=bad' .
             urlencode('=');
         $headers = array(
-            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Content-Type' => 'application\/x\-www\-form\-urlencoded',
             'Content-Length' => strlen($expected)
         );
         $str = $this->client->createRawHttpRequestString($R);
@@ -170,7 +176,7 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
         $R->setPath('/a/post/processor');
         $expected = $this->createUrlEncodedParams($post);
         $headers = array(
-            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Content-Type' => 'application\/x\-www\-form\-urlencoded',
             'Content-Length' => strlen($expected)
         );
         
@@ -308,7 +314,7 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
             self::isStartsWith($raw_response, "HTTP/1.1 200 OK\r\n"),
             'Did not find Response Line.'
         );
-        $headers = array('Content-Type' => 'text/html');
+        $headers = array('Content-Type' => 'text\/html');
         $this->_testHeaders($headers, $raw_response);
         $this->assertContains(
             '<title>The Great HTML</title>', $raw_response);
@@ -345,11 +351,11 @@ class Asar_ClientHttpTest extends Asar_Test_Helper
         $args = func_get_args();
         $out = array();
         foreach ($args as $file) {
-            $ctype = 'text/html';
+            $ctype = 'text\/html';
             if (self::isEndsWith($file, '.txt'))
-                $ctype = 'text/plain';
+                $ctype = 'text\/plain';
             elseif (self::isEndsWith($file, '.xml'))
-                $ctype = 'application/xml';
+                $ctype = 'application\/xml|text\/xml';
             
             $out['/'.$file] = array(
                 'headers' => array(
