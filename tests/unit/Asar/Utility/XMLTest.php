@@ -70,4 +70,10 @@ class Asar_Utility_XMLTest extends PHPUnit_Framework_TestCase
     );
   }
   
+  function testGettingElementByIdNotFound() {
+    $this->assertSame(
+      null, $this->xml->getElementById('baz')
+    );
+  }
+  
 }

@@ -10,6 +10,9 @@ class Asar_Utility_XML extends SimpleXMLElement {
   
   function getElementById($id) {
     $result = $this->xpath("//*[@id='$id']");
+    if (count($result) === 0) {
+      return null;
+    }
     return $result[0];
   }
 }
