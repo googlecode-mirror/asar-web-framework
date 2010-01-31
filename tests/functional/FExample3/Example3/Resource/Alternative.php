@@ -6,3 +6,4 @@ class Example3_Resource_Alternative extends Asar_Resource {
   }
   
 }
+

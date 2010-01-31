@@ -35,9 +35,12 @@ spl_autoload_register(array('Asar', 'loadClass'));
  **/
 class Asar {
   
-  //private static $parser;
+  const MODE_PRODUCTION  = 0;
+  const MODE_DEVELOPMENT = 1;
+  const MODE_DEBUG       = 2;
   
-  
+  static private $mode;
+  static private $debug = array();                           
   static private $interpreter;
   
   static function setInterpreter($i) {
@@ -58,6 +61,26 @@ class Asar {
     self::$interpreter->interpretFor(
       self::instantiate($application_name.'_Application')
     );
+  }
+  
+  static function setMode($mode) {
+    if ( in_array($mode, array(1,2,3), true) ) {
+      self::$mode = $mode;
+    } else {
+      self::$mode = self::MODE_PRODUCTION;
+    }
+  }
+  
+  static function getMode() {
+    return self::$mode;
+  }
+  
+  static function debug($key, $value) {
+    self::$debug[$key] = $value;
+  }
+  
+  static function getDebugMessages() {
+    return self::$debug;
   }
   
   /**

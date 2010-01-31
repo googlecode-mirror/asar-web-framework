@@ -358,46 +358,41 @@ class AsarTest extends Asar_Test_Helper {
     );
   }
   
-  /*
-  
-  function testStartTestApplicationOnClientObjectInvokesApplicationAndSetsResponseObjectOnClient() {
-    $testapp = 'AsarTest';
-    $client = new Asar_Client;
-    $client->createRequest('/', array('method'=>'GET'));
-    Asar::start('AsarTest', $client);
-    $this->assertEquals($client->getResponse()->getContent(), 'Hello World','start method did not set response for client');
+  function testSettingApplicationStartModes() {
+    $modes = array(
+      'Production'  => Asar::MODE_PRODUCTION,
+      'Development' => Asar::MODE_DEVELOPMENT,
+      'Debug'       => Asar::MODE_DEBUG
+    );
+    foreach ($modes as $mode => $const) {
+      Asar::setMode($const);
+      $this->assertEquals(
+        $const, Asar::getMode(), "Mode was not set to $mode."
+      );
+    }
   }
   
-  function testStartingWithNoDefinedApplicationInvokesTheDefaultClient() {
-    $this->setExpectedException('Asar_Client_Default_Exception');
-    $testapp = 'AsarTest';
-    Asar::start('AsarTest');
-  }
-  
-  function testSettingApplicationStartModeProduction() {
-    Asar::setMode(Asar::MODE_PRODUCTION);
-    $this->assertEquals(Asar::MODE_PRODUCTION, Asar::getMode(), 'Mode was not set to Production');
-  }
-  
-  function testSettingApplicationStartModeDevelopment() {
-    Asar::setMode(Asar::MODE_DEVELOPMENT);
-    $this->assertEquals(Asar::MODE_DEVELOPMENT, Asar::getMode(), 'Mode was not set to Development');
-  }
-  
-  function testSettingApplicationStartModeTest() {
-    Asar::setMode(Asar::MODE_TEST);
-    $this->assertEquals(Asar::MODE_TEST, Asar::getMode(), 'Mode was not set to Test');
-  }
-  
-  function testSettingApplicationStartModeToSomethingElseWillResortToProductionModeByDefault() {
+  function testSettingModeToSomethingElseWillResortToProductionModeByDefault() {
     Asar::setMode('asdfasdf');
-    $this->assertEquals(Asar::MODE_PRODUCTION, Asar::getMode(), 'Mode was not set to Production');
+    $this->assertEquals(
+      Asar::MODE_PRODUCTION, Asar::getMode(), 
+      'Mode was not set to Production for unknown modes.'
+    );
   }
   
   function testAddingDebugInformation() {
-    Asar::setMode(Asar::MODE_DEVELOPMENT);
     Asar::debug('Title', 'Some debug message');
-    $this->assertEquals(array('Title'=>'Some debug message'), Asar::getDebugMessages(), 'Unable to obtain debug mesesage');
+    $debug = Asar::getDebugMessages();
+    $this->assertEquals(
+      'Some debug message', $debug['Title'],
+      'Unable to obtain debug mesesages.'
+    );
+  }
+  
+  /*
+  function testSettingApplicationStartModeTest() {
+    Asar::setMode(Asar::MODE_TEST);
+    $this->assertEquals(Asar::MODE_TEST, Asar::getMode(), 'Mode was not set to Test');
   }
   
   function testAddingAnotherDebugInformation() {
