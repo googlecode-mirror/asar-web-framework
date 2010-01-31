@@ -2,6 +2,8 @@
 
 class Asar_Test_Server {
   
+  private static $can_connect_to_test_server;
+  
   private static function absoluteToRelative($from, $to) {
     $from_arr = explode(DIRECTORY_SEPARATOR, $from);
     $to_arr = explode(DIRECTORY_SEPARATOR, $to);
@@ -57,6 +59,32 @@ class Asar_Test_Server {
         escapeshellarg($paths['from']);
       exec($command);
     }
+  }
+
+  // TODO: create test code for coverage's sake
+  // Copied from Asar_Unit_ClientHttpTest
+  function isCanConnectToTestServer() {
+    if (is_null(self::$can_connect_to_test_server)) {
+      self::$can_connect_to_test_server = false;
+      Asar_Test_Server::setUp(array('fixture' => 'normal'));
+      $fp = @fsockopen('asar-test.local', 80, $errno, $errstr, 30);
+      if (!$fp) {
+        self::$can_connect_to_test_server = false;
+      } else {
+        $out = "GET / HTTP/1.1\r\n";
+        $out .= "Host: asar-test.local\r\n";
+        $out .= "Connection: Close\r\n\r\n";
+        fwrite($fp, $out);
+        $test = stream_get_contents($fp);
+        if (strpos($test,'<h1>This is the Great HTML</h1>') > 0) {
+          self::$can_connect_to_test_server = true;
+        } else {
+          self::$can_connect_to_test_server = false;
+        }
+        fclose($fp);
+      }
+    }
+    return self::$can_connect_to_test_server;
   }
   
   private static function deleteIf($path) {
