@@ -63,7 +63,7 @@ class Asar_Test_Server {
 
   // TODO: create test code for coverage's sake
   // Copied from Asar_Unit_ClientHttpTest
-  function isCanConnectToTestServer() {
+  static function isCanConnectToTestServer() {
     if (is_null(self::$can_connect_to_test_server)) {
       self::$can_connect_to_test_server = false;
       Asar_Test_Server::setUp(array('fixture' => 'normal'));
