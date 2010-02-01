@@ -20,6 +20,12 @@ class Asar_Utility_XML extends SimpleXMLElement {
     if (!isset($this[$name])) {
       return null;
     }
-    return $this[$name]->__toString();
+    if (method_exists($this, '__toString')) {
+      return $this[$name]->__toString();
+    } else {
+      ob_start();
+      echo $this[$name];
+      return ob_get_clean();
+    }
   }
 }
