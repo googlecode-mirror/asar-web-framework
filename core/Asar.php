@@ -73,7 +73,7 @@ class Asar {
     }
   }
   
-  public function _cleanUp() {
+  static private function _cleanUp() {
     if (self::$mode == self::MODE_DEBUG) {
       self::_fillDebugMessages();
       echo str_replace(
