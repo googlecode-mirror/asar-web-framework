@@ -42,6 +42,7 @@ class Asar {
   static private $mode;
   static private $debug = array();                           
   static private $interpreter;
+  static private $_tstart;
   
   static function setInterpreter($i) {
     self::$interpreter = $i;
@@ -58,27 +59,51 @@ class Asar {
     if (!self::$interpreter) {
       self::$interpreter = new Asar_Interpreter;
     }
-    if (self::$mode == self::MODE_DEBUG) {
-      ob_start();
-      self::debug('Execution Time', null);
-      self::debug('Memory Used', null);
-      $start = microtime();
-    }
+    self::_prepare();
     self::$interpreter->interpretFor(
       self::instantiate($application_name.'_Application')
     );
+    self::_cleanUp();
+  }
+  
+  static private function _prepare($value='') {
     if (self::$mode == self::MODE_DEBUG) {
-      self::debug(
-        'Execution Time', number_format(microtime() - $start, 2) . 'ms'
-      );
-      self::debug(
-        'Memory Used', memory_get_usage() . 'MB'
-      );
+      ob_start();
+      self::_setUpDebugMessages();
+    }
+  }
+  
+  public function _cleanUp() {
+    if (self::$mode == self::MODE_DEBUG) {
+      self::_fillDebugMessages();
       echo str_replace(
         '</body>', self::debugOutputHtml() . '</body>',
         ob_get_clean()
       );
     }
+  }
+  
+  static private function _setUpDebugMessages() {
+    self::debug('Execution Time', null);
+    self::debug('Memory Used', null);
+    self::$_tstart = microtime();
+  }
+  
+  static function _fillDebugMessages() {
+    self::debug(
+      'Execution Time', number_format(microtime() - self::$_tstart, 4) . 'ms'
+    );
+    self::debug('Memory Used', self::getMemoryUsed());
+  }
+  
+  static function getMemoryUsed() {
+    $mem_usage = memory_get_usage(true);
+    if ($mem_usage < 1000)
+      return $mem_usage."bytes";
+    elseif ($mem_usage < 1000)
+      return round($mem_usage/1000,2)."KB";
+    else
+      return round($mem_usage/1000000,2)."MB";
   }
   
   static function setMode($mode) {

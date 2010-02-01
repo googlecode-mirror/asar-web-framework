@@ -464,7 +464,7 @@ class AsarTest extends Asar_Test_Helper {
     $debug = Asar::getDebugMessages();
     $key = key($debug);
     $this->assertEquals('Execution Time', $key);
-    $this->assertRegExp('/[0-9]+.[0-9]{2}ms/', $debug[$key]);
+    $this->assertRegExp('/[0-9]+.[0-9]{4}ms/', $debug[$key]);
     // move cursor
     next($debug); $key = key($debug);
     $this->assertEquals('Memory Used', $key);
