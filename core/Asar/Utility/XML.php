@@ -15,4 +15,8 @@ class Asar_Utility_XML extends SimpleXMLElement {
     }
     return $result[0];
   }
+  
+  function getAttribute($name) {
+    return $this[$name]->__toString();
+  }
 }

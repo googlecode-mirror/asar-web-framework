@@ -76,4 +76,10 @@ class Asar_Utility_XMLTest extends PHPUnit_Framework_TestCase
     );
   }
   
+  function testGettingAttributesAsAssociativeArray() {
+    $this->assertEquals(
+      'wrapper', $this->xml->body->div->getAttribute('id')
+    );
+  }
+  
 }
