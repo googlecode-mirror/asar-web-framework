@@ -5,10 +5,16 @@ set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__
 class FDebuggingExample_Test extends Asar_Test_Helper {
   
   function setUp() {
-    Asar::setMode(Asar::MODE_DEBUG);
+    if (!Asar_Test_Server::isCanConnectToTestServer()) {
+      $this->markTestSkipped(
+        'Unable to connect to test server. Check server setup.'
+      );
+    }
     $this->client = new Asar_Client;
-    $this->app = new DebuggingExample_Application;
-    $this->client->setServer($this->app);
+    Asar_Test_Server::setUp(array(
+      'path' =>  Asar::constructRealPath(dirname(__FILE__), 'web')
+    ));
+    $this->client->setServer('http://asar-test.local/');
   }
   
   function tearDown() {
@@ -17,6 +23,7 @@ class FDebuggingExample_Test extends Asar_Test_Helper {
   
   function testDebugInformationForHtmlRequest() {
     $content = $this->client->GET('/')->getContent();
+    //var_dump($content);
     // Test if the setup is okay...
     $this->assertContains('Debugging Tests', $content);
     $this->assertContains('<title', $content);

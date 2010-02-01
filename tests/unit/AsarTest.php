@@ -8,6 +8,7 @@ class Test_Parent_Class {
     Asar::exception($this, 'Throwing exception for '.get_class($this));
   }
 }
+
 class Test_Child_Class extends Test_Parent_Class {
   private $attr1 = '';
   private $attr2 = '';
@@ -337,7 +338,6 @@ class AsarTest extends Asar_Test_Helper {
       ->with($this->isInstanceOf(get_class($app)));
     Asar::setInterpreter($interpreter);
     Asar::start($prefix);
-        
   }
   
   function testStartSetsDefaultInterpreterIfNoneWasSet() {
@@ -388,6 +388,89 @@ class AsarTest extends Asar_Test_Helper {
       'Unable to obtain debug mesesages.'
     );
   }
+  
+  function testClearingDebugMessages() {
+    Asar::debug('foo', 'bar');
+    Asar::clearDebugMessages();
+    $this->assertEquals(0, count(Asar::getDebugMessages()) );
+  }
+  
+  function testHtmlDebugOutput() {
+    Asar::clearDebugMessages();
+    Asar::setMode(Asar::MODE_DEBUG);
+    Asar::debug('foo', 'bar');
+    Asar::debug('list', array('apple', 'banana', 'cherry', 'durian'));
+    Asar::debug('map', array('one' => 'alpha', 'two' => 'beta', 'three' => 'gamma'));
+    $debug = new Asar_Utility_XML(Asar::debugOutputHtml());
+    
+    $this->assertEquals('table', $debug->getName());
+    $this->assertEquals('asarwf_debug_info', $debug->getAttribute('id'));
+    $this->assertEquals('Debugging Info', $debug->thead->tr->th->stringValue());
+    $this->assertEquals('col', $debug->thead->tr->th->getAttribute('scope'));
+    $this->assertEquals(3, count($debug->tbody->children()) );
+    $row = $debug->tbody->tr;
+    $this->assertEquals('foo', $row[0]->th->stringValue());
+    $this->assertEquals('bar', $row[0]->td->stringValue());
+    $this->assertEquals('list', $row[1]->th->stringValue());
+    $this->assertEquals('row', $row[1]->th->getAttribute('scope'));
+    $this->assertEquals('cherry', $row[1]->td->ul->li[2]->stringValue());
+    $this->assertEquals('map', $row[2]->th->stringValue());
+    $this->assertEquals('two', $row[2]->td->dl->dt[1]->stringValue());
+    $this->assertEquals('beta', $row[2]->td->dl->dd[1]->stringValue());
+  }
+  
+  function testInsertDebugInfoWhenInDebugMode() {
+    $prefix = get_class($this). '_App3';
+    $class_name = $prefix . '_Application';
+    eval("
+      class $class_name implements Asar_Requestable {
+        function handleRequest(Asar_Request_Interface \$request) {
+          \$r = new Asar_Response;
+          \$r->setContent(
+            '<html><head></head><body><h1>Hello World!</h1></body></html>'
+          );
+          return \$r;
+        }
+      }
+    ");
+    Asar::setMode(Asar::MODE_DEBUG);
+    Asar::debug('foo', 'bar');
+    ob_start();
+    Asar::start($prefix);
+    $content = ob_get_clean();
+    $this->assertContains('<html>', $content);
+    $html = new Asar_Utility_XML($content);
+    $this->assertNotNull(
+      $html->getElementById('asarwf_debug_info')
+    );
+    $this->assertEquals(
+      $html->getElementById('asarwf_debug_info'), $html->body->table
+    );
+    $this->assertEquals(
+      new Asar_Utility_XML(Asar::debugOutputHtml()),
+      $html->body->table
+    );
+  }
+  
+  function testInsertDebugInfoData() {
+    // Use previous definition
+    $prefix = get_class($this). '_App3';
+    Asar::setMode(Asar::MODE_DEBUG);
+    // Clear debug messages first
+    Asar::clearDebugMessages();
+    ob_start();
+    Asar::start($prefix);
+    ob_end_clean();
+    $debug = Asar::getDebugMessages();
+    $key = key($debug);
+    $this->assertEquals('Execution Time', $key);
+    $this->assertRegExp('/[0-9]+.[0-9]{2}ms/', $debug[$key]);
+    // move cursor
+    next($debug); $key = key($debug);
+    $this->assertEquals('Memory Used', $key);
+    $this->assertRegExp('/[0-9]+.[0-9]{2}(M|K)B/', $debug[$key]);
+  }
+  
   
   /*
   function testSettingApplicationStartModeTest() {

@@ -58,9 +58,27 @@ class Asar {
     if (!self::$interpreter) {
       self::$interpreter = new Asar_Interpreter;
     }
+    if (self::$mode == self::MODE_DEBUG) {
+      ob_start();
+      self::debug('Execution Time', null);
+      self::debug('Memory Used', null);
+      $start = microtime();
+    }
     self::$interpreter->interpretFor(
       self::instantiate($application_name.'_Application')
     );
+    if (self::$mode == self::MODE_DEBUG) {
+      self::debug(
+        'Execution Time', number_format(microtime() - $start, 2) . 'ms'
+      );
+      self::debug(
+        'Memory Used', memory_get_usage() . 'MB'
+      );
+      echo str_replace(
+        '</body>', self::debugOutputHtml() . '</body>',
+        ob_get_clean()
+      );
+    }
   }
   
   static function setMode($mode) {
@@ -81,6 +99,36 @@ class Asar {
   
   static function getDebugMessages() {
     return self::$debug;
+  }
+  
+  static function clearDebugMessages() {
+    self::$debug = array();
+  }
+  
+  static function debugOutputHtml() {
+    $rows = '';
+    foreach (self::$debug as $name => $value) {
+      if (is_array($value)) {
+        if (is_int(key($value))) {
+          $list = '<ul>';
+          foreach($value as $val) {
+            $list .= "<li>$val</li>";
+          };
+          $value = "$list</ul>";
+        } else {
+          $list = '<dl>';
+          foreach($value as $key => $val) {
+            $list .= "<dt>$key</dt><dd>$val</dd>";
+          };
+          $value = "$list</dl>";
+        }
+      }
+      
+      $rows .= "<tr><th scope=\"row\">$name</th><td>$value</td></tr>";
+    }
+    return '<table id="asarwf_debug_info">' . 
+      '<thead><tr><th scope="col" colspan="2">Debugging Info</th></tr></thead>' .
+      "<tbody>$rows</tbody></table>";
   }
   
   /**
