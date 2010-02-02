@@ -59,17 +59,17 @@ class Asar {
     if (!self::$interpreter) {
       self::$interpreter = new Asar_Interpreter;
     }
-    self::_prepare();
+    self::_prepare($application_name);
     self::$interpreter->interpretFor(
       self::instantiate($application_name.'_Application')
     );
     self::_cleanUp();
   }
   
-  static private function _prepare($value='') {
+  static private function _prepare($application_name) {
     if (self::$mode == self::MODE_DEBUG) {
       ob_start();
-      self::_setUpDebugMessages();
+      self::_setUpDebugMessages($application_name);
     }
   }
   
@@ -83,9 +83,10 @@ class Asar {
     }
   }
   
-  static private function _setUpDebugMessages() {
+  static private function _setUpDebugMessages($application_name) {
     self::debug('Execution Time', null);
     self::debug('Memory Used', null);
+    self::debug('Application', $application_name);
     self::$_tstart = microtime();
   }
   
@@ -98,9 +99,10 @@ class Asar {
   
   static function getMemoryUsed() {
     $mem_usage = memory_get_usage(true);
+    //return $mem_usage;
     if ($mem_usage < 1000)
       return $mem_usage."bytes";
-    elseif ($mem_usage < 1000)
+    elseif ($mem_usage < 1000000)
       return round($mem_usage/1000,2)."KB";
     else
       return round($mem_usage/1000000,2)."MB";

@@ -67,6 +67,25 @@ class FDebuggingExample_Test extends Asar_Test_Helper {
       'Unable to find memory usage value in debug info table.'
     );
     
+    // Application
+    $this->assertEquals(
+      'Application', $debug->tbody->tr[2]->th->stringValue(),
+      'Unable to find application name label in debug info table.'
+    );
+    $this->assertEquals(
+      'DebuggingExample', $debug->tbody->tr[2]->td->stringValue(),
+      'Unable to find application name value in debug info table.'
+    );
+    
+    // Resource
+    $this->assertEquals(
+      'Resource', $debug->tbody->tr[3]->th->stringValue(),
+      'Unable to find resource name label in debug info table.'
+    );
+    $this->assertEquals(
+      'DebuggingExample_Resource_Index', $debug->tbody->tr[3]->td->stringValue(),
+      'Unable to find resource name value in debug info table.'
+    );
   }
   
 }

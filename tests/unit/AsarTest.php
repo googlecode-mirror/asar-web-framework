@@ -469,6 +469,10 @@ class AsarTest extends Asar_Test_Helper {
     next($debug); $key = key($debug);
     $this->assertEquals('Memory Used', $key);
     $this->assertRegExp('/[0-9]+.[0-9]{2}(M|K)B/', $debug[$key]);
+    // application
+    next($debug); $key = key($debug);
+    $this->assertEquals('Application', $key);
+    $this->assertEquals($prefix, $debug[$key]);
   }
   
   
