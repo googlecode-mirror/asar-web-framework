@@ -51,6 +51,9 @@ class Asar_Application implements Asar_Requestable {
             return $response;
         }
         if ($r instanceof Asar_Requestable) {
+            if (Asar::getMode() == Asar::MODE_DEBUG) {
+              Asar::debug('Resource', get_class($r));
+            }
             if (method_exists($r, 'setConfiguration')) {
                 $config = array(
                     'context' => $this

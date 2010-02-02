@@ -410,4 +410,15 @@ class Asar_ApplicationTest extends Asar_Test_Helper {
     );
   }
   
+  function testApplicationMarksResolvedResourceWhenInDebugMode() {
+    $index = $this->getMock('Asar_Requestable');
+    $this->app->setIndex($index);
+    Asar::setMode(Asar::MODE_DEBUG);
+    $this->app->handleRequest(new Asar_Request);
+    $debug = Asar::getDebugMessages();
+    $this->assertEquals(get_class($index), $debug['Resource']);
+    Asar::setMode(Asar::MODE_DEVELOPMENT);
+    Asar::clearDebugMessages();
+  }
+  
 } //388

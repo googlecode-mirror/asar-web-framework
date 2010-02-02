@@ -86,6 +86,23 @@ class FDebuggingExample_Test extends Asar_Test_Helper {
       'DebuggingExample_Resource_Index', $debug->tbody->tr[3]->td->stringValue(),
       'Unable to find resource name value in debug info table.'
     );
+    
+    // Templates
+    $this->assertEquals(
+      'Templates Used', $debug->tbody->tr[4]->th->stringValue(),
+      'Unable to find templates section label in debug info table.'
+    );
+    $this->assertEquals(
+      new Asar_Utility_XML(
+        '<ul><li>'. 
+        realpath(dirname(__FILE__) . '/DebuggingExample/Representation/Index.GET.html.php') .
+        '</li><li>'.
+        realpath(dirname(__FILE__) . '/DebuggingExample/Representation/Layout.html.php') .
+        '</li></ul>'
+      ),
+      $debug->tbody->tr[4]->td->ul,
+      'Unable to find list of templates used in debug info table.'
+    );
   }
   
 }
