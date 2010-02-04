@@ -5,6 +5,7 @@ class Asar_Template implements Asar_Template_Interface {
   private $_tpl;
   private $_allow_layout = true;
   private $_layout = null;
+  private static $_template_files_used = array();
 
   function __construct() {
     $this->_tpl = new Asar_View;
@@ -44,6 +45,10 @@ class Asar_Template implements Asar_Template_Interface {
   }
 
   function render() {
+    if (Asar::getMode() == Asar::MODE_DEBUG) {
+      self::$_template_files_used[] = $this->_template_file;
+      Asar::debug('Templates Used', self::$_template_files_used);
+    }
     if ($this->_layout && $this->_allow_layout) {
       $this->_layout->set('content', $this->_tpl->fetch());
       return $this->_layout->render();
