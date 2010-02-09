@@ -23,13 +23,11 @@ class Asar_ResourceTest extends Asar_Test_Helper {
 
   private static $prefCount = 0;
 
-  function setUp()
-  {
+  function setUp() {
     $this->R = new Asar_Resource;
   }
   
-  function testShouldBeAbleToSetRequestAttribute()
-  {
+  function testShouldBeAbleToSetRequestAttribute() {
     $this->request = new Asar_Request;
     $this->R = $this->getMock('Asar_Resource', array('GET'));
     $this->R->expects($this->once())
@@ -38,8 +36,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $this->R->handleRequest($this->request);
   }
   
-  function checkRequestAttribute()
-  {
+  function checkRequestAttribute() {
     $this->assertSame(
       $this->request,
       $this->readAttribute($this->R, 'request'),
@@ -47,8 +44,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testResponseShouldProcessGetRequest()
-  {
+  function testResponseShouldProcessGetRequest() {
     $request = new Asar_Request;
     $request->setMethod('GET');
     $R = $this->getMock('Asar_Resource', array('GET'));
@@ -62,8 +58,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testResponseShouldBe200WhenNormalProcessingOfGetRequest()
-  {
+  function testResponseShouldBe200WhenNormalProcessingOfGetRequest() {
     $request = new Asar_Request;
     $request->setMethod('GET');
     $R = $this->getMock('Asar_Resource', array('GET'));
@@ -77,8 +72,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testResponseContentTypeShouldBeHtmlByDefaultGetRequest()
-  {
+  function testResponseContentTypeShouldBeHtmlByDefaultGetRequest() {
     $request = new Asar_Request;
     $request->setMethod('GET');
     $R = $this->getMock('Asar_Resource', array('GET'));
@@ -96,8 +90,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testExecutePOSTMethodWhenPostRequest()
-  {
+  function testExecutePOSTMethodWhenPostRequest() {
     $request = new Asar_Request;
     $request->setMethod('POST');
     $R = $this->getMock('Asar_Resource', array('POST'));
@@ -115,8 +108,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testExecutingPOSTMethodSetsContentOfPostGlobalVariable()
-  {
+  function testExecutingPOSTMethodSetsContentOfPostGlobalVariable() {
     $request = new Asar_Request;
     $request->setMethod('POST');
     $request->setContent(array('foo'=>'bar', 'one' => 1));
@@ -133,8 +125,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $_POST = array();
   }
   
-  function testResourceWithoutDefinedHttpMethodShouldReturn405HttpStatus()
-  {
+  function testResourceWithoutDefinedHttpMethodShouldReturn405HttpStatus() {
     $cname = get_class($this) . '_ResourceStatus405';
     eval('
       class '. $cname . ' extends Asar_Resource {}
@@ -152,8 +143,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     }
   }
   
-  function testResourceShouldSendResponse500StatusWhenMethodRaisesException()
-  {
+  function testResourceShouldSendResponse500StatusWhenMethodRaisesException() {
     $R = $this->getMock('Asar_Resource', array('GET'));
     $R->expects($this->once())
       ->method('GET')
@@ -165,13 +155,11 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function checkRaisingException()
-  {
+  function checkRaisingException() {
     throw new Exception;
   }
   
-  function testResourceShouldShowErrorMessageByDefaultFor500Response()
-  {
+  function testResourceShouldShowErrorMessageByDefaultFor500Response() {
     $R = $this->getMock('Asar_Resource', array('GET'));
     $R->expects($this->once())
       ->method('GET')
@@ -183,13 +171,11 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function checkRaisingExceptionMsg()
-  {
+  function checkRaisingExceptionMsg() {
     throw new Exception('The error message.');
   }
   
-  function testResourceTriggersErrorWhenTryingToAccessUnknownProperty()
-  {
+  function testResourceTriggersErrorWhenTryingToAccessUnknownProperty() {
     set_error_handler(array($this, 'temporaryErrorHandler'));
     $this->R->something;
     restore_error_handler();
@@ -205,23 +191,20 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     
   }
   
-  function temporaryErrorHandler($err_no, $err_str)
-  {
+  function temporaryErrorHandler($err_no, $err_str) {
     $this->saveObject(
       'error', array($err_no, $err_str)
     );
   }
   
-  function testResourceAttemptsToRenderTemplateWhenTemplateIsSet()
-  {
+  function testResourceAttemptsToRenderTemplateWhenTemplateIsSet() {
     $this->R->template = $this->getMock('Asar_Template_Interface', array());
     $this->R->template->expects($this->once())
       ->method('render');
     $this->R->handleRequest(new Asar_Request);
   }
   
-  function testResourceAttemptsToRenderTemplateWhenTemplateIsSetPOST()
-  {
+  function testResourceAttemptsToRenderTemplateWhenTemplateIsSetPOST() {
     $this->R = new Asar_Resource;
     $this->R->template = $this->getMock('Asar_Template_Interface', array());
     $this->R->template->expects($this->once())
@@ -231,8 +214,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $this->R->handleRequest($req);
   }
   
-  function testSettingTemplateEngine()
-  {
+  function testSettingTemplateEngine() {
     $pref = get_class($this);
     $cname = $pref . '_DummyEngine';
     eval('
@@ -247,8 +229,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testResourceDefaultsToAsarTemplateEngine()
-  {
+  function testResourceDefaultsToAsarTemplateEngine() {
     $this->R->template->any = 'something';
     $this->assertEquals(
       'Asar_Template', get_class($this->R->template),
@@ -256,8 +237,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testSettingConfigurationOnResource()
-  {
+  function testSettingConfigurationOnResource() {
     $tpldir = self::getTempDir().'Hehe/';
     $hlpdir = self::getTempDir().'Wawa/';
     $this->R->setConfiguration(array(
@@ -275,8 +255,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testSettingConfigurationMultipleTimes()
-  {
+  function testSettingConfigurationMultipleTimes() {
     $tpldir = self::getTempDir().'Nana/';
     $hlpdir = self::getTempDir().'Yaya/';
     $tpldir2 = self::getTempDir().'Hehe2/';
@@ -299,8 +278,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testSettingContextSetsDefaultRepresentationDir()
-  {
+  function testSettingContextSetsDefaultRepresentationDir() {
     $context = $this->createAppMock();
     $reflector = new ReflectionClass(get_class($context));
     $representation_dir = dirname($reflector->getFileName()) .
@@ -314,8 +292,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testSettingDefaultRepresentationDirSetsTemplateLocation()
-  {
+  function testSettingDefaultRepresentationDirSetsTemplateLocation() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix);
@@ -351,8 +328,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
-  function testSettingDefaultRepresentationDirSetsTemplateLocation2()
-  {
+  function testSettingDefaultRepresentationDirSetsTemplateLocation2() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix, 'Vindex');
@@ -371,8 +347,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $R->handleRequest(new Asar_Request);
   }
   
-  function testSettingDefaultRepresentationDirSetsTemplateLocation3()
-  {
+  function testSettingDefaultRepresentationDirSetsTemplateLocation3() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix, 'Foo_Bar');
@@ -391,8 +366,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $R->handleRequest(new Asar_Request);
   }
   
-  function testSettingTemplateSetsLayoutByDefault()
-  {
+  function testSettingTemplateSetsLayoutByDefault() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix, 'Foo_Bar');
@@ -411,8 +385,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $R->handleRequest(new Asar_Request);
   }
   
-  function testSettingTemplateSetsLayoutAccordingToFileType()
-  {
+  function testSettingTemplateSetsLayoutAccordingToFileType() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix);
@@ -433,8 +406,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $R->handleRequest($request);
   }
   
-  function testSettingTemplateForPostRequest()
-  {
+  function testSettingTemplateForPostRequest() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix);
@@ -455,8 +427,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $R->handleRequest($request);
   }
   
-  function testSettingTemplateTxtContentTypeRequests()
-  {
+  function testSettingTemplateTxtContentTypeRequests() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix);
@@ -478,8 +449,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $this->assertEquals('text/plain', $response->getHeader('Content-Type'));
   }
   
-  function testSettingTemplateXmlContentTypeRequests()
-  {
+  function testSettingTemplateXmlContentTypeRequests() {
     $prefix = $this->generatePrefix();
     $context = $this->createAppMock($prefix);
     $R = $this->createResourceMock($prefix);
