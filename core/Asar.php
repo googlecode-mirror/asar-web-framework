@@ -101,11 +101,11 @@ class Asar {
     $mem_usage = memory_get_usage(true);
     //return $mem_usage;
     if ($mem_usage < 1000)
-      return $mem_usage."bytes";
+      return number_format($mem_usage,2)."bytes";
     elseif ($mem_usage < 1000000)
-      return round($mem_usage/1000,2)."KB";
+      return number_format($mem_usage/1000,2)."KB";
     else
-      return round($mem_usage/1000000,2)."MB";
+      return number_format($mem_usage/1000000,2)."MB";
   }
   
   static function setMode($mode) {
