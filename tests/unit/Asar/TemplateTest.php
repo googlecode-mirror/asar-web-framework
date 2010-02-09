@@ -7,9 +7,9 @@ require_once realpath(dirname(__FILE__). '/../../config.php');
  */
 class Asar_TemplateTest extends Asar_Test_Helper {
 
-	private static $template_path;
-	private static $template_name = 'inc.php';
-	private static $template_contents = '
+  private static $template_path;
+  private static $template_name = 'inc.php';
+  private static $template_contents = '
     <h2>This is in included template</h2>
     <p><?= $var ?></p>';
   private static $template2_path;
@@ -31,15 +31,15 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     </html>';
 
   protected function setUp() {
-  	$this->T = new Asar_Template;
-		self::newFile(self::$template_name, self::$template_contents);
-		self::$template_path = self::getPath(self::$template_name);
-		
-		self::newFile(self::$template2_name, self::$template2_contents);
-		self::$template2_path = self::getPath(self::$template2_name);
-		//echo self::$template2_path;
-		self::newFile(self::$layout_name, self::$layout_contents);
-		self::$layout_path = self::getPath(self::$layout_name);
+    $this->T = new Asar_Template;
+    self::newFile(self::$template_name, self::$template_contents);
+    self::$template_path = self::getPath(self::$template_name);
+    
+    self::newFile(self::$template2_name, self::$template2_contents);
+    self::$template2_path = self::getPath(self::$template2_name);
+    //echo self::$template2_path;
+    self::newFile(self::$layout_name, self::$layout_contents);
+    self::$layout_path = self::getPath(self::$layout_name);
   }
   
   function testSettingAVariableAndGettingItsOutputInATemplate() {
@@ -147,14 +147,14 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     );
   }
   
-	function testGettingTemplateFileExtension() {
-		$this->assertEquals(
-			'php', $this->T->getTemplateFileExtension(),
-			'Asar_View did not return a proper file extension'
-		);
-	}
-	
-	function testSettingLayoutWrapsLayoutAroundTemplate() {
+  function testGettingTemplateFileExtension() {
+    $this->assertEquals(
+      'php', $this->T->getTemplateFileExtension(),
+      'Asar_View did not return a proper file extension'
+    );
+  }
+  
+  function testSettingLayoutWrapsLayoutAroundTemplate() {
     $this->T->set(array(
       'h1' => 'Another heading',
       'paragraph' => 'Dummy text. Lorem ipsum dolor.'
@@ -186,10 +186,10 @@ class Asar_TemplateTest extends Asar_Test_Helper {
       'Did not find title value in template render.'
     );
     
-	}
-	
-	function testForcingNotToRenderLayout() {
-	  $this->T->set(array(
+  }
+  
+  function testForcingNotToRenderLayout() {
+    $this->T->set(array(
       'h1' => 'Another heading',
       'paragraph' => 'Dummy text. Lorem ipsum dolor.'
     ));
@@ -207,10 +207,10 @@ class Asar_TemplateTest extends Asar_Test_Helper {
       '<h1>Another heading</h1>', $contents,
       'Did not find heading value in template render.'
     );
-	}
-	
-	function testLayoutMustNotRenderIfTheLayoutFileDoesNotExist() {
-	  $this->T->set(array(
+  }
+  
+  function testLayoutMustNotRenderIfTheLayoutFileDoesNotExist() {
+    $this->T->set(array(
       'h1' => 'Yet another heading',
       'paragraph' => 'Dummy text. Lorem ipsum dolor.'
     ));
@@ -227,31 +227,31 @@ class Asar_TemplateTest extends Asar_Test_Helper {
       '<h1>Yet another heading</h1>', $contents,
       'Did not find heading value in template render.'
     );
-	}
-	
-	function testAccessingLayoutVariable() {
-	  $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
-	  $this->T->setTemplateFile(self::$template2_path);
-	  $this->T->setLayout(self::$layout_path);
-	  $this->T->getLayout()->title = 'FooBar Title';
-	  $html = new Asar_Utility_XML($this->T->render());
-	  $this->assertContains(
-	    'FooBar Title',
-	    $html->head->title->stringValue(),
-	    'Unable to access layout and set its value.'
+  }
+  
+  function testAccessingLayoutVariable() {
+    $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
+    $this->T->setTemplateFile(self::$template2_path);
+    $this->T->setLayout(self::$layout_path);
+    $this->T->getLayout()->title = 'FooBar Title';
+    $html = new Asar_Utility_XML($this->T->render());
+    $this->assertContains(
+      'FooBar Title',
+      $html->head->title->stringValue(),
+      'Unable to access layout and set its value.'
     );
-	}
-	
-	function testAccessingLayoutVariableBeforeSettingLayoutFile() {
-	  $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
-	  $this->T->setTemplateFile(self::$template2_path);
-	  $this->T->getLayout()->title = 'FooBar Title';
-	  $this->T->setLayout(self::$layout_path);
-	  $html = new Asar_Utility_XML($this->T->render());
-	  $this->assertContains(
-	    'FooBar Title',
-	    $html->head->title->stringValue(),
-	    'Unable to access layout and set its value.'
+  }
+  
+  function testAccessingLayoutVariableBeforeSettingLayoutFile() {
+    $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
+    $this->T->setTemplateFile(self::$template2_path);
+    $this->T->getLayout()->title = 'FooBar Title';
+    $this->T->setLayout(self::$layout_path);
+    $html = new Asar_Utility_XML($this->T->render());
+    $this->assertContains(
+      'FooBar Title',
+      $html->head->title->stringValue(),
+      'Unable to access layout and set its value.'
     );
   }
   
@@ -272,23 +272,23 @@ class Asar_TemplateTest extends Asar_Test_Helper {
   }
   
   function testLogTemplatesUsedWhenInDebugMode() {
-	  Asar::setMode(Asar::MODE_DEBUG);
-	  $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
-	  $this->T->setTemplateFile(self::$template2_path);
-	  $this->T->setLayout(self::$layout_path);
-	  $this->T->getLayout()->title = 'FooBar Title';
-	  $this->T->render();
-	  $debug = Asar::getDebugMessages();
-	  $this->assertTrue(
-	    array_key_exists('Templates Used', $debug),
-	    '"Templates Used" key was not found in debug messages.'
-	  );
-	  $this->assertEquals(
-	    $debug['Templates Used'], array(
-	       self::$template2_path, self::$layout_path
-	    )
-	  );
-	  Asar::setMode(Asar::MODE_DEVELOPMENT);
+    Asar::setMode(Asar::MODE_DEBUG);
+    $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
+    $this->T->setTemplateFile(self::$template2_path);
+    $this->T->setLayout(self::$layout_path);
+    $this->T->getLayout()->title = 'FooBar Title';
+    $this->T->render();
+    $debug = Asar::getDebugMessages();
+    $this->assertTrue(
+      array_key_exists('Templates Used', $debug),
+      '"Templates Used" key was not found in debug messages.'
+    );
+    $this->assertEquals(
+      $debug['Templates Used'], array(
+         self::$template2_path, self::$layout_path
+      )
+    );
+    Asar::setMode(Asar::MODE_DEVELOPMENT);
   }
 
 }
