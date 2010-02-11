@@ -8,7 +8,7 @@ require_once realpath(dirname(__FILE__). '/../../config.php');
 
 class Asar_FileTest extends Asar_Test_Helper {
 	
-	public function testSettingFileName() {
+	function testSettingFileName() {
 		
 		$testFileName = self::getTempDir().'AAAAARD';
 		
@@ -17,7 +17,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$this->assertEquals($testFileName, $file->getFileName(), 'Filename returned is not the same');
 	}
 	
-	public function testSimpleCreateFile() {
+	function testSimpleCreateFile() {
 		$testString = 'This is a test';
 		$testFileName = self::getTempDir().'Asar_FileTesting.txt';
 		
@@ -29,7 +29,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 	  $this->assertEquals($testString, file_get_contents($testFileName), 'Contents of file is not correct');
 	}
 	
-	public function testLongWayToCreateFile() {
+	function testLongWayToCreateFile() {
 		
 		$testString = 'This is just a string';
 		$testFileName = self::getTempDir().'GAAnotherFileToTest.txt';
@@ -45,7 +45,7 @@ class Asar_FileTest extends Asar_Test_Helper {
         $this->assertEquals($testString, file_get_contents($testFileName), 'Contents of file is not correct');
 	}
 	
-	public function testOpeningAndGettingContents() {
+	function testOpeningAndGettingContents() {
 				
 		$testString = 'Different operating system families have different line-ending conventions. When you write a text file and want to insert a line break, you need to use the correct line-ending character(s) for your operating system.';
 		$testFileName = self::getTempDir().'GAAnotherFileToTest.txt';
@@ -59,7 +59,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$this->assertEquals($testString, $file->read());
 	}
 	
-	public function testStaticUnlink() {
+	function testStaticUnlink() {
 		
 		$testFileName = self::getTempDir().'Suchadirtyword';
 		$testString = '';
@@ -71,7 +71,7 @@ class Asar_FileTest extends Asar_Test_Helper {
         $this->assertFalse(file_exists($testFileName), 'Unable to delete the file');
 	}
 	
-	public function testStaticUnlinkReturnsFalseWhenFileDoesNotExist()
+	function testStaticUnlinkReturnsFalseWhenFileDoesNotExist()
 	{
 	    $testFileName = self::getTempDir().'Nothingnothing';
 	    $this->assertFalse(
@@ -80,7 +80,7 @@ class Asar_FileTest extends Asar_Test_Helper {
         );
 	}
 	
-	public function testDeleting() {
+	function testDeleting() {
 		
 		$testFileName = self::getTempDir().'Suchadirtywordaaa.txt';
 		$testString = 'asdfsadf';
@@ -97,7 +97,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 	    $this->assertFalse(file_exists($testFileName), 'Unable to delete the file');
 	}
 	
-	public function testWritingBeforeAndAfter() {
+	function testWritingBeforeAndAfter() {
 		
 		$testString = 'XXX';
 		$testFileName = self::getTempDir().'Asar_FileTesting.txt';
@@ -112,7 +112,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$this->assertEquals('BBBBXXXCCC', file_get_contents($testFileName), 'Unable to write successfully');
 	}
 	
-	public function testManyWrites() {
+	function testManyWrites() {
 		$testString = 'XXX';
 		$testFileName = self::getTempDir().'Asar_FileTesting.txt';
 		
@@ -124,7 +124,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$this->assertEquals('ABCDEFG', file_get_contents($testFileName), 'Unable to write successfully');
 	}
 	
-	public function testManyWritesButInAppendMode() {
+	function testManyWritesButInAppendMode() {
 		$testString = 'XXX';
 		$testFileName = self::getTempDir().'Asar_FileTesting.txt';
 		
@@ -136,7 +136,7 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$this->assertEquals('XXXiiiABCDEFG', file_get_contents($testFileName), 'Unable to write successfully');
 	}
 	
-	public function testCreatingFilesWithPathsInName() {
+	function testCreatingFilesWithPathsInName() {
 		$testString = 'asdf;lkj';
 		$testFileName = self::getTempDir().'temp/XXXXXXtest.txt';
 		
@@ -150,28 +150,20 @@ class Asar_FileTest extends Asar_Test_Helper {
 		$this->assertEquals($testString, file_get_contents($testFileName), 'Unable to write successfully');
 	}
 	
-	public function testRaiseExceptionWhenTheFileAlreadyExists()
+	function testRaiseExceptionWhenTheFileAlreadyExists()
 	{
 		$testString = 'nananananana';
 		$testFileName = self::getTempDir().'nanana.txt';
 		
 		Asar_File::create($testFileName)->write($testString)->save();
-		try {
-			Asar_File::create($testFileName);
-		} catch (Exception $e) {
-			$this->assertEquals(
-				'Asar_File_Exception', get_class($e),
-				'Asar_File did not raise the right exception for duplicate files'
-			);
-			$this->assertEquals(
-				"Asar_File::create failed. The file '$testFileName' already exists.",
-				$e->getMessage(),
-				'Asar_File did not set the correct exception message for duplicate files'
-			);
-		}
+		$this->setExpectedException(
+		  'Asar_File_Exception',
+		  "Asar_File::create failed. The file '$testFileName' already exists."
+	  );
+	  Asar_File::create($testFileName);
 	}
 	
-	public function testOpeningAFile()
+	function testOpeningAFile()
 	{
 	    $testFileName = self::getTempDir().'nanananana.js';
 		$testString = 'nananananana';
@@ -181,96 +173,58 @@ class Asar_FileTest extends Asar_Test_Helper {
 	    $this->assertEquals($testString, $obj->getContent());
 	}
 	
-	public function testRaiseExceptionWhenOpeningAFileThatDoesNotExist()
+	function testRaiseExceptionWhenOpeningAFileThatDoesNotExist()
 	{
 		$testFileName = self::getTempDir().'hahahaha.js';
-		
-		try {
-			Asar_File::open($testFileName);
-		} catch (Exception $e) {
-			$this->assertEquals(
-				'Asar_File_Exception', get_class($e),
-				'Asar_File did not raise the right exception for opening non-existent files'
-			);
-			$this->assertEquals(
-				"Asar_File::open failed. The file '$testFileName' does not exist.",
-				$e->getMessage(),
-				'Asar_File did not set the correct exception message for opening non-existent files'
-			);
-		}
+		$this->setExpectedException(
+		  'Asar_File_Exception',
+		  "Asar_File::open failed. The file '$testFileName' does not exist."
+	  );
+		Asar_File::open($testFileName);
 	}
 	
-	public function testRaiseExceptionWhenNoFileNameIsSpecified()
+	function testRaiseExceptionWhenNoFileNameIsSpecified()
 	{
 		$file = new Asar_File;
-		try {
-			$file->save();
-		} catch (Exception $e) {
-			$this->assertEquals(
-				'Asar_File_Exception', get_class($e),
-				'Asar_File did not raise the right exception for file object with no file name.'
-			);
-			$this->assertEquals(
-				"Asar_File::getResource failed. The file object does not have a file name.",
-				$e->getMessage(),
-				'Asar_File did not set the correct exception message for file object with no file name.'
-			);
-			return;
-		}
-		$this->fail('Did not raise Asar_File_Exception');
+		$this->setExpectedException(
+		  'Asar_File_Exception',
+		  "Asar_File::getResource failed. The file object does not have a file name."
+	  );
+	  $file->save();
 	}
 	
-	public function testRaiseExceptionWhenSettingInvalidFileNames()
+	function testRaiseExceptionWhenSettingInvalidFileNames()
 	{
 		$names = array(
 			null, 1, array(1,2,3), ''
 		);
 		$file = new Asar_File;
 		foreach ($names as $name) {
-			try {
-				$file->setFileName($name);
-			} catch (Exception $e) {
-				$this->assertEquals(
-					'Asar_File_Exception', get_class($e),
-					'Asar_File did not raise the right exception for setting an invalid file name.'
-				);
-				$this->assertEquals(
-					'Asar_File::setFileName failed. Filename should be a '.
-					'non-empty string.',
-					$e->getMessage(),
-					'Asar_File did not set the correct exception message for setting an invalid file name.'
-				);
-			}
+		  $this->setExpectedException(
+		    'Asar_File_Exception',
+		    'Asar_File::setFileName failed. Filename should be a non-empty string.'
+	    );
+		  $file->setFileName($name);
 		}
 	}
 	
 	function testRaiseExceptionWhenCreatingAFileOnANonExistentDirectory() {
-	  try {
-	    Asar_File::create('a/non-existent/directory/file.txt');
-    } catch (Asar_File_Exception $e) {
-      $this->assertEquals(
-        'Asar_File_Exception_DirectoryNotFound', get_class($e)
-      );
-      $this->assertEquals(
-				'Asar_File::create failed. Unable to find the directory to create the '.
-				'file to (a/non-existent/directory).',
-				$e->getMessage()
-			);
-			return;
-    }
-    $this->fail('Did not raise expected exception (Asar_File_Exception).');
+	  $this->setExpectedException(
+		  'Asar_File_Exception_DirectoryNotFound',
+		  'Asar_File::create failed. Unable to find the directory to create the '.
+				'file to (a/non-existent/directory).'
+	  );
+	  Asar_File::create('a/non-existent/directory/file.txt');
 	}
 	
-	public function testSettingContentUsingArrayAsArgument() {
-	    $content = array('AA', 'BB', 'CC', 'DD');
+	function testSettingContentUsingArrayAsArgument() {
+	  $content = array('AA', 'BB', 'CC', 'DD');
 		$testFileName = self::getTempDir().'temp/XXXXXXtest.txt';
 		
 		mkdir(self::getTempDir().'/temp');
 		
-		$file = Asar_File::create($testFileName)
-            ->write($content)
-            ->save();
-        $this->assertEquals("AA\nBB\nCC\nDD", $file->getContent());
+		$file = Asar_File::create($testFileName)->write($content)->save();
+    $this->assertEquals("AA\nBB\nCC\nDD", $file->getContent());
 	}
   
 }

@@ -16,13 +16,8 @@ class Asar_Utility_RandomStringGeneratorTest extends Asar_Test_Helper {
   protected $StrLength;
   protected $CharacterList = array();
   
-  protected function setUP() {
-    
-    try {
-      $this->RSG = Asar_Utility_RandomStringGenerator::instance();
-    } catch (Exception $e) {
-    }
-    
+  protected function setUp() {
+    $this->RSG = Asar_Utility_RandomStringGenerator::instance();
     $this->CharacterList = str_split('_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
     $this->CharacerLimit = count($this->CharacterList) -1;
     $this->RandomNumber = mt_rand(0, $this->CharacterLimit);

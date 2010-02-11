@@ -173,18 +173,10 @@ class Asar_Utility_CLITest extends Asar_Test_Helper {
   }
   
   function testThrowAsarUtilityCLIExceptionWhenTaskMethodIsNotDefined() {
-    try {
-      $this->cli->execute(array('/a', 'something-to-do-but-cannot-do', 'arg1'));
-    } catch(Asar_Utility_CLI_Exception_UndefinedTask $e) {
-      $this->assertEquals(
-        "The task method 'taskSomethingToDoButCannotDo' is not defined.",
-        $e->getMessage()
-      );
-      return;
-    }
-    $this->fail(
-      'Did not raise expected exception ' .
-      "'Asar_Utility_CLI_Exception_UndefinedTask'."
-    );
+    $this->setExpectedException(
+		  'Asar_Utility_CLI_Exception_UndefinedTask',
+		  "The task method 'taskSomethingToDoButCannotDo' is not defined."
+	  );
+	  $this->cli->execute(array('/a', 'something-to-do-but-cannot-do', 'arg1'));
   }
 }

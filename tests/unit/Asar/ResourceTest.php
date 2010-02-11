@@ -12,7 +12,9 @@ class Asar_ResourceTest_DummyTemplateEngine implements Asar_Template_Interface
   
   function setTemplateFile($file) {}
   
-  function setLayout($file) {}
+  function setLayoutFile($file) {}
+  
+  function getLayout() {}
   
   function getTemplateFile() {}
   
@@ -373,7 +375,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $dir = Asar::constructPath('Somewhere','There');
     $template = $this->getMock('Asar_Template_Interface');
     $template->expects($this->once())
-      ->method('setLayout')
+      ->method('setLayoutFile')
       ->with($this->equalTo(
         Asar::constructPath($dir, 'Layout.html.php')
       ));
@@ -392,7 +394,7 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $dir = Asar::constructPath('Another','Directory');
     $template = $this->getMock('Asar_Template_Interface');
     $template->expects($this->once())
-      ->method('setLayout')
+      ->method('setLayoutFile')
       ->with($this->equalTo(
         Asar::constructPath($dir, 'Layout.txt.php')
       ));
@@ -551,8 +553,8 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     self::newFile('Representation/Foo/Bar/Index.GET.html.php', '');
     $template = $this->getMock('Asar_Template_Interface', 
       array(
-        'render', '__set', 'set', 'setLayout', 'setTemplateFile',
-        'getTemplateFile', 'getTemplateFileExtension'
+        'render', '__set', 'set', 'setLayoutFile', 'setTemplateFile',
+        'getTemplateFile', 'getTemplateFileExtension', 'getLayout'
       )
     );
     $template->expects($this->once())

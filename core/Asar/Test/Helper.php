@@ -158,7 +158,6 @@ abstract class Asar_Test_Helper extends PHPUnit_Framework_TestCase
 		if (!file_exists(self::getTempDir())) {
 			mkdir(self::getTempDir());
 		}
-		
 		// See if it has a path to it
 		if (strpos($filename, '/') > -1) {
 			// Create Path First

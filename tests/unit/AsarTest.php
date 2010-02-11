@@ -216,22 +216,12 @@ class AsarTest extends Asar_Test_Helper {
   
   function testUnInstantiableClass() {
     $testclass = 'Uninstantiable_Class';
-    try {
-      $obj = Asar::instantiate($testclass);
-    } catch (Exception $e) {
-      $this->assertEquals(
-        'Asar_Exception', get_class($e),
-        'Asar did not raise the right exception for instantiating an ' .
-        'uninstantiable class.'
-      );
-      $this->assertEquals(
-        "Asar::instantiate failed. Trying to instantiate the uninstantiable " .
-        "class '$testclass'.",
-        $e->getMessage(),
-        'Asar did not set the correct exception message for instantiating an ' .
-        'uninstantiable class.'
-      );
-    }
+    $this->setExpectedException(
+      'Asar_Exception',
+      "Asar::instantiate failed. Trying to instantiate the uninstantiable " .
+        "class '$testclass'."
+    );
+    $obj = Asar::instantiate($testclass);
   }
   
   function testConstructPath() {

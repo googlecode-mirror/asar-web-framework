@@ -8,7 +8,9 @@ interface Asar_Template_Interface {
     
     public function set($variable, $value = null);
     
-    public function setLayout($layout_file);
+    public function setLayoutFile($layout_file);
+    
+    public function getLayout();
     
     public function setTemplateFile($file);
     

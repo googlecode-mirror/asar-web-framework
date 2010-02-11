@@ -28,7 +28,7 @@ class Asar_Template implements Asar_Template_Interface {
     return $this->_template_file;
   }
 
-  function setLayout($layout_file) {
+  function setLayoutFile($layout_file) {
     if (Asar::fileExists($layout_file)) {
       $this->getLayout()->setTemplateFile($layout_file);
     }

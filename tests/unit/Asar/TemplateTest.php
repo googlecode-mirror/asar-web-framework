@@ -160,7 +160,7 @@ class Asar_TemplateTest extends Asar_Test_Helper {
       'paragraph' => 'Dummy text. Lorem ipsum dolor.'
     ));
     $this->T->setTemplateFile(self::$template2_path);
-    $this->T->setLayout(self::$layout_path);
+    $this->T->setLayoutFile(self::$layout_path);
     $contents = $this->T->render();
     
     $this->assertContains(
@@ -194,7 +194,7 @@ class Asar_TemplateTest extends Asar_Test_Helper {
       'paragraph' => 'Dummy text. Lorem ipsum dolor.'
     ));
     $this->T->setTemplateFile(self::$template2_path);
-    $this->T->setLayout(self::$layout_path);
+    $this->T->setLayoutFile(self::$layout_path);
     $this->T->noLayout();
     $contents = $this->T->render();
     
@@ -215,7 +215,7 @@ class Asar_TemplateTest extends Asar_Test_Helper {
       'paragraph' => 'Dummy text. Lorem ipsum dolor.'
     ));
     $this->T->setTemplateFile(self::$template2_path);
-    $this->T->setLayout('/non-existent/layout_file.php');
+    $this->T->setLayoutFile('/non-existent/layout_file.php');
     $contents = $this->T->render();
     
     $this->assertNotContains(
@@ -232,7 +232,7 @@ class Asar_TemplateTest extends Asar_Test_Helper {
   function testAccessingLayoutVariable() {
     $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
     $this->T->setTemplateFile(self::$template2_path);
-    $this->T->setLayout(self::$layout_path);
+    $this->T->setLayoutFile(self::$layout_path);
     $this->T->getLayout()->title = 'FooBar Title';
     $html = new Asar_Utility_XML($this->T->render());
     $this->assertContains(
@@ -246,7 +246,7 @@ class Asar_TemplateTest extends Asar_Test_Helper {
     $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
     $this->T->setTemplateFile(self::$template2_path);
     $this->T->getLayout()->title = 'FooBar Title';
-    $this->T->setLayout(self::$layout_path);
+    $this->T->setLayoutFile(self::$layout_path);
     $html = new Asar_Utility_XML($this->T->render());
     $this->assertContains(
       'FooBar Title',
@@ -257,25 +257,19 @@ class Asar_TemplateTest extends Asar_Test_Helper {
   
   function testAttemptingToRenderANonExistentFileWillRaiseException() {
     $this->T->setTemplateFile('a/non/existent/file.php');
-    try {
-      $this->T->render();
-      $this->fail('Did not raise exception');
-    } catch (Asar_Exception $e) {
-      $this->assertEquals(
-        'Asar_Template_Exception_FileNotFound', get_class($e)
-      );
-      $this->assertEquals(
-        'Asar_Template::render() failed. The file \'a/non/existent/file.php\' '.
-        'does not exist.', $e->getMessage()
-      );
-    }
+    $this->setExpectedException(
+		  'Asar_Template_Exception_FileNotFound',
+		  'Asar_Template::render() failed. The file \'a/non/existent/file.php\' '.
+        'does not exist.'
+	  );
+	  $this->T->render();
   }
   
   function testLogTemplatesUsedWhenInDebugMode() {
     Asar::setMode(Asar::MODE_DEBUG);
     $this->T->set(array('h1' => 'Foo', 'paragraph' => 'Bar'));
     $this->T->setTemplateFile(self::$template2_path);
-    $this->T->setLayout(self::$layout_path);
+    $this->T->setLayoutFile(self::$layout_path);
     $this->T->getLayout()->title = 'FooBar Title';
     $this->T->render();
     $debug = Asar::getDebugMessages();

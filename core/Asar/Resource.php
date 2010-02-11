@@ -106,7 +106,7 @@ class Asar_Resource implements Asar_Requestable {
       );
     }
     if (array_key_exists('default_representation_dir', $this->config)) {
-      $this->template->setLayout( Asar::constructPath(
+      $this->template->setLayoutFile( Asar::constructPath(
         $this->config['default_representation_dir'],
         'Layout' . $this->_getTemplateTypeToUse() . '.php'
       ));

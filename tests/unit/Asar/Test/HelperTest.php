@@ -184,9 +184,9 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
     $dir = 'testDir/subDir/newDir/';
     Asar_Test_Helper::createDir($dir);
     $tempdir = Asar_Test_Helper::getTempDir();
-    $this->assertTrue(file_exists($tempdir.'testDir'), 'Did not create first directory');
-    $this->assertTrue(file_exists($tempdir.'testDir/subDir'), 'Did not create subdirectory');
-    $this->assertTrue(file_exists($tempdir.'testDir/subDir/newDir'), 'Did not create last path');
+    $this->assertFileExists($tempdir.'testDir', 'Did not create first directory');
+    $this->assertFileExists($tempdir.'testDir/subDir', 'Did not create subdirectory');
+    $this->assertFileExists($tempdir.'testDir/subDir/newDir', 'Did not create last path');
   }
   
   function testCreatingDirectoryReturnsTheFullPath() {
@@ -203,9 +203,16 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
     $file = 'aFolder/anotherFolder/thefile.txt';
     Asar_Test_Helper::newFile($file, '');
     $tempdir = Asar_Test_Helper::getTempDir();
-    $this->assertTrue(file_exists($tempdir.'aFolder'), 'Did not create first directory');
-    $this->assertTrue(file_exists($tempdir.'aFolder/anotherFolder'), 'Did not create subdirectory');
-    $this->assertTrue(file_exists($tempdir.'aFolder/anotherFolder/thefile.txt'), 'Did not create file');
+    $this->assertFileExists($tempdir.'aFolder', 'Did not create first directory');
+    $this->assertFileExists($tempdir.'aFolder/anotherFolder', 'Did not create subdirectory');
+    $this->assertFileExists($tempdir.'aFolder/anotherFolder/thefile.txt', 'Did not create file');
+  }
+  
+  function testCreatingAFileWithASpecifiedPath2() {
+    $file = 'aFolder' . DIRECTORY_SEPARATOR . 'thefile.txt';
+    Asar_Test_Helper::newFile($file, '');
+    $tempdir = Asar_Test_Helper::getTempDir();
+    $this->assertFileExists($tempdir.$file, 'Did not create file');
   }
   
   function testDestructClearsTempDir() {
@@ -214,8 +221,8 @@ class Asar_Test_HelperTest extends PHPUnit_Framework_TestCase
     Asar_Test_Helper::newFile('anotherfile', 'some content');
     $testobj = new Asar_Test_HelperTest_E;
     unset($testobj);
-    $this->assertFalse(
-      file_exists(Asar_Test_Helper::getTempDir()),
+    $this->assertFileNotExists(
+      Asar_Test_Helper::getTempDir(),
       'Destroying an Asar_Test_Helper clears temp directory.'
     );
   }

@@ -141,20 +141,11 @@ class Asar_ViewTest extends Asar_Test_Helper {
 	{
 		$file = 'a_non_existent_template_file.html';
 		$this->T->setTemplate($file);
-		try {
-			$this->T->fetch();
-			$this->fail('Asar_View did not raise an exception for unreachable files');
-		} catch (Exception $e) {
-			$this->assertEquals(
-				'Asar_View_Exception_FileNotFound', get_class($e),
-				'Asar_View did not raise the right exception for setting an invalid file name.'
-			);
-			$this->assertEquals(
-				"Asar_View::fetch failed. Unable to find the template file '$file'.",
-				$e->getMessage(),
-				'Asar_View did not set the correct exception message for setting an invalid file name.'
-			);
-		}
+		$this->setExpectedException(
+		  'Asar_View_Exception_FileNotFound',
+		  "Asar_View::fetch failed. Unable to find the template file '$file'."
+	  );
+	  $this->T->fetch();
 	}
 	
 	

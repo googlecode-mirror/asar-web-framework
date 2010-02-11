@@ -33,58 +33,58 @@ class Asar_Template_BuilderTest extends Asar_Test_Helper {
     );
   }
   
-  function testBuilderReturnsCorrectTemplateObject() {
-    $file = Asar::constructPath($this->tpldir, 'Index.GET.html.php');
-    self::newFile('Index.GET.html.php', '');
-    $tpl = $this->B->getTemplate('GET', 'html');
+  function testBuilderReturnsCorrectTemplateObject(array $options = array()) {
+    extract(array_merge(array(
+      'fname' => 'Index.GET.html.php', 'method' => 'GET', 'type' => 'html',
+      'rname' => 'Index', 'layout' => false), $options)
+    );
+    $file = Asar::constructPath($this->tpldir, $fname);
+    self::newFile($fname, '');
+    if ($layout) {
+      self::newFile($layout, '');
+    }
+    $tpl = $this->B->getTemplate($method, $type);
     $this->assertTrue(
       $tpl instanceof Asar_Template, 'Failed to create Asar_Template object.'
     );
-    $this->assertEquals(
-      $file, $tpl->getTemplateFile()
-    );
+    $this->assertEquals($file, $tpl->getTemplateFile());
+    if ($layout) {
+      $layout_file = Asar::constructPath($this->tpldir, $layout);
+      $this->assertEquals($layout_file, $tpl->getLayout()->getTemplateFile());
+    }
   }
   
   function testBuilderReturnsCorrectTemplateObject2() {
-    $file = Asar::constructPath($this->tpldir, 'Index', 'GET.html.php');
-    self::newFile(Asar::constructPath('Index', 'GET.html.php'), '');
-    $tpl = $this->B->getTemplate('GET', 'html');
-    $this->assertEquals(
-      $file, $tpl->getTemplateFile()
+    $this->testBuilderReturnsCorrectTemplateObject(
+      array('fname' => Asar::constructPath('Index', 'GET.html.php'))
+    );
+  }
+  
+  function testBuilderReturnsCorrectTemplateObjectPOST() {
+    $this->testBuilderReturnsCorrectTemplateObject(
+      array('fname' => 'Index.POST.html.php', 'method' => 'POST')
+    );
+  }
+  
+  function testBuilderReturnsCorrectTemplateObjectTxtType() {
+    $this->testBuilderReturnsCorrectTemplateObject(
+      array('fname' => 'Index.GET.txt.php', 'type' => 'txt')
     );
   }
   
   function testBuilderThrowsExceptionWhenNoTemplateFileIsFound() {
-    try {
-      $tpl = $this->B->getTemplate('GET', 'html');
-    } catch (Exception $e) {
-      $this->assertTrue(
-        $e instanceof Asar_Template_Builder_Exception,
-        'Exception must be Asar_Template_Builder_Exception and not ' .
-        get_class($e) . '.'
-      );
-      $this->assertEquals(
-        'Unable to build template for ' . get_class($this->R) . ' with '.
-          'GET html request.',
-        $e->getMessage()
-      );
-      return;
-    }
-    $this->fail('Did not throw exception when no template file.');
+    $this->setExpectedException(
+      'Asar_Template_Builder_Exception', 
+      'Unable to build template for ' . get_class($this->R) . ' with '.
+          'GET html request.'
+    );
+    $tpl = $this->B->getTemplate('GET', 'html');
   }
   
-  function testBuilderReturnsCorrectTemplateObjectPOST() {
-    $file = Asar::constructPath($this->tpldir, 'Index.POST.html.php');
-    self::newFile('Index.POST.html.php', '');
-    $tpl = $this->B->getTemplate('POST', 'html');
-    $this->assertEquals($file, $tpl->getTemplateFile());
-  }
-  
-  function testBuilderReturnsCorrectTemplateObjectTxtType() {
-    $file = Asar::constructPath($this->tpldir, 'Index.GET.txt.php');
-    self::newFile('Index.GET.txt.php', '');
-    $tpl = $this->B->getTemplate('GET', 'txt');
-    $this->assertEquals($file, $tpl->getTemplateFile());
+  function testBuilderSetsLayoutWhenItExists() {
+    $this->testBuilderReturnsCorrectTemplateObject(
+      array('layout' => 'Layout.html.php')
+    );
   }
   
 }
