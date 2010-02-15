@@ -1,6 +1,27 @@
 <?php
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+// This class is for testing purposes only
+class Asar_Template_Builder_DummyEngine implements Asar_Template_Interface {
+  function render() {}
+  
+  function __set($variable, $value = null) {}
+  
+  function set($variable, $value = null) {}
+  
+  function setTemplateFile($file) {}
+  
+  function setLayoutFile($file) {}
+  
+  function getLayout() {}
+  
+  function getTemplateFile() {}
+  
+  function getTemplateFileExtension() {
+    return 'tbd';
+  }
+}
+
 class Asar_Template_BuilderTest extends Asar_Test_Helper {
   
   private static $prefCount = 0;
@@ -36,17 +57,20 @@ class Asar_Template_BuilderTest extends Asar_Test_Helper {
   function testBuilderReturnsCorrectTemplateObject(array $options = array()) {
     extract(array_merge(array(
       'fname' => 'Index.GET.html.php', 'method' => 'GET', 'type' => 'html',
-      'rname' => 'Index', 'layout' => false), $options)
-    );
+      'rname' => 'Index', 'layout' => false, 'engine' => 'Asar_Template'),
+      $options
+    ));
     $file = Asar::constructPath($this->tpldir, $fname);
     self::newFile($fname, '');
+    echo "\n--$file";
     if ($layout) {
       self::newFile($layout, '');
     }
+    if ($engine != 'Asar_Template') {
+      $this->B->setEngine($engine);
+    }
     $tpl = $this->B->getTemplate($method, $type);
-    $this->assertTrue(
-      $tpl instanceof Asar_Template, 'Failed to create Asar_Template object.'
-    );
+    $this->assertType($engine, $tpl);
     $this->assertEquals($file, $tpl->getTemplateFile());
     if ($layout) {
       $layout_file = Asar::constructPath($this->tpldir, $layout);
@@ -85,6 +109,22 @@ class Asar_Template_BuilderTest extends Asar_Test_Helper {
     $this->testBuilderReturnsCorrectTemplateObject(
       array('layout' => 'Layout.html.php')
     );
+  }
+  
+  function testBuilderSetsLayoutXmlType() {
+    $this->testBuilderReturnsCorrectTemplateObject(array(
+      'fname' => 'Index.GET.xml.php', 'layout' => 'Layout.xml.php',
+      'type' => 'xml'
+    ));
+  }
+  
+  function testBuilderWithADifferentTemplateEngine() {
+    $b = new Asar_Template_Builder_DummyEngine;
+    echo "\n======\n", $b->getTemplateFileExtension(), "\n=====";
+    $this->testBuilderReturnsCorrectTemplateObject(array(
+      'fname' => 'Index.GET.html.tbd',
+      'engine' => 'Asar_Template_Builder_DummyEngine'
+    ));
   }
   
 }

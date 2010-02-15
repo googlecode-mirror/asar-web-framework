@@ -3,9 +3,9 @@ class Asar_Resource implements Asar_Requestable {
   private $request, $response, $template_engine;
   private $config = array();
   protected static $_types = array(
-    'text/html'     => '.html',
-    'application/xml' => '.xml',
-    'text/plain'    => '.txt'
+    'text/html'     => 'html',
+    'application/xml' => 'xml',
+    'text/plain'    => 'txt'
   );
   
   function setTemplateEngine($class) {
@@ -35,6 +35,7 @@ class Asar_Resource implements Asar_Requestable {
       if ( !isset($this->template_engine) ) {
         $this->setTemplateEngine('Asar_Template');
       }
+      $this->template_builder = new Asar_Template_Builder($this);
       $this->template = new $this->template_engine;
       return $this->template;
     }
@@ -108,7 +109,7 @@ class Asar_Resource implements Asar_Requestable {
     if (array_key_exists('default_representation_dir', $this->config)) {
       $this->template->setLayoutFile( Asar::constructPath(
         $this->config['default_representation_dir'],
-        'Layout' . $this->_getTemplateTypeToUse() . '.php'
+        'Layout' . '.' . $this->_getTemplateTypeToUse() . '.php'
       ));
     }
     try {
@@ -128,7 +129,8 @@ class Asar_Resource implements Asar_Requestable {
       $thisname = str_replace( '_', DIRECTORY_SEPARATOR,
         substr_replace(get_class($this), '', 0, strlen($contextname) + 10)
       );
-      $suffix = $this->request->getMethod() . $this->_getTemplateTypeToUse() . '.php';
+      $suffix = $this->request->getMethod() . '.' .
+        $this->_getTemplateTypeToUse() . '.php';
       $path = Asar::constructPath(
       $this->config['default_representation_dir'],
         $thisname . '.' . $suffix
@@ -148,7 +150,7 @@ class Asar_Resource implements Asar_Requestable {
     if (array_key_exists($accept, self::$_types)) {
       return self::$_types[$accept];
     }
-    return '.html';
+    return 'html';
   }
   
   function GET() {

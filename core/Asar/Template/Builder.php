@@ -3,6 +3,7 @@ class Asar_Template_Builder {
   
   private $resource;
   private $rconf = null;
+  private $engine = 'Asar_Template';
   
   function __construct($resource) {
     $this->resource = $resource;
@@ -14,15 +15,23 @@ class Asar_Template_Builder {
   }
   
   function getTemplate($method, $content_type) {
-    $tpl = new Asar_Template;
+    $tpl = new $this->engine;
+    var_dump($tpl);
     $tpl->setTemplateFile(
-      $this->_getTemplateFile($method, $content_type)
+      $this->_getTemplateFile($method, $content_type, $tpl->getTemplateFileExtension())
     );
-    $layout_file = $this->_constructTemplateFilePath('Layout.'.$content_type.'.php');
+    $layout_file = $this->_constructTemplateFilePath(
+      'Layout.'.$content_type.'.'. $tpl->getTemplateFileExtension()
+    );
     if ($layout_file) {
       $tpl->setLayoutFile($layout_file);
     }
     return $tpl;
+  }
+  
+  function setEngine($engine) {
+    echo "\nSetting Engine... $engine";
+    $this->engine;
   }
   
   private function _getPrefix() {
@@ -32,8 +41,9 @@ class Asar_Template_Builder {
     return $prefix;
   }
   
-  private function _getTemplateFile($method, $content_type) {
-    $suffix = "$method.$content_type.php";
+  private function _getTemplateFile($method, $content_type, $extension) {
+    $suffix = "$method.$content_type.$extension";
+    echo "\nFinding: $suffix";
     $path = $this->_constructTemplateFilePath($this->_getPrefix() . ".$suffix");
     if (!$path) {
       $path = $this->_constructTemplateFilePath(
