@@ -5,49 +5,56 @@ class Asar_Interpreter implements Asar_Interprets {
     
   function interpretFor(Asar_Requestable $requestable) {
     //TODO: How will this behave if $response is not an Asar_Response
-    $response = $requestable->handleRequest($this->createRequest());
+    $response = $requestable->handleRequest($this->importRequest());
     $this->exportResponse($response);
   }
   
-  function createRequest() {
+  function importRequest() {
     $request = new Asar_Request;
-    if (array_key_exists('REQUEST_METHOD', $_SERVER)) {
+    if ($this->isInServerVar('REQUEST_METHOD')) {
       $request->setMethod($_SERVER['REQUEST_METHOD']);
     }
-    if (array_key_exists('REQUEST_URI', $_SERVER)) {
+    if ($this->isInServerVar('REQUEST_URI')) {
       $request->setPath($this->createPathFromUri($_SERVER['REQUEST_URI']));
     }
+    $this->importHeadersToRequest($request);
+    if ($this->isPostRequest()) {
+      $request->setContent($_POST);
+    }
+    return $request;
+  }
+  
+  private function importHeadersToRequest($request) {
     foreach ($_SERVER as $key => $value) {
       if (strpos($key, 'HTTP_') === 0) {
         $request->setHeader(str_replace('HTTP_', '', $key), $value);
       }
     }
-    if (array_key_exists('REQUEST_METHOD', $_SERVER) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-      $request->setContent($_POST);
-    }
-    
-    return $request;
+  }
+  
+  private function isInServerVar($key) {
+    return array_key_exists($key, $_SERVER);
+  }
+  
+  private function isPostRequest() {
+    return $this->isInServerVar('REQUEST_METHOD') &&
+      $_SERVER['REQUEST_METHOD'] === 'POST';
   }
   
   function exportResponse(Asar_Response $response) {
     $this->exportResponseHeaders($response);
     echo $response->getContent();
-    //var_dump($response);
-    //var_dump(headers_list());
   }
   
   function exportResponseHeaders($response) {
     $headers = $response->getHeaders();
-    $this->response = $response;
-    $i = 0;
-    $length = count($headers);
     foreach ($headers as $name => $value) {
-      $i++;
       $this->header($name . ': ' . $value);
     }
     $status = $response->getStatus();
-    $message = Asar_Response::getStatusMessage($status);
-    $this->header("HTTP/1.1 $status $message");
+    $this->header(
+      "HTTP/1.1 $status " . Asar_Response::getStatusMessage($status)
+    );
   }
   
   function header() {
