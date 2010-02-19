@@ -3,19 +3,21 @@ require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 // This class is for testing purposes only
 class Asar_Template_Builder_DummyEngine implements Asar_Template_Interface {
+  private $file;
+  
   function render() {}
   
   function __set($variable, $value = null) {}
   
   function set($variable, $value = null) {}
   
-  function setTemplateFile($file) {}
+  function setTemplateFile($file) {$this->file = $file;}
   
   function setLayoutFile($file) {}
   
   function getLayout() {}
   
-  function getTemplateFile() {}
+  function getTemplateFile() {return $this->file;}
   
   function getTemplateFileExtension() {
     return 'tbd';
@@ -62,14 +64,14 @@ class Asar_Template_BuilderTest extends Asar_Test_Helper {
     ));
     $file = Asar::constructPath($this->tpldir, $fname);
     self::newFile($fname, '');
-    echo "\n--$file";
     if ($layout) {
       self::newFile($layout, '');
     }
     if ($engine != 'Asar_Template') {
       $this->B->setEngine($engine);
     }
-    $tpl = $this->B->getTemplate($method, $type);
+    $tpl = $this->B->getTemplate();
+    $this->B->prepareTemplate($method, $type);
     $this->assertType($engine, $tpl);
     $this->assertEquals($file, $tpl->getTemplateFile());
     if ($layout) {
@@ -97,12 +99,13 @@ class Asar_Template_BuilderTest extends Asar_Test_Helper {
   }
   
   function testBuilderThrowsExceptionWhenNoTemplateFileIsFound() {
+    $tpl = $this->B->getTemplate();
     $this->setExpectedException(
       'Asar_Template_Builder_Exception', 
       'Unable to build template for ' . get_class($this->R) . ' with '.
           'GET html request.'
     );
-    $tpl = $this->B->getTemplate('GET', 'html');
+    $this->B->prepareTemplate('GET', 'html');
   }
   
   function testBuilderSetsLayoutWhenItExists() {
@@ -119,12 +122,18 @@ class Asar_Template_BuilderTest extends Asar_Test_Helper {
   }
   
   function testBuilderWithADifferentTemplateEngine() {
-    $b = new Asar_Template_Builder_DummyEngine;
-    echo "\n======\n", $b->getTemplateFileExtension(), "\n=====";
     $this->testBuilderReturnsCorrectTemplateObject(array(
       'fname' => 'Index.GET.html.tbd',
       'engine' => 'Asar_Template_Builder_DummyEngine'
     ));
+  }
+  
+  function testOverrideTemplate() {
+    $tpl = new Asar_Template_Builder_DummyEngine;
+    $this->B->setTemplate($tpl);
+    $this->assertType(
+      'Asar_Template_Builder_DummyEngine', $this->B->getTemplate()
+    );
   }
   
 }

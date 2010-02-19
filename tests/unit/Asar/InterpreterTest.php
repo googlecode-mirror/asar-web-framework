@@ -16,17 +16,17 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
     $this->I->interpretFor($app);
   }
 	
-	function testCreateRequest() {
+	function testImportRequest() {
 	  $this->assertTrue(
-	    $this->I->createRequest() instanceof Asar_Request,
-	    'CreateRequest() did not create an Asar_Request object.'
+	    $this->I->importRequest() instanceof Asar_Request,
+	    'ImportRequest() did not create an Asar_Request object.'
     );
 	}
 	
-	function testCreateRequestBaseRequestCreationOnEnvironmentVariables() {
+	function testImportRequestBaseRequestCreationOnEnvironmentVariables() {
 	  $_SERVER['REQUEST_METHOD'] = 'POST';
 	  $_SERVER['REQUEST_URI']  = '/a_page';
-	  $R = $this->I->createRequest();
+	  $R = $this->I->importRequest();
 	  $this->assertEquals(
 	    'POST', $R->getMethod(),
 	    'Did not set the request method to server values.'
@@ -37,10 +37,10 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
     );
 	}
 	
-	function testCreateRequestBaseRequestCreationOnEnvironmentVariables2() {
+	function testImportRequestBaseRequestCreationOnEnvironmentVariables2() {
 	  $_SERVER['REQUEST_METHOD'] = 'GET';
 	  $_SERVER['REQUEST_URI']  = '/another/path';
-	  $R = $this->I->createRequest();
+	  $R = $this->I->importRequest();
 	  $this->assertEquals(
 	    'GET', $R->getMethod(),
 	    'Did not set the request method to server values.'
@@ -51,33 +51,33 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
     );
 	}
 	
-	function testCreateRequestSettingPathWithQueryVariables() {
+	function testImportRequestSettingPathWithQueryVariables() {
 	  $_SERVER['REQUEST_URI'] = '/a/path/to/page2?foo=bar&prog=ram';
 	  $this->assertEquals(
-	    '/a/path/to/page2', $this->I->createRequest()->getPath(),
+	    '/a/path/to/page2', $this->I->importRequest()->getPath(),
 	    'Did not properly set the request path with query variables.'
     );
 	}
 	
-	function testCreateRequestSetsContentOnRequestIfMethodIsPost() {
+	function testImportRequestSetsContentOnRequestIfMethodIsPost() {
 	  $_SERVER['REQUEST_METHOD'] = 'POST';
 	  $_POST = array(
 	    'foo' => 'bar',
 	    'boo' => 'far',
 	    'goo' => 'mar'
 	  );
-	  $R = $this->I->createRequest();
+	  $R = $this->I->importRequest();
 	  $this->assertEquals(
 	    'POST', $R->getMethod(),
 	    'Did not set request method to post.'
     );
 	  $this->assertEquals(
 	    $_POST, $R->getContent(),
-	    'CreateRequest() did not set the post variables for POST request.'
+	    'ImportRequest() did not set the post variables for POST request.'
     );
 	}
 	
-	function testCreateRequestDoesNotSetContentOnRequestIfMethodIsGet() {
+	function testImportRequestDoesNotSetContentOnRequestIfMethodIsGet() {
 	  $_SERVER['REQUEST_METHOD'] = 'GET';
 	  $_POST = array(
 	    'foo' => 'bar',
@@ -85,14 +85,14 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
 	    'goo' => 'mar',
 	    'mammal' => 'cat',
 	  );
-	  $R = $this->I->createRequest();
+	  $R = $this->I->importRequest();
 	  $this->assertEquals(
 	    null, $R->getContent(),
-	    'CreateRequest() must not set the post variables for GET request.'
+	    'ImportRequest() must not set the post variables for GET request.'
     );
 	}
 	
-	function testCreateRequestSetsHeaders() {
+	function testImportRequestSetsHeaders() {
 	  $_SERVER = array(
 	    'REQUEST_METHOD'     => 'GET',
 	    "HTTP_HOST"      => 'localhost',
@@ -106,7 +106,7 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
 	    'REQUEST_URI'      => 'somewhere_over_the_rainbow'
     );
 	  
-	  $R = $this->I->createRequest();
+	  $R = $this->I->importRequest();
 	  foreach ($_SERVER as $key => $value) {
 	    if (strpos($key, 'HTTP_') === 0) {
 	      //TODO: not safe for headers that contain multiple instances
@@ -132,12 +132,12 @@ class Asar_InterpreterTest extends Asar_Test_Helper {
     }  
 	}
 	
-	function testInterpretForUsesCreateRequestToPassRequestToApp() {
+	function testInterpretForUsesImportRequestToPassRequestToApp() {
 	  $app = $this->getMock('Asar_Requestable', array('handleRequest'));
 	  $app->expects($this->once())
 	    ->method('handleRequest')
 	    ->with($this->equalTo(
-	      $this->I->createRequest()
+	      $this->I->importRequest()
 	    ))
 	    ->will($this->returnValue(new Asar_Response));
     $this->I->interpretFor($app);

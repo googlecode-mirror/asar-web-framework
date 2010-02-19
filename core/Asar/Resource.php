@@ -35,7 +35,6 @@ class Asar_Resource implements Asar_Requestable {
       if ( !isset($this->template_engine) ) {
         $this->setTemplateEngine('Asar_Template');
       }
-      $this->template_builder = new Asar_Template_Builder($this);
       $this->template = new $this->template_engine;
       return $this->template;
     }
@@ -100,18 +99,6 @@ class Asar_Resource implements Asar_Requestable {
   }
   
   private function _renderTemplate($content_type) {
-    if (!$this->template->getTemplateFile()) {
-      // Infer template file based on name of context and this resource 
-      $this->template->setTemplateFile(
-        $this->_constructTemplateFilePath()
-      );
-    }
-    if (array_key_exists('default_representation_dir', $this->config)) {
-      $this->template->setLayoutFile( Asar::constructPath(
-        $this->config['default_representation_dir'],
-        'Layout' . '.' . $this->_getTemplateTypeToUse() . '.php'
-      ));
-    }
     try {
       $content = $this->template->render();
       // TODO: Create more functional tests for content negotiation
@@ -123,35 +110,6 @@ class Asar_Resource implements Asar_Requestable {
     return $content;
   }
   
-  protected function _constructTemplateFilePath() {
-    if (array_key_exists('context', $this->config)) {
-      $contextname = str_replace('_Application', '', get_class($this->config['context']));
-      $thisname = str_replace( '_', DIRECTORY_SEPARATOR,
-        substr_replace(get_class($this), '', 0, strlen($contextname) + 10)
-      );
-      $suffix = $this->request->getMethod() . '.' .
-        $this->_getTemplateTypeToUse() . '.php';
-      $path = Asar::constructPath(
-      $this->config['default_representation_dir'],
-        $thisname . '.' . $suffix
-      );
-      if (!file_exists($path)) {
-        $path = Asar::constructPath(
-          $this->config['default_representation_dir'], $thisname, $suffix
-        );
-      }
-      return $path;
-    }
-    return false;
-  }
-  
-  protected function _getTemplateTypeToUse() {
-    $accept = $this->_contentNegotiate($this->request->getHeader('Accept'));
-    if (array_key_exists($accept, self::$_types)) {
-      return self::$_types[$accept];
-    }
-    return 'html';
-  }
   
   function GET() {
     $this->response->setStatus(405);
