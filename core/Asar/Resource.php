@@ -1,6 +1,6 @@
 <?php
 class Asar_Resource implements Asar_Requestable {
-  private $request, $response, $template_engine;
+  private $request, $response, $template;
   private $config = array();
   protected static $_types = array(
     'text/html'     => 'html',
@@ -8,40 +8,8 @@ class Asar_Resource implements Asar_Requestable {
     'text/plain'    => 'txt'
   );
   
-  function setTemplateEngine($class) {
-    $this->template_engine = $class;
-  }
-  
-  function setConfiguration(array $config) {
-    if (array_key_exists('context', $config)) {
-      $this->config['default_representation_dir'] = 
-        $this->createRepresentationDirectory($config['context']);
-    }
-    $this->config = array_merge($this->config, $config);
-  }
-  
-  function getConfiguration() {
-    return $this->config;
-  }
-  
-  private function createRepresentationDirectory($context) {
-    $reflector = new ReflectionClass(get_class($context));
-    return dirname($reflector->getFileName()) . 
-        DIRECTORY_SEPARATOR . 'Representation';
-  }
-  
-  function __get($property) {
-    if ($property == 'template') {
-      if ( !isset($this->template_engine) ) {
-        $this->setTemplateEngine('Asar_Template');
-      }
-      $this->template = new $this->template_engine;
-      return $this->template;
-    }
-    trigger_error(
-      "Unknown property '$property' via __get()",
-      E_USER_WARNING
-    );
+  function setTemplate($template) {
+    $this->template = $template;
   }
   
   private function _runMethod() {

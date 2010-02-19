@@ -157,26 +157,10 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     throw new Exception('The error message.');
   }
   
-  function testResourceTriggersErrorWhenTryingToAccessUnknownProperty() {
-    set_error_handler(array($this, 'temporaryErrorHandler'));
-    $this->R->something;
-    restore_error_handler();
-    $this->assertNotNull(
-      $this->getObject('error'),
-      'Accessing unknown property did not trigger any error.'
-    );
-    $error = $this->getObject('error');
-    $this->assertContains(
-      'Unknown property \'something\' via __get()', $error[1],
-      'Wrong error message sent.'
-    );
-    
-  }
-  
-  function temporaryErrorHandler($err_no, $err_str) {
-    $this->saveObject(
-      'error', array($err_no, $err_str)
-    );
+  function testSettingTemplate() {
+    $template = $this->getMock('Asar_Template_Interface');
+    $this->R->setTemplate($template);
+    $this->assertSame($template, $this->readAttribute($this->R, 'template'));
   }
   
   function testResourceAttemptsToRenderTemplateWhenTemplateIsSet() {
