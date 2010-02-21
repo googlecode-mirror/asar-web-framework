@@ -18,6 +18,22 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $this->R->handleRequest($this->request);
   }
   
+  function testRunsResourceMethodBasedOnRequestMethod($method = 'GET') {
+    $request = new Asar_Request;
+    $request->setMethod($method);
+    $this->R = $this->getMock('Asar_Resource', array($method));
+    $this->R->expects($this->once())
+      ->method($method);
+    $this->R->handleRequest($request);
+  }
+  
+  function testRunsResourceMethodBasedOnRequestMethodAll() {
+    $methods = array('POST', 'PUT', 'DELETE');
+    foreach ($methods as $method) {
+      $this->testRunsResourceMethodBasedOnRequestMethod($method);
+    }
+  }
+  
   function checkRequestAttribute() {
     $this->assertSame(
       $this->request,
@@ -164,20 +180,11 @@ class Asar_ResourceTest extends Asar_Test_Helper {
   }
   
   function testResourceAttemptsToRenderTemplateWhenTemplateIsSet() {
-    $this->R->template = $this->getMock('Asar_Template_Interface', array());
-    $this->R->template->expects($this->once())
+    $template = $this->getMock('Asar_Template_Interface');
+    $this->R->setTemplate($template);
+    $template->expects($this->once())
       ->method('render');
     $this->R->handleRequest(new Asar_Request);
-  }
-  
-  function testResourceAttemptsToRenderTemplateWhenTemplateIsSetPOST() {
-    $this->R = new Asar_Resource;
-    $this->R->template = $this->getMock('Asar_Template_Interface', array());
-    $this->R->template->expects($this->once())
-      ->method('render');
-    $req = new Asar_Request;
-    $req->setMethod('POST');
-    $this->R->handleRequest($req);
   }
   
 }
