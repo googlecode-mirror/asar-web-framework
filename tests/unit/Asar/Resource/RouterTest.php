@@ -5,7 +5,7 @@ class Asar_Resource_RouterTest extends Asar_Test_Helper {
 
   function setUp() {
     $this->F   = new Asar_Resource_Router;
-    $this->app = $this->getMock('Asar_Application', array(), array(),
+    $this->app = $this->getMock('Asar_Application', array(), array($this->F),
       self::generateRandomClassName(get_class($this), 'Application')
     );
   }
@@ -64,6 +64,46 @@ class Asar_Resource_RouterTest extends Asar_Test_Helper {
       '/pages/a-name-of-a-page/edit', 'Pages__Item_Edit'
     );
   }
+  
+  /*
+  function testSetIndexInstantiatesRequestableObjectIfArgumentIsString() {
+    eval('
+      class Asar_ApplicationTest_App1 extends Asar_Application {
+        protected function setUp() {
+          $this->setIndex("Resource1");
+        }
+      }
+      
+      class Asar_ApplicationTest_Resource_Resource1 extends Asar_Resource { }
+    ');
+    $app = new Asar_ApplicationTest_App1;
+    $this->assertTrue(
+       $app->getMap('/') instanceof Asar_ApplicationTest_Resource_Resource1,
+      'setIndex() was not able to find the index from string'
+    );
+  }
+  
+  function testApplicationCanSetDefaultPrefix() {
+    eval('
+      class Asar_ApplicationTest_App2 extends Asar_Application {
+        
+        protected function setUp() {
+          $this->setAppPrefix("Asar_ApplicationTest_FooApp");
+          $this->setIndex("Resource1");
+        }
+      }
+      
+      class Asar_ApplicationTest_FooApp_Resource_Resource1 extends Asar_Resource
+      { }
+    ');
+    $app = new Asar_ApplicationTest_App2;
+    $this->assertEquals(
+       'Asar_ApplicationTest_FooApp_Resource_Resource1',
+       get_class($app->getMap('/')),
+      'setIndex() was not able to find the index from string'
+    );
+  }
+  */
   
 }
 

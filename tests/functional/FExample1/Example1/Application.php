@@ -8,7 +8,7 @@
  */
 class Example1_Application extends Asar_Application
 {
-    protected function initialize() {
+    protected function setUp() {
         $this->setIndex('Index');
         $this->setMap('/what', 'What');
     }

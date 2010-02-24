@@ -88,6 +88,28 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     );
   }
   
+  function testReturn406StatusForUnknownTypes() {
+    $request = new Asar_Request;
+    $request->setMethod('GET');
+    $request->setHeader('Accept', 'unknowntype');
+    $R = $this->getMock('Asar_Resource', array('GET'));
+    $this->assertEquals(
+      406, $R->handleRequest($request)->getStatus()
+    );
+  }
+  
+  function testDoNotExecuteMethodDefIf406Status() {
+    $request = new Asar_Request;
+    $request->setMethod('GET');
+    $request->setHeader('Accept', 'another/unknowntype');
+    $R = $this->getMock('Asar_Resource', array('GET'));
+    $R->expects($this->never())
+      ->method('GET');
+    $this->assertEquals(
+      406, $R->handleRequest($request)->getStatus()
+    );
+  }
+  
   function testExecutePOSTMethodWhenPostRequest() {
     $request = new Asar_Request;
     $request->setMethod('POST');
@@ -179,12 +201,10 @@ class Asar_ResourceTest extends Asar_Test_Helper {
     $this->assertSame($template, $this->readAttribute($this->R, 'template'));
   }
   
-  function testResourceAttemptsToRenderTemplateWhenTemplateIsSet() {
+  function testGettingTemplate() {
     $template = $this->getMock('Asar_Template_Interface');
     $this->R->setTemplate($template);
-    $template->expects($this->once())
-      ->method('render');
-    $this->R->handleRequest(new Asar_Request);
+    $this->assertSame($template, $this->R->getTemplate());
   }
   
 }

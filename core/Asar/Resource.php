@@ -2,18 +2,22 @@
 class Asar_Resource implements Asar_Requestable {
   private $request, $response, $template;
   private $config = array();
-  protected static $_types = array(
-    'text/html'     => 'html',
+  protected $_types = array(
+    'text/html'       => 'html',
     'application/xml' => 'xml',
-    'text/plain'    => 'txt'
+    'text/plain'      => 'txt'
   );
   
   function setTemplate($template) {
     $this->template = $template;
   }
   
-  private function _runMethod() {
-    return call_user_func(array($this, $this->request->getMethod()));
+  function getTemplate() {
+    return $this->template;
+  }
+  
+  private function _runMethod($method) {
+    return call_user_func(array($this, $method));
   }
   
   function handleRequest(Asar_Request_Interface $request) {
@@ -42,22 +46,17 @@ class Asar_Resource implements Asar_Requestable {
   }
   
   private function _getContent($request) {
-    $content_type = $this->_contentNegotiate($request->getHeader('Accept'));
-    if (!$content_type) {
-      $this->response->setStatus(406);
+    if ($this->_contentNegotiate($request->getHeader('Accept'))) {
+      return $this->_runMethod($request->getMethod());
     }
-    $content = $this->_runMethod();
-    if (!$content && isset($this->template)) {
-      return $this->_renderTemplate($content_type);
-    }
-    return $content;
+    $this->response->setStatus(406);
   }
   
   protected function _contentNegotiate($accept) {
-    if (array_key_exists($accept, self::$_types)) {
+    if (array_key_exists($accept, $this->_types)) {
       return $accept;
     }
-    $mime_types = array_keys(self::$_types);
+    $mime_types = array_keys($this->_types);
     foreach ($mime_types as $mime_type) {
       if (strpos($accept, $mime_type) !== FALSE) {
         return $mime_type;
@@ -65,19 +64,6 @@ class Asar_Resource implements Asar_Requestable {
     }
     return null;
   }
-  
-  private function _renderTemplate($content_type) {
-    try {
-      $content = $this->template->render();
-      // TODO: Create more functional tests for content negotiation
-      $this->response->setHeader( 'Content-Type', $content_type );
-    } catch (Asar_Template_Exception_FileNotFound $e) {
-      $this->response->setStatus(406);
-      $content = '';
-    }
-    return $content;
-  }
-  
   
   function GET() {
     $this->response->setStatus(405);
