@@ -1,34 +1,47 @@
 <?php
+/* Resource dispatching */
 
-/* A sample interface for Asar_View */
+//////////////////////// 1.
+$app->setReceiver($resource);
+$app->handleRequest($request);
 
-$config = array(
-    'default_template_engine' => 'Asar_Template_Interface',
-    'default_template_path'   => 'Representation',
-    
-);
-
-
-var_dump($config);
-
-class Churva {
-    private $config;
-    
-    function setConfig(&$conf) {
-        $this->config =& $conf;
-    }
-    
-    function getConfig() {
-        return $this->config;
-    }
+// in handleRequest()
+function handleRequest($request) {
+  $response = $this->receiver->handleRequest($request);
+  //...
 }
 
-$chuva = new Churva;
+// Or combined...
+$app->letResourceHandleRequest($resource, $request);
 
-$chuva->setConfig($config);
+function letResourceHandleRequest($resource, $request) {
+  $response = $this->resource->handleRequest($request);
+  //...
+}
 
-echo "\n\n************************\n\n";
 
-$config['nanana'] = 'lalalala';
 
-var_dump($chuva->getConfig());
+//////////////////////// 2. - Dispatcher
+
+class Asar_Application implements Asar_Requestable {
+  function __construct(Asar_Dispatcher $dispatcher) {
+    $this->dispatcher = $dispatcher;
+    $this->dispatcher->setConfiguration($this->getConfiguration());
+    $this->dispatcher->setMapping($this->getMap());
+  }
+  
+  function handleRequest($request) {
+    $response = $this->dispatcher->dispatchFor($request, $resource);
+    //...
+  }
+}
+
+class Asar_Dispatcher {
+  
+  function dispatchFor($request, $resource) {
+    
+  }
+}
+
+$app = new Asar_Application($dispatcher);
+
