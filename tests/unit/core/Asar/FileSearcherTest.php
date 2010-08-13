@@ -18,15 +18,17 @@ class Asar_FileSearcherTest extends PHPUnit_Framework_TestCase {
     if (!$this->tempdir) {
       $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
       $this->TFM = new Asar_TempFilesManager($this->tempdir);
+      $this->TFM->clearTempDirectory();
       $this->old_include_path = get_include_path();
     }
     $this->FS = new Asar_FileSearcher();
-    $this->TFM->clearTempDirectory();
     set_include_path($this->tempdir . PATH_SEPARATOR . $this->old_include_path);
   }
   
   function tearDown() {
-    $this->TFM->clearTempDirectory();
+    if ($this->TFM) {
+      $this->TFM->clearTempDirectory();
+    }
     set_include_path($this->old_include_path);
   }
   
