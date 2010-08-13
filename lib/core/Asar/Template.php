@@ -1,70 +1,51 @@
 <?php
 
 class Asar_Template implements Asar_Template_Interface {
-  private $_template_file = null;
-  private $_tpl;
-  private $_allow_layout = true;
-  private $_layout = null;
-  private static $_template_files_used = array();
-
-  function __construct() {
-    $this->_tpl = new Asar_View;
-  }
-
-  function __set($variable, $value = null) {
-    $this->set($variable, $value);
-  }
-
-  function set($variable, $value = null) {
-    $this->_tpl->set($variable, $value);
-  }
-
+  
+  
+  private
+    $file,
+    $layout = array(),
+    $config = array(
+      'no_layout' => false
+    );
+  
   function setTemplateFile($file) {
-    $this->_template_file = $file;
-    $this->_tpl->setTemplate($this->_template_file);
-  }
-
-  function getTemplateFile() {
-    return $this->_template_file;
-  }
-
-  function setLayoutFile($layout_file) {
-    if (Asar::fileExists($layout_file)) {
-      $this->getLayout()->setTemplateFile($layout_file);
-    }
-  }
-
-  function getLayout() {
-    if (!$this->_layout)
-      $this->_layout = new self;
-    return $this->_layout;
-  }
-
-  function noLayout() {
-    $this->_allow_layout = false;
-  }
-
-  function render() {
-    if (Asar::getMode() == Asar::MODE_DEBUG) {
-      self::$_template_files_used[] = $this->_template_file;
-      Asar::debug('Templates Used', self::$_template_files_used);
-    }
-    if ($this->_layout && $this->_allow_layout) {
-      $this->_layout->set('content', $this->_tpl->fetch());
-      return $this->_layout->render();
-    }
-    try {
-      return $this->_tpl->fetch();
-    } catch (Asar_View_Exception_FileNotFound $e) {
+    if (!file_exists($file)) {
       throw new Asar_Template_Exception_FileNotFound(
-        "Asar_Template::render() failed. The file '{$this->_template_file}' " .
-        'does not exist.'
+        "The file '$file' passed to the template does not exist."
       );
     }
+    $this->file = $file;
   }
-
-  function getTemplateFileExtension() {
-    return 'php';
+  
+  function getTemplateFile() {
+    return $this->file;
   }
-
+  
+  function setConfig($key, $value) {
+    
+  }
+  
+  function getLayoutVars() {
+    return $this->layout;
+  }
+  
+  function getConfig($key) {
+    if (array_key_exists($key, $this->config)) {
+      return $this->config[$key];
+    }
+  }
+  
+  function render($vars=array()) {
+    if (is_array($vars)) {
+      extract($vars);
+    } else {
+      $content = $vars;
+    }
+    ob_start();
+    include($this->file);
+    return ob_get_clean();
+  }
+  
 }

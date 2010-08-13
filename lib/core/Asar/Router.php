@@ -1,26 +1,42 @@
 <?php
-class Asar_Resource_Router {
-  function getRoute($app, $path) {
-    $app_name = str_replace('_Application', '', get_class($app));
-    if ($path == '/') {
-      $suffix = 'Index';
-      return $app_name . '_Resource_' . $suffix;
+
+class Asar_Router implements Asar_Router_Interface {
+  
+  private $resource_factory;
+  
+  function __construct(Asar_ResourceFactory $resource_factory) {
+    $this->resource_factory = $resource_factory;
+  }
+  
+  function route($app_name, $path, $map) {
+    if (is_array($map) && array_key_exists($path, $map)) {
+      $rname = $this->getResourceNamePrefix($app_name) . '_' . $map[$path];
+    } elseif ($path == '/') {
+      $rname = $this->getResourceNamePrefix($app_name) . '_Index';
     } else {
-      $levels = explode('/', $path);
-      array_shift($levels);
-      $path_array = array();
-      $name_now = $app_name . '_Resource';
-      foreach($levels as $level) {
-        $test_name = $name_now . '_' . Asar_Utility_String::camelCase($level);
-        if (class_exists($test_name)) {
-          $name_now = $test_name;
-        } elseif(!class_exists($name_now . '__Item')) {
-          return ' ';
-        } else {
-          $name_now .= '__Item';
+      $rname = $this->getNameFromPath($app_name, $path);
+    }
+    return $this->resource_factory->getResource($rname);
+  }
+  
+  private function getResourceNamePrefix($app_name) {
+    return $app_name . '_Resource';
+  }
+  
+  private function getNameFromPath($app_name, $path) {
+    $levels = explode('/', ltrim($path, '/'));
+    $rname = $this->getResourceNamePrefix($app_name);
+    foreach($levels as $level) {
+      $test = $rname . '_' . Asar_Utility_String::camelCase($level);
+      if (class_exists($test)) {
+        $rname = $test;
+      } else {
+        $rname = $rname .'_Item';
+        if (!class_exists($rname)) {
+          throw new Asar_Router_Exception_ResourceNotFound;
         }
       }
-      return $name_now;
     }
+    return $rname;
   }
 }

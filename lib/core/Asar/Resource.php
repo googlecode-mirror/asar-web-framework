@@ -1,83 +1,72 @@
 <?php
-class Asar_Resource implements Asar_Requestable {
-  private $request, $response, $template;
-  private $config = array();
-  protected $_types = array(
-    'text/html'       => 'html',
-    'application/xml' => 'xml',
-    'text/plain'      => 'txt'
+
+class Asar_Resource 
+  implements Asar_Resource_Interface, Asar_Configurable_Interface,
+  Asar_Named
+{
+  
+  protected $config = array(
+    'default_content_type' => 'text/html',
+    'default_language'     => 'en',
+    'use_templates'        => true
   );
   
-  function setTemplate($template) {
-    $this->template = $template;
+  protected $request = null;
+  
+  function __construct() {
+    $this->setUp();
   }
   
-  function getTemplate() {
-    return $this->template;
+  protected function setUp() {}
+  
+  function getConfig($key) {
+    if (array_key_exists($key, $this->config)) {
+      return $this->config[$key];
+    }
   }
   
-  private function _runMethod($method) {
-    return call_user_func(array($this, $method));
+  // TODO: Is this still needed?
+  function setConfig($key, $value) {
+    if (!isset($this->config[$key])) {
+      $this->config[$key] = $value;
+    }
+  }
+  
+  function getName() {
+    return get_class($this);
   }
   
   function handleRequest(Asar_Request_Interface $request) {
     $this->request = $request;
-    $this->response = new Asar_Response;
+    $response = new Asar_Response(array(
+      'headers' => array(
+        'Content-Type' => $this->getConfig('default_content_type'),
+        'Content-Language' => $this->getConfig('default_language')
+      )
+    ));
+    
     try {
-      if ($request->getMethod() === 'POST') {
-        $_POST = $this->request->getContent();
-      }
-      $this->response->setContent($this->_getContent($request));
-      $this->_setResponseDefaults();
+      $response->setContent(
+        $this->runIfExists($request->getMethod())
+      );
+    } catch (Asar_Resource_Exception_MethodUndefined $e) {
+      $response->setStatus(405);
     } catch (Exception $e) {
-      $this->response->setContent($e->getMessage());
-      $this->response->setStatus(500);
+      $response->setStatus(500);
+      $response->setContent($e->getMessage());
     }
-    return $this->response;
+    return $response;
   }
   
-  private function _setResponseDefaults() {
-    if (!$this->response->getStatus()) {
-      $this->response->setStatus(200);
-    }
-    if (!$this->response->getHeader('Content-Type')) {
-      $this->response->setHeader('Content-Type', 'text/html');
-    }
-  }
-  
-  private function _getContent($request) {
-    if ($this->_contentNegotiate($request->getHeader('Accept'))) {
-      return $this->_runMethod($request->getMethod());
-    }
-    $this->response->setStatus(406);
-  }
-  
-  protected function _contentNegotiate($accept) {
-    if (array_key_exists($accept, $this->_types)) {
-      return $accept;
-    }
-    $mime_types = array_keys($this->_types);
-    foreach ($mime_types as $mime_type) {
-      if (strpos($accept, $mime_type) !== FALSE) {
-        return $mime_type;
+  private function runIfExists($method) {
+    if (method_exists($this, $method)) {
+      if ($method == 'POST') {
+        $post_content = $this->request->getContent();
+        $_POST = $post_content ? $post_content : array();
       }
+      return $this->$method();
     }
-    return null;
+    throw new Asar_Resource_Exception_MethodUndefined;
   }
   
-  function GET() {
-    $this->response->setStatus(405);
-  }
-  
-  function POST() {
-    $this->response->setStatus(405);
-  }
-  
-  function PUT() {
-    $this->response->setStatus(405);
-  }
-  
-  function DELETE() {
-    $this->response->setStatus(405);
-  }
 }

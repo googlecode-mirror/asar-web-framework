@@ -1,81 +1,79 @@
 <?php
-class Asar_Request implements Asar_Request_Interface
-{
-    private $path, $method, $content, $headers = array(), $params = array();
+
+class Asar_Request extends Asar_Message implements Asar_Request_Interface {
+  
+  private 
+    $path    = '/', 
+    $method  = 'GET', 
+    $params  = array();
+  protected
+    $headers = array('Accept' => 'text/html'), 
+    $content;
     
-    public function setPath($path)
-    {
-        $this->path = $path;
+  function __construct($options = array()) {
+    parent::__construct($options);
+    $this->setIfExists('path', $options, 'setPath');
+    $this->setIfExists('method', $options, 'setMethod');
+    $this->setIfExists('params', $options, 'setParams');
+  }
+
+  function setPath($path) {
+    $this->path = $path;
+  }
+  
+  function getPath() {
+    return $this->path;
+  }
+  
+  function setMethod($method) {
+    $this->method = $method;
+  }
+  
+  function getMethod() {
+    return $this->method;
+  }
+  
+  function setParams(array $params) {
+    $this->params = $params;
+  }
+  
+  function getParams() {
+    return $this->params;
+  }
+  
+  function setContent($content) {
+    $this->content = $content;
+  }
+  
+  function getContent() {
+    return $this->content;
+  }
+  
+  function export() {
+    $str = sprintf("%s %s HTTP/1.1\r\n", 
+      $this->getMethod(), $this->getPath()
+    );
+    $headers = $this->getHeaders();
+    $msg_body = '';
+    if ($this->getMethod() == 'POST') {
+      $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      $msg_body = $this->createParamStr($this->getContent());
+      $headers['Content-Length'] = strlen($msg_body);
     }
-    
-    public function getPath()
-    {
-        return $this->path;
+    foreach ($headers as $key => $value) {
+      $str .= $key . ': ' . $value . "\r\n";
     }
-    
-    public function setMethod($method)
-    {
-        $this->method = $method;
+    return $str . "\r\n" . $msg_body;
+  }
+  
+  private function createParamStr($params) {
+    if (!is_array($params))
+      return '';
+    $post_pairs = array();
+    foreach($params as $key => $value) {
+      $post_pairs[] = rawurlencode($key) . '=' . rawurlencode($value);
     }
-    
-    public function getMethod()
-    {
-        return $this->method;
-    }
-    
-    public function setContent($content)
-    {
-        $this->content = $content;
-    }
-    
-    public function getContent()
-    {
-        return $this->content;
-    }
-    
-    public function setHeader($field_name, $value)
-    {
-    	$this->headers[$this->dashCamelCase($field_name)] = $value;
-    }
-    
-    public function setHeaders(array $headers)
-    {
-        foreach ($headers as $name => $value) {
-            $this->headers[$this->dashCamelCase($name)] = $value;
-        }
-    }
-    
-    // TODO: Move this to some other class?
-    private function dashCamelCase($string)
-    {
-        return Asar_Utility_String::dashCamelCase($string);
-    }
-    
-    public function getHeader($field_name)
-    {
-    	return $this->headers[$this->dashCamelCase($field_name)];
-    }
-    
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-    
-    public function setParams($params = array())
-    {
-        $this->params = $params;
-    }
-    
-    public function getParams($params = array())
-    {
-        return $this->params;
-    }
-        
-    
-    public function __construct()
-    {
-        $this->method = 'GET';
-        $this->path = '/';
-        $this->headers['Accept'] = 'text/html';
-    }
+    return implode('&', $post_pairs);
+  }
+
 }

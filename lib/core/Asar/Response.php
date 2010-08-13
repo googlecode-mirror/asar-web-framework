@@ -1,9 +1,8 @@
 <?php
-class Asar_Response implements Asar_Response_Interface
-{
-  private $content = '';
-  private $status;
-  private $headers = array();
+
+class Asar_Response extends Asar_Message implements Asar_Response_Interface {
+  
+  private $status = 200;
   private static $reason_phrases = array(
     100 => 'Continue',
     101 => 'Switching Protocols',
@@ -45,12 +44,9 @@ class Asar_Response implements Asar_Response_Interface
     503 => 'Service Unavailable'
   );
   
-  function setContent($content) {
-    $this->content = $content;
-  }  
-  
-  function getContent() {
-    return $this->content;
+  function __construct($options = array()) {
+    parent::__construct($options);
+    $this->setIfExists('status', $options, 'setStatus');
   }
   
   function setStatus($status) {
@@ -61,32 +57,27 @@ class Asar_Response implements Asar_Response_Interface
     return $this->status;
   }
   
-  static function getStatusMessage($status) {
-    if (!array_key_exists($status, self::$reason_phrases)) {
+  function getStatusReasonPhrase() {
+    return self::getReasonPhrase($this->getStatus());
+  }
+  
+  static function getReasonPhrase($status) {
+    if (!isset(self::$reason_phrases[$status])) {
       return null;
     }
     return self::$reason_phrases[$status];
   }
   
-  function setHeader($key, $value) {
-    $this->headers[$key] = $value;
-  }
-  
-  function getHeader($key) {
-    if (array_key_exists($key, $this->headers)) {
-      return $this->headers[$key];
-    }
-    return null;
-  }
-  
-  function setHeaders(array $headers){
-    foreach ($headers as $name => $value) {
-      $this->setHeader($name, $value);
+  function import($str) {
+    $rawarr = explode("\r\n\r\n", $str, 2);
+    $this->setContent(array_pop($rawarr));
+    $headers = explode("\r\n", $rawarr[0]);
+    $response_line = array_shift($headers);
+    $this->setStatus(intval(str_replace('HTTP/1.1 ', '', $response_line)));
+    foreach($headers as $line) {
+      $header = explode(':', $line, 2);
+      $this->setHeader($header[0], ltrim($header[1]));
     }
   }
   
-  function getHeaders(){
-    return $this->headers;
-  }
 }
-
