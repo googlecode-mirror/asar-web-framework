@@ -1,0 +1,355 @@
+================================================================================
+TODO:
+================================================================================
+- Create sniff for 
+  - indenting multi-line string appends
+  - public function and public static function
+- Make sure setting include paths in tests do not compound (refactor???)
+- Asar_File -- Create testcase for files created in directories that are non-
+  existent.
+- Get pHAML documentation http://i.cloudi.us/phaml/documentation
+- WADL
+- See if there's a friendlier HAML implementation for PHP (license)
+- Support for Konstrukt-style subviews
+  - thing?new
+  - thing/entry?edit
+  - thing/entry?delete
+- Support for Konstrukt-style browser hacks
+- Support for Logging
+- Support for Debugging
+  - Execution Time
+  - Resource Name
+  - Application Name
+  - Files Included
+  - Classes Called
+  - Template Used
+  - Memory Used
+- Svn ignore error logs (tests/data/test-server-logs/error.log)
+- Ensure maximum coverage
+- RUN through RFC 2616 to see which rules still needs implementing
+  - If the requested URI does not include an Internet host name for the service 
+    being requested, then the Host header field MUST be given with an empty
+    value.
+- Consolidate test files into fixtures instead of creating a new set of test
+  files for each new testcase.
+- Refactor
+  - Move mapping resolution code from Application to Router
+  - Move resource instantiation to Router
+  - Move template instantiation and injection to an Injector
+
+================================================================================
+CHEATSHEET
+================================================================================
+->getMock(
+  $originalClassName, $methods = array(), array $arguments = array(), 
+  $mockClassName = '', $callOriginalConstructor = TRUE, 
+  $callOriginalClone = TRUE, $callAutoload = TRUE)
+
+================================================================================
+HTTP Message Formats:
+================================================================================
+
+generic-message = start-line
+                  *(message-header CRLF)
+                  CRLF
+                  [ message-body ]
+start-line      = Request-Line | Status-Line
+
+
+message-header = field-name ":" [ field-value ]
+field-name     = token
+field-value    = *( field-content | LWS )
+field-content  = <the OCTETs making up the field-value
+                 and consisting of either *TEXT or combinations
+                 of token, separators, and quoted-string>
+
+message-body = entity-body
+             | <entity-body encoded as per Transfer-Encoding>
+
+general-header = Cache-Control     ; Section 14.9
+               | Connection        ; Section 14.10
+               | Date              ; Section 14.18
+               | Pragma            ; Section 14.32
+               | Trailer           ; Section 14.40
+               | Transfer-Encoding ; Section 14.41
+               | Upgrade ; Section 14.42
+               | Via     ; Section 14.45
+               | Warning ; Section 14.46
+
+
+Request = Request-Line             ; Section 5.1
+          *(( general-header       ; Section 4.5
+           | request-header        ; Section 5.3
+           | entity-header ) CRLF) ; Section 7.1
+          CRLF
+          [ message-body ]         ; Section 4.3
+
+Request-Line = Method SP Request-URI SP HTTP-Version CRLF
+
+
+# Note: Method name is case-sensitive
+Method         = "OPTIONS"        ; Section 9.2
+               | "GET"            ; Section 9.3
+               | "HEAD"           ; Section 9.4
+               | "POST"           ; Section 9.5
+               | "PUT"            ; Section 9.6
+               | "DELETE"         ; Section 9.7
+               | "TRACE"          ; Section 9.8
+               | "CONNECT"        ; Section 9.9
+               | extension-method
+extension-method = token
+
+Request-URI = "*" | absoluteURI | abs_path | authority
+
+request-header = Accept              ; Section 14.1
+               | Accept-Charset      ; Section 14.2
+               | Accept-Encoding     ; Section 14.3
+               | Accept-Language     ; Section 14.4
+               | Authorization       ; Section 14.8
+               | Expect              ; Section 14.20
+               | From                ; Section 14.22
+               | Host                ; Section 14.23
+               | If-Match            ; Section 14.24
+               | If-Modified-Since   ; Section 14.25
+               | If-None-Match       ; Section 14.26
+               | If-Range            ; Section 14.27
+               | If-Unmodified-Since ; Section 14.28
+               | Max-Forwards        ; Section 14.31
+               | Proxy-Authorization ; Section 14.34
+               | Range               ; Section 14.35
+               | Referer             ; Section 14.36
+               | TE                  ; Section 14.39
+               | User-Agent          ; Section 14.43
+
+Response = Status-Line              ; Section 6.1
+           *(( general-header       ; Section 4.5
+            | response-header       ; Section 6.2
+            | entity-header ) CRLF) ; Section 7.1
+           CRLF
+           [ message-body ]         ; Section 7.2
+
+Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+
+Status-Code    =
+         "100" ; Section 10.1.1: Continue
+       | "101" ; Section 10.1.2: Switching Protocols
+       | "200" ; Section 10.2.1: OK
+       | "201" ; Section 10.2.2: Created
+       | "202" ; Section 10.2.3: Accepted
+       | "203" ; Section 10.2.4: Non-Authoritative Information
+       | "204" ; Section 10.2.5: No Content
+       | "205" ; Section 10.2.6: Reset Content
+       | "206" ; Section 10.2.7: Partial Content
+       | "300" ; Section 10.3.1: Multiple Choices
+       | "301" ; Section 10.3.2: Moved Permanently
+       | "302" ; Section 10.3.3: Found
+       | "303" ; Section 10.3.4: See Other
+       | "304" ; Section 10.3.5: Not Modified
+       | "305" ; Section 10.3.6: Use Proxy
+       | "307" ; Section 10.3.8: Temporary Redirect
+       | "400" ; Section 10.4.1: Bad Request
+       | "401" ; Section 10.4.2: Unauthorized
+       | "402" ; Section 10.4.3: Payment Required
+       | "403" ; Section 10.4.4: Forbidden
+       | "404" ; Section 10.4.5: Not Found
+       | "405" ; Section 10.4.6: Method Not Allowed
+       | "406" ; Section 10.4.7: Not Acceptable
+       | "407" ; Section 10.4.8: Proxy Authentication Required
+       | "408" ; Section 10.4.9: Request Time-out
+       | "409" ; Section 10.4.10: Conflict
+       | "410" ; Section 10.4.11: Gone
+       | "411" ; Section 10.4.12: Length Required
+       | "412" ; Section 10.4.13: Precondition Failed
+       | "413" ; Section 10.4.14: Request Entity Too Large
+       | "414" ; Section 10.4.15: Request-URI Too Large
+       | "415" ; Section 10.4.16: Unsupported Media Type
+       | "416" ; Section 10.4.17: Requested range not satisfiable
+       | "417" ; Section 10.4.18: Expectation Failed
+       | "500" ; Section 10.5.1: Internal Server Error
+       | "501" ; Section 10.5.2: Not Implemented
+       | "502" ; Section 10.5.3: Bad Gateway
+       | "503" ; Section 10.5.4: Service Unavailable
+       | "504" ; Section 10.5.5: Gateway Time-out
+       | "505" ; Section 10.5.6: HTTP Version not supported
+       | extension-code
+extension-code = 3DIGIT
+Reason-Phrase = *<TEXT, excluding CR, LF>
+
+response-header = Accept-Ranges      ; Section 14.5
+                | Age                ; Section 14.6
+                | ETag               ; Section 14.19
+                | Location           ; Section 14.30
+                | Proxy-Authenticate ; Section 14.33
+                | Retry-After        ; Section 14.37
+                | Server             ; Section 14.38
+                | Vary               ; Section 14.44
+                | WWW-Authenticate   ; Section 14.47
+
+entity-header  = Allow            ; Section 14.7
+               | Content-Encoding ; Section 14.11
+               | Content-Language ; Section 14.12
+               | Content-Length   ; Section 14.13
+               | Content-Location ; Section 14.14
+               | Content-MD5      ; Section 14.15
+               | Content-Range    ; Section 14.16
+               | Content-Type     ; Section 14.17
+               | Expires          ; Section 14.21
+               | Last-Modified    ; Section 14.29
+               | extension-header
+extension-header = message-header
+
+
+
+
+
+
+5 Years Time
+Noah and the Whale
+
+Oh well in five years time we could be walking round a zoo
+With the sun shining down over me and you
+And there’ll be love in the bodies of the elephants too
+And I’ll put my hands over your eyes, but you’ll peep through
+
+And there’ll be sun sun sun
+All over our bodies
+And sun sun sun
+All down our necks (?)
+And sun sun sun
+All over our faces
+And sun sun sun
+
+So what the heck
+
+
+
+Cos I’ll be laughing at all your silly little jokes
+And we’ll be laughing about how we used to smoke
+All those stupid little cigarettes
+And drink stupid wine
+Cos it’s what we needed to have a good time
+
+And it was fun fun fun
+When we were drinking
+It was fun fun fun
+When we were drunk
+And it was fun fun fun
+When we were laughing
+It was fun fun fun
+Oh it was fun
+
+Oh well I look at you and say
+It’s the happiest that I’ve ever been
+And I’ll say I no longer feel I have to be James Dean
+And she’ll say
+Yah well I feel all pretty happy too
+And I’m always pretty happy when I’m just kicking back with you
+
+And it’ll be
+Love love love
+All through our bodies
+And love love love
+All through our minds
+And it be Love love love
+All over her face
+And Love love love
+All over mine
+
+
+Although maybe all these moments are just in my head
+I’ll be thinking ‘bout them as I’m lying in bed
+And all that I believe (?) might never really come true
+But in my mind I’m havin’ a pretty good time with you
+
+Oh
+
+Five years time
+I might not know you
+Five years time
+We might not speak
+Oh
+In five years time
+We might not get along
+In five years time
+You might just prove me wrong
+
+Oh there’ll be love love love
+Wherever you go
+There’ll be love love love
+Wherever you go
+There’ll be love love love
+Wherever you go
+There’ll be love love love
+Wherever you go
+There’ll be love love love
+Wherever you go
+There’ll be love love love
+Wherever you go
+There’ll be love love love
+
+Wherever you go there’ll be love 
+
+
+====
+'/root/subpath/random_name/leaf' => Root_Subpath__Item_Leaf
+
+straight    - Root_Subpath_RandomName_Leaf x
+wildcard1   - Root_Subpath_RandomName__Item x
+wildcard2   - Root_Subpath__Item__Leaf ***
+
+
+'/root/somewhere/subpath/random_name/leaf' => Root__Item_Subpath__Item_Leaf
+
+straight    - Root_Somewhere_Subpath_RandomName _Leaf x
+wildcard1   - Root_Somewhere_Subpath_RandomName__Item x
+wildcard2   - Root_Somewhere_Subpath__Item      _Leaf x
+wildcard3   - Root_Somewhere_Subpath__Item     __Item x
+wildcard4   - Root_Somewhere__Item  _RandomName _Leaf x
+wildcard5   - Root_Somewhere__Item  _RandomName__Item x
+wildcard6   - Root_Somewhere__Item  __Item      _Leaf x
+wildcard7   - Root_Somewhere__Item  __Item     __Item x
+wildcard8   - Root__Item    _Subpath_RandomName _Leaf x
+wildcard9   - Root__Item    _Subpath_RandomName__Item x
+wildcard10  - Root__Item    _Subpath__Item     __Leaf ***
+
+
+
+1.) down up
+
+a a a a a  ->  a * a * a
+a a a a *
+a a a * a
+a a a * *
+a a * a a
+a a * a *
+a a * * a
+a a * * *
+a * a a a
+a * a a *
+a * a * a
+
+
+
+2.) up down with checking
+
+a a a a a  ->  a * a * a
+a a!
+a *
+a * a
+a * a a!
+a * a *
+a * a * a
+
+
+=============================
+Template Usage Notes:
+=============================
+
+- Templates are loaded by Asar_Representation
+- if a template file is defined in the Representation directory but no
+  equivalent Representation has been defined, the framework creates a
+  Representation object. 
+- The generated Representation object maps each representation type to a
+  specific mime-type. It also handles creation of template object.
+- Apps can register their own Template engines.
+- The default template engine is Asar_Template.

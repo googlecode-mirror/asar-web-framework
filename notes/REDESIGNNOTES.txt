@@ -1,0 +1,21 @@
+- Since the Application classes are only used for configuration and the setUp;
+  maybe it's better if we move the configuration to a separate class and do
+  away with the Application class altogether. 
+  - For 5.3, maybe the application class implements the __invoke() method.
+- Cascading Configurations: 
+  - We have default configurations created by the framework
+  - Each app can override these configurations
+  - Resources can override these too
+- Do away with inheritance. Resource can be dumbbed-down and need only implement
+  GET, POST, PUT, DELETE as necessary and just a required __construct interface
+  where all the dependency needed is passed. The HTTP methods need only return
+  something interesting.
+- Filters need only implement the Asar_Resource_Interface
+- For Router, only one kind of word separator (e.g. '_' in 'the_quick_brown').
+  This will prevent multiple URLs pointing to the same resource.
+  - Users can override this through configuration.
+- When Resources need to use a representation of another Resource, they can use
+  it through $this->useRepresentationFor('NameOfOwnerRepresentation');
+- Better dependency injection
+  - Phemto? http://phemto.sourceforge.net/quick-start.php
+  - Pimple? http://github.com/fabpot/Pimple

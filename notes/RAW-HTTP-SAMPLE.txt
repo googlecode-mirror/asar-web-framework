@@ -1,0 +1,28 @@
+http://asar-test.local/post.php
+
+POST /post.php HTTP/1.1
+Host: asar-test.local
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.15) Gecko/2009102815 Ubuntu/9.04 (jaunty) Firefox/3.0.15
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: tl,en-us;q=0.7,en;q=0.3
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Connection: keep-alive
+Referer: http://asar-test.local/form.html
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 119
+name=Damon&summary=dadfasd%3Blkj+%3Balsdfj%3Bl+aksdf&radio=Male&checkbox%5B%5D=Mango&checkbox%5B%5D=Apple&submit=Submit
+
+
+HTTP/1.x 200 OK
+Date: Wed, 11 Nov 2009 06:37:39 GMT
+Server: Apache/2.2.11 (Ubuntu) PHP/5.2.6-3ubuntu4.2 with Suhosin-Patch
+X-Powered-By: PHP/5.2.6-3ubuntu4.2
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 1292
+Keep-Alive: timeout=15, max=100
+Connection: Keep-Alive
+Content-Type: text/html
+----------------------------------------------------------
