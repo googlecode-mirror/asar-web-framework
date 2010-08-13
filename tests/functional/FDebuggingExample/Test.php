@@ -5,6 +5,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__
 class FDebuggingExample_Test extends Asar_Test_Helper {
   
   function setUp() {
+    $this->markTestIncomplete();
     if (!Asar_Test_Server::isCanConnectToTestServer()) {
       $this->markTestSkipped(
         'Unable to connect to test server. Check server setup.'

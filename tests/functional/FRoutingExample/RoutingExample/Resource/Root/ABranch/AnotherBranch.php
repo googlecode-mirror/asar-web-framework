@@ -1,2 +1,0 @@
-<?php
-class RoutingExample_Resource_Root_ABranch_AnotherBranch extends RoutingExample_Resource_Index {}
