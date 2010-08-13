@@ -1,367 +1,190 @@
 <?php
-require_once realpath(dirname(__FILE__). '/../../config.php');
-require_once 'PHPUnit/Framework.php';
-require_once 'Asar.php';
 
-class Asar_ApplicationTest extends Asar_Test_Helper {
+require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
+  
   function setUp() {
-    $this->router = $this->getMock('Asar_Resource_Router');
-    $this->app = new Asar_Application($this->router);
-  }
-  
-  function testApplicationImplementsAsarRequestableInterface() {
-    $this->assertTrue(
-      $this->app instanceof Asar_Requestable,
-      'App object does not implement Asar_Requestable interface.'
+    $this->resource = $this->getMock(
+      'Asar_Resource_Interface', array('handleRequest')
+    );
+    $this->router = $this->getMock('Asar_Router_Interface', array('route'));
+    $this->sm = $this->getMock(
+      'Asar_Response_StatusMessages_Interface', array('getMessage')
+    );
+    $this->map = array('/foo_ra' => 'BarRa');
+    $this->app = new Asar_Application(
+      'Some_Name', $this->router, $this->sm, $this->map
     );
   }
   
-  function testHandleRequestShouldAlwaysReturnAResponseObject() {
-    $this->assertTrue(
-      $this->app->handleRequest(new Asar_Request) instanceof Asar_Response,
-      'The app object did not return with an Asar_Response object'
-    );
+  function testApplicationImplementsResourceInterface() {
+    $this->assertType('Asar_Resource_Interface', $this->app);
   }
   
-  function testApplicationShouldRunInitializationMethodOnConstruction() {
-    $app = $this->getMock('Asar_Application', array('setUp'), array(), '', false);
-    $app->expects($this->once())
-      ->method('setUp');
-    $app->__construct($this->router);
+  function testApplicationGetName() {
+    $this->assertEquals('Some_Name', $this->app->getName());
   }
-  
-  function testGetMap() {
-    $this->app->setMap('/foo', 'Bar');
-    $this->assertEquals('Bar', $this->app->getMap('/foo'));
-  }
-  
-  function testSetAnIndex() {
-    $index = $this->getMock('Asar_Requestable', array());
-    $this->app->setIndex($index);
-    $this->assertSame($index, $this->app->getMap('/'));
-  }
-  
-  function testSettingRouterObject() {
-    $router = new Asar_Resource_Router;
-    $this->app->setRouter($router);
-    $this->assertSame(
-      $router, $this->readAttribute($this->app, 'router')
-    );
-  }
-  
-  function testHandleRequestPassesRoutingToRouterIfNonIsMapped() {
-    $request = new Asar_Request;
-    $path = '/a/path/not/known';
-    $request->setPath($path);
-    $router = $this->getMock('Asar_Resource_Router', array('getRoute'));
-    $router->expects($this->once())
-      ->method('getRoute')
-      ->with($this->equalTo($this->app), $this->equalTo($path));
-    $this->app->setRouter($router);
-    $this->app->handleRequest($request);
-  }
-  
-  function testHandleRequestDoesNotPassRoutingToRouterIfItIsMapped() {
-    $request = new Asar_Request;
-    $path = '/mapped/path';
-    $request->setPath($path);
-    $router = $this->getMock('Asar_Resource_Router', array('getRoute'));
-    $router->expects($this->never())
-      ->method('getRoute');
-    $this->app->setMap($path, $this->getMock('Asar_Requestable'));
-    $this->app->setRouter($router);
-    $this->app->handleRequest($request);
-  }
-  
-  function testHandleRequestUsesReturnValueFromRouter() {
-    $request = new Asar_Request;
-    $path = '/mapped/path';
-    $request->setPath($path);
-    eval ('
-      class Asar_ApplicationTest_Route_Resource extends Asar_Resource {
-        function handleRequest(Asar_Request_Interface $request) {
-          $response = new Asar_Response;
-          $response->setContent("watatatata");
-          return $response;
+
+  function testAppRunsSetupMethodOnConstruction() {
+    $old_post = $_POST;
+    $cname = get_class($this) . '_SetUpTest_Application';
+    eval('
+      class '. $cname . ' extends Asar_Application {
+        function setUp() {
+          $_POST["baz"] = 2895;
         }
       }
     ');
-    $router = $this->getMock('Asar_Resource_Router', array('getRoute'));
-    $router->expects($this->once())
-      ->method('getRoute')
-      ->will($this->returnValue('Asar_ApplicationTest_Route_Resource'));
-    $this->app->setRouter($router);
-    $this->assertEquals(
-      'watatatata', $this->app->handleRequest($request)->getContent()
-    );
+    new $cname('Foo_Name', $this->router, $this->sm);
+    $this->assertArrayHasKey('baz', $_POST);
+    $this->assertEquals(2895, $_POST['baz']);
+    $_POST = $old_post;
   }
   
-  function testApplicationShouldPassRequestToResource() {
-    $request = new Asar_Request;
-    $resource = $this->getMock('Asar_Resource', array('handleRequest'));
-    $resource->expects($this->once())
-      ->method('handleRequest')
-      ->with($request);
-    $this->app->setIndex($resource);
+  private function routerExpects() {
+    return $this->router->expects($this->once())->method('route');
+  }
+  
+  private function routerReturnsResource() {
+    return $this->routerExpects()->will($this->returnValue($this->resource));
+  }
+  
+  private function resourceExpects() {
+    return $this->resource->expects($this->once())->method('handleRequest');
+  }
+  
+  function testApplicationSendsApplicationNamePathAndMapToRouter() {
+    $path = '/foo/bar';
+    $request = new Asar_Request(array('path'=>$path));
+    $this->routerExpects()->with('Some_Name', $path, $this->app->getMap());
     $this->app->handleRequest($request);
   }
   
-  function testApplicationShouldReturnResponseFromResource() {
-    $request = new Asar_Request;
-    $resource = $this->getMock('Asar_Resource', array('handleRequest'));
-    $expected_response = new Asar_Response;
-    $resource->expects($this->any())
-      ->method('handleRequest')
-      ->will($this->returnValue($expected_response));
-    $this->app->setIndex($resource);
-    $response = $this->app->handleRequest($request);
-    $this->assertSame(
-      $expected_response, $response,
-      'Application did not return the response from Resource'
-    );
-  }
-  /*
-  function testSetMapInstantiatesRequestableObjectFromString() {
-    eval('
-      class Asar_ApplicationTest_App5 extends Asar_Application {
-        protected function setUp() {
-          $this->setAppPrefix("Asar_ApplicationTest_App5");
-          $this->setMap("/rest", "Rest");
-        }
-      }
-      
-      class Asar_ApplicationTest_App5_Resource_Rest extends Asar_Resource {}
-    ');
-    $app = new Asar_ApplicationTest_App5;
-    $this->assertTrue(
-       $app->getMap('/rest') instanceof Asar_ApplicationTest_App5_Resource_Rest,
-      'setMap() was not able to set resource mapping.'
-    );
-  }
-  
-  function testSetMapAttemptsToInstantiateRequestableDirectlyFromString() {
-    eval('
-      class Asar_ApplicationTest_A_Different_Resource extends Asar_Resource {}
-    ');
-    $this->app->setMap("/wee", "Asar_ApplicationTest_A_Different_Resource");
-    $this->assertTrue(
-       $this->app->getMap('/wee') instanceof Asar_ApplicationTest_A_Different_Resource,
-      'setMap() was not able to set resource mapping directly.'
-    );
-  }
-  
-  function testSetMapAttemptsToMapResourceDirectly() {
-    $resource = $this->getMock('Asar_Resource');
-    $this->app->setMap('/waa', $resource);
-    $this->assertSame(
-       $resource, $this->app->getMap('/waa'),
-      'setMap() was not able to set resource mapping directly.'
-    );
-  }
-  
-  function testAppShouldPassRequestToMappedResourceProperly() {
-    $index = $this->getMock('Asar_Requestable', array('handleRequest'));
-    $page  = $this->getMock('Asar_Requestable', array('handleRequest'));
-    $request = new Asar_Request;
-    $request->setPath('/page');
-    $index->expects($this->never())
-      ->method('handleRequest');
-    $page->expects($this->once())
-      ->method('handleRequest')
-      ->with($request);
-    $this->app->setIndex($index);
-    $this->app->setMap('/page', $page);
+  function testAppPassesRequestToResourcePassedFromRouter() {
+    $request = new Asar_Request(array('path' => '/foo'));
+    $this->routerReturnsResource();
+    $this->resourceExpects()->with($request);
     $this->app->handleRequest($request);
   }
   
-  function testShouldReturn404ResponseWhenRequestPathIsUnknown() {
-    $request = new Asar_Request;
-    $request->setPath('/a-path-yet-to-be-known');
-    $response = $this->app->handleRequest($request);
-    $this->assertEquals(
-      404, $response->getStatus(),
-      'Application did not return 404 status when resource is unknown'
-    );
-  }
-  
-  function testShouldSetDefaultMessageForRequestPathIsUnknown() {
-    $request = new Asar_Request;
-    $request->setPath('/unknown/path');
-    $response = $this->app->handleRequest($request);
-    $this->assertContains(
-      'File Not Found (404)', $response->getContent(),
-      'Application response did not say what type of error it was for 404'
-    );
-    $this->assertContains(
-      'Sorry, we were unable to find the resource you were looking for. '.
-      'Please check that you got the address or URL correctly. If '.
-      'that is the case, please email the administrator. Thank you '.
-      'and please forgive the inconvenience.',
-      $response->getContent(),
-      'Application did not return a proper 404 message'
-    );
-  }
-  
-  function testShouldSetDefaultMessageFor405ResponseStatus($method = 'POST') {
-    $request = new Asar_Request;
-    $request->setMethod($method);
-    $response = new Asar_Response;
-    $response->setStatus(405);
-    $index = $this->getMock('Asar_Requestable', array('handleRequest'));
-    $index->expects($this->once())
-      ->method('handleRequest')
-      ->will($this->returnValue($response));
-    $this->app->setIndex($index);
-    $r = $this->app->handleRequest($request);
-    $this->assertEquals(
-      405, $r->getStatus(),
-      'Status should be 405'
-    );
-    $this->assertContains(
-      'Method Not Allowed (405)', $r->getContent(),
-      'Application response did not say what type of error it was for 405'
-      );
-      $this->assertContains(
-        "The HTTP Method '$method' is not allowed for this resource.",
-          $r->getContent(),
-          'Application did not return a proper 405 message'
-      );
-  }
-  
-  function testShouldSetAppropriate405Messages() {
-    $methods = array('GET', 'PUT', 'DELETE');
-    foreach ($methods as $method) {
-      $this->testShouldSetDefaultMessageFor405ResponseStatus($method);
-    }
-  }
-  
-  function testShouldSetDefaultMessageFor406ResponseStatus() {
+  function testHandleRequestUsesReturnValueFromResource() {
     $request = new Asar_Request;
     $response = new Asar_Response;
-    $response->setStatus(406);
-    $index = $this->getMock('Asar_Requestable', array('handleRequest'));
-    $index->expects($this->once())
-      ->method('handleRequest')
-      ->will($this->returnValue($response));
-    $this->app->setIndex($index);
-    $r = $this->app->handleRequest($request);
-    $this->assertEquals( 406, $r->getStatus() );
-    $this->assertContains(
-      'Not Acceptable (406)', $r->getContent()
-      );
-      $this->assertContains(
-        'An appropriate representation of the requested ' .
-        'resource could not be found.',
-        $r->getContent()
-      );
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($response));
+    $app_response = $this->app->handleRequest($request);
+    $this->assertEquals($response, $app_response);
   }
   
-  function testShouldSetDefaultMessageFor500ResponseStatus() {
+  function testSends404ResponseWhenRouterThrowsNotFoundException() {
+    $this->routerExpects()
+      ->will($this->throwException(new Asar_Router_Exception_ResourceNotFound));
+    $response = $this->app->handleRequest(new Asar_Request);
+    $this->assertEquals(404, $response->getStatus());
+  }
+  
+  function testSends500ResponseWhenResourceThrowsAGeneralException() {
+    $this->routerReturnsResource();
+    $this->resourceExpects()
+      ->will($this->throwException(new Exception));
+    $response = $this->app->handleRequest(new Asar_Request);
+    $this->assertEquals(500, $response->getStatus());
+  }
+  
+  function test500ResponseExceptionContent() {
+    $this->routerReturnsResource();
+    $this->resourceExpects()
+      ->will($this->throwException(new Exception('Foo message')));
+    $this->setStatusMessagesMock()->will($this->returnCallBack(array($this, 'cbSM')));
+    $response = $this->app->handleRequest(new Asar_Request);
+    $this->assertRegExp(
+      '/\nLine: [0-9]+/', $response->getContent()
+    );
+    $this->assertContains(
+      "Foo message\nFile: " . __FILE__, $response->getContent()
+    );
+  }
+  
+  public function cbSM($response, $request) {
+    return $response->getContent();
+  }
+  
+  function setStatusMessagesMock() {
+    return $this->sm->expects($this->once())->method('getMessage');
+  }
+  
+  function testAppPassesResponseAndRequestToStatusMessageCreator() {
+    $request = new Asar_Request(array('path' => '/foo/bar'));
+    $response = new Asar_Response(array('status' => 405));
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($response));
+    $this->setStatusMessagesMock()->with($response, $request);
+    $this->app->handleRequest($request);
+  }
+  
+  function testAppUsesStatusMessageCreatorReturnAsReponseContent() {
     $request = new Asar_Request;
     $response = new Asar_Response;
-    $response->setStatus(500);
-    $index = $this->getMock('Asar_Requestable', array('handleRequest'));
-    $index->expects($this->once())
-      ->method('handleRequest')
-      ->will($this->returnValue($response));
-    $this->app->setIndex($index);
-    $r = $this->app->handleRequest($request);
-    $this->assertEquals(
-      500, $r->getStatus(),
-      'Status should be 500'
-    );
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($response));
+    $this->setStatusMessagesMock()->will($this->returnValue('foo bar baz'));
     $this->assertContains(
-      'Internal Server Error (500)', $r->getContent(),
-      'Application response did not say what type of error it was for 500'
-    );
-    $this->assertContains(
-      'The Server has encountered some problems.', $r->getContent(),
-      'Application did not return a proper 500 message.'
+      'foo bar baz', $this->app->handleRequest($request)->getContent()
     );
   }
   
-  function testResourceRespondsContentWithStatus500ApplicationAttemptsToRenderIt() {
+  function testAppReturnsPlainResponseWhenStatusMessageReturnsFalse() {
     $request = new Asar_Request;
-    $response = new Asar_Response;
-    $response->setStatus(500);
-    $response->setContent('The error message from resource.');
-    $index = $this->getMock('Asar_Requestable', array('handleRequest'));
-    $index->expects($this->once())
-      ->method('handleRequest')
-      ->will($this->returnValue($response));
-    $this->app->setIndex($index);
-    $r = $this->app->handleRequest($request);
-    $this->assertEquals(
-      500, $r->getStatus(),
-      'Status should be 500'
-    );
+    $response = new Asar_Response(array('content' => 'foo'));
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($response));
+    $this->setStatusMessagesMock()->will($this->returnValue(false));
     $this->assertContains(
-      'The resource returned: The error message from resource.', $r->getContent(),
-        'Application response include error message from resource.'
+      'foo', $this->app->handleRequest($request)->getContent()
     );
   }
   
-  function testApplicationSetsDefaultRepresentationDirectory() {
-    // 'Representation' roughly translates to 'View' in MVC
-    // or 'templates' in template-based strategies.
-    // We test that the application sets the Representation directory
-    // relative to the file where the application was defined.
-    eval('
-      class Asar_ApplicationTest_App9 extends Asar_Application {
-        protected function setUp() {
-          $this->config["default_representation_dir"] = "/Foo/Bar";
+  function testAppUsesPassedMapping() {
+    $map = $this->app->getMap();
+    $this->assertArrayHasKey('/foo_ra', $map);
+    $this->assertEquals('BarRa', $map['/foo_ra']);
+  }
+  
+  function testAppSetMapping() {
+    $app_name = get_class($this) . '_MappingTest';
+    $cname = $app_name . '_Application';
+    $resource1 = $app_name . '_Foo_Resource';
+    $resource2 = $app_name . '_BarResource';
+    eval("
+      class $cname extends Asar_Application {
+        function setUp() {
+          \$this->setIndex('$resource1');
+          \$this->setMap('/bar', '$resource2');
         }
       }
-    ');
-    
-    $index = $this->getMock('Asar_Requestable', 
-      array('handleRequest', 'setConfiguration')
-    );
-    
-    $app = new Asar_ApplicationTest_App9;
-    $index->expects($this->once())
-      ->method('setConfiguration')
-      ->will($this->returnCallback(array($this, '_dummySetConfiguration')));
-    $app->setIndex($index);
-    $app->handleRequest(new Asar_Request);
-    $config = self::getObject('config');
-    $this->assertEquals(
-      '/Foo/Bar',
-      $config['default_representation_dir'],
-      'Unable to set the representation directory relative to Application'
-    );
+    ");
+    $app = new $cname($app_name, $this->router, $this->sm);
+    $map = $app->getMap();
+    $this->assertType('array', $map);
+    $this->assertEquals($map['/'], $resource1);
+    $this->assertEquals($map['/bar'], $resource2);
   }
   
-  function _dummySetConfiguration($config) {
-    self::saveObject('config', $config);
+  function testAppOverridesMapping() {
+    $app_name = get_class($this) . '_MappingTest2';
+    $cname = $app_name . '_Application';
+    $resource = $app_name . '_Foo_Resource';
+    eval("
+      class $cname extends Asar_Application {
+        function setUp() {
+          \$this->setMap('/foo_ra', '$resource');
+        }
+      }
+    ");
+    $app = new $cname($app_name, $this->router, $this->sm);
+    $map = $app->getMap();
+    $this->assertEquals($map['/foo_ra'], $resource);
   }
-  
-  function testApplicationSetsContextForResource() {
-    $index = $this->getMock('Asar_Requestable', 
-      array('handleRequest', 'setConfiguration'), array()
-    );
-    $index->expects($this->once())
-      ->method('setConfiguration')
-      ->will($this->returnCallback(array($this, '_dummySetConfiguration')));
-    $this->app->setIndex($index);
-    $this->app->handleRequest(new Asar_Request);
-    $config = self::getObject('config');
-    $this->assertSame(
-      $this->app, $config['context'],
-      'Unable to set the context of the resource on Application'
-    );
-  }
-  
-  function testApplicationMarksResolvedResourceWhenInDebugMode() {
-    $index = $this->getMock('Asar_Requestable');
-    $this->app->setIndex($index);
-    Asar::setMode(Asar::MODE_DEBUG);
-    $this->app->handleRequest(new Asar_Request);
-    $debug = Asar::getDebugMessages();
-    $this->assertEquals(get_class($index), $debug['Resource']);
-    Asar::setMode(Asar::MODE_DEVELOPMENT);
-    Asar::clearDebugMessages();
-  }*/
-  
-} //388
+
+}

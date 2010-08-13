@@ -1,12 +1,5 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../../config.php');
-/**
- * Created on Jun 21, 2007
- * 
- * @author     Wayne Duran
- */
-
-require_once 'Asar.php';
+require_once realpath(dirname(__FILE__) . '/../../../../config.php');
 
 class Asar_Utility_StringTest extends PHPUnit_Framework_TestCase {
 
@@ -30,6 +23,18 @@ class Asar_Utility_StringTest extends PHPUnit_Framework_TestCase {
       'BAR'            => 'Bar'
     );
     $this->_testFunction('dashCamelCase', $tests);
+  }
+  
+  function testDashLowerCase() {
+    $tests = array(
+      'FooBar'         => 'foo-bar',
+      'wanton-noodles' => 'wanton-noodles',
+      'HOLy-maCaroni'  => 'h-o-ly-ma-caroni',
+      'bAd'            => 'b-ad',
+      'foo'            => 'foo',
+      'BAR'            => 'b-a-r',
+    );
+    $this->_testFunction('dashLowerCase', $tests);
   }
   
   function testCamelCase() {

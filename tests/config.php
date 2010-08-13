@@ -1,5 +1,23 @@
 <?php
+ini_set('error_reporting', E_ALL | E_STRICT);
 
-$core_path = realpath(dirname(__FILE__) . '/../core');
-set_include_path( $core_path . PATH_SEPARATOR . get_include_path());
-require_once 'Asar.php';
+require_once realpath(dirname(__FILE__) . '/../lib/core/Asar.php');
+
+$__asar = Asar::getInstance();
+$__asar->getToolSet()->getIncludePathManager()->add(
+  $__asar->getFrameworkCorePath(),
+  $__asar->getFrameworkDevTestingPath(),
+  $__asar->getFrameworkExtensionsPath()
+);
+
+require_once 'Asar/EnvironmentScope.php';
+require_once 'Asar/Injector.php';
+
+if (!isset($_SESSION)) {
+  $_SESSION = array();
+}
+$scope = new Asar_EnvironmentScope(
+  $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
+);
+Asar_Injector::injectEnvironmentHelperBootstrap($scope)->run();
+Asar_Injector::injectEnvironmentHelper($scope)->runTestEnvironment();

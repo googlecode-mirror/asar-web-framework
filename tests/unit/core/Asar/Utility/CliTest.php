@@ -1,182 +1,86 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../../config.php');
 
-class Asar_Utility_CLITest extends Asar_Test_Helper {
+require_once realpath(dirname(__FILE__) . '/../../../../config.php');
+
+class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
-    // This is so we put all created files in the temporary directory
-    $this->cli = Asar_Utility_CLI::instance();
+    // This is called to help the reflector
+    $this->getMock('Asar_Utility_Cli_Interface');
+    $this->interpreter = $this->getMock('Asar_Utility_Cli_Interpreter');
+    $this->executor = $this->getMock(
+      'Asar_Utility_Cli_Executor_Interface'
+    );
+    $this->dir = realpath(dirname(__FILE__));
+    $this->cli = new Asar_Utility_Cli($this->interpreter, $this->executor, $this->dir);
   }
   
   function mock($methods = array()) {
-    return $this->getMock('Asar_Utility_CLI', $methods, array(), '', false);
+    return $this->getMock('Asar_Utility_Cli', $methods, array(), '', false);
   }
   
   function mockTaskList($methods = array()) {
     return $this->getMock(
-      'Asar_Utility_CLI_Interface',
+      'Asar_Utility_Cli_Interface',
       array_merge($methods, array('setController'))
     );
   }
-  
-  function testInterpretingCommands() {
-    $arguments = array(
-      '/the/cli/caller', '--flag1', '--flag2', 'the-command', 'arg1', 'arg2'
-    );
-    $this->assertEquals(
-      array(
-        'caller'    => '/the/cli/caller',
-        'flags'     => array('flag1', 'flag2'),
-        'command'   => 'the-command',
-        'arguments' => array('arg1', 'arg2')
-      ),
-      $this->cli->interpret($arguments)
-    );
-  }
-  
-  function testInterpretingCommands2() {
-    $arguments = array(
-      '/the/cli/callerx', '--flag1', 'a-command'
-    );
-    $this->assertEquals(
-      array(
-        'caller'    => '/the/cli/callerx',
-        'flags'     => array('flag1'),
-        'command'   => 'a-command',
-        'arguments' => array()
-      ),
-      $this->cli->interpret($arguments)
-    );
-  }
-  
-  function testInterpretingCommands3() {
-    $arguments = array(
-      '/another/caller', 'mycommand', 'arg1', 'arg2'
-    );
-    $this->assertEquals(
-      array(
-        'caller'    => '/another/caller',
-        'flags'     => array(),
-        'command'   => 'mycommand',
-        'arguments' => array('arg1', 'arg2')
-      ),
-      $this->cli->interpret($arguments)
-    );
-  }
-  
-  function testInterpretingCommands4() {
-    $arguments = array(
-      '/another/caller', 'mycommand', '--command-flag', 'arg2'
-    );
-    $this->assertEquals(
-      array(
-        'caller'    => '/another/caller',
-        'flags'     => array(),
-        'command'   => 'mycommand',
-        'arguments' => array('--command-flag', 'arg2')
-      ),
-      $this->cli->interpret($arguments)
-    );
-  }
-  
-  function testInterpretingCommands5() {
-    $arguments = array(
-      '/caller', 'nspace:mycommand', 'arg1', 'arg2'
-    );
-    $this->assertEquals(
-      array(
-        'caller'    => '/caller',
-        'flags'     => array(),
-        'namespace' => 'nspace',
-        'command'   => 'mycommand',
-        'arguments' => array('arg1', 'arg2')
-      ),
-      $this->cli->interpret($arguments)
-    );
-  }
 
-  function testExecutePassesArgumentsToInterpret() {
-    $this->cli = $this->mock(array('interpret'));
+  function testExecutePassesArgumentsToInterpreter() {
     $arguments = array(
       '/cli/ui/front', '--aflag'
     );
-    $this->cli->expects($this->once())
+    $command = new Asar_Utility_Cli_Command(array());
+    $this->interpreter->expects($this->once())
       ->method('interpret')
-      ->with($this->equalto($arguments));
+      ->with($this->equalto($arguments))
+      ->will($this->returnValue($command));
     $this->cli->execute($arguments);
   }
   
-  function testGettingVersion() {
-    ob_start();
-    $this->cli->execute(array('/a/cli/front-controller', '--version'));
-    $output = ob_get_clean();
-    $this->assertEquals(
-      'Asar Web Framework ' . Asar::getVersion(), $output
-    );
+  function testExecutePassesCommandFromInterpreterToExecutor() {
+    $command = new Asar_Utility_Cli_Command(array());
+    $this->interpreter->expects($this->once())
+      ->method('interpret')
+      ->will($this->returnValue($command));
+    $this->executor->expects($this->once())
+      ->method('execute')
+      ->with($command);
+    $this->cli->execute(array());
   }
   
-  function testVersionIsNotReturnedWhenVersionFlagIsNotPresent() {
-    $this->assertNotEquals(
-      'Asar Web Framework ' . Asar::getVersion(),
-      $this->cli->execute(array('/a/cli/front-controller'))
-    );
-  }
-  
-  // TODO: Think of a better alternative to 'Controller'
   function testRegisterPassesItselfToTaskListAsController() {
     $tasks = $this->mockTaskList();
     $tasks->expects($this->once())
       ->method('setController')
       ->with($this->equalTo($this->cli));
+    $this->executor->expects($this->once())
+      ->method('registerTasks')
+      ->with($tasks);
     $this->cli->register($tasks);
   }
   
-  function testRegisterWithSettingNamespace() {
-    $tasks1 = $this->mockTaskList(array('taskToDo'));
-    $tasks1->expects($this->once())
-      ->method('taskToDo')
-      ->with($this->equalTo('arg'));
-    $tasks2 = $this->mockTaskList(array('taskToDo'));
-    $tasks2->expects($this->never())
-      ->method('taskToDo');
-    $this->cli->register($tasks1, 'anamespace');
-    $this->cli->register($tasks2);
-    $this->cli->execute(array(
-      '/p', 'anamespace:to-do', 'arg'
-    ));
+  function testOutput() {
+    $test_string  = 'Foo bar.';
+    $test_string2 = 'Bar foo.';
+    ob_start();
+    $this->cli->out($test_string);
+    $this->cli->out($test_string2);
+    $out = ob_get_clean();
+    $this->assertEquals("$test_string\n$test_string2\n", $out);
   }
   
-  function testInvokingTaskMethodThroughExecute() {
-    $tasks = $this->mockTaskList(array('taskCreateProjectDirectories'));
-    $tasks->expects($this->once())
-      ->method('taskCreateProjectDirectories')
-      ->with($this->equalTo('adirectory'));
-    $this->cli->register($tasks);
-    $this->cli->execute(array(
-      '/yo', 'create-project-directories', 'adirectory'
-    ));
+  function testGetRegisteredTasks() {
+    $tasks = array('foo', 'bar');
+    $this->executor->expects($this->once())
+      ->method('getRegisteredTasks')
+      ->will($this->returnValue($tasks));
+    $this->assertEquals($tasks, $this->cli->getRegisteredTasks());
   }
   
-  function testInvokingDuplicateTaskMethods() {
-    $tasks1 = $this->mockTaskList(array('taskDummyTask'));
-    $tasks2 = $this->mockTaskList(array('taskDummyTask'));
-    $tasks1->expects($this->never())
-      ->method('taskDummyTask');
-    $tasks2->expects($this->once())
-      ->method('taskDummyTask')
-      ->with($this->equalTo('adirectory'));
-    $this->cli->register($tasks1);
-    $this->cli->register($tasks2);
-    $this->cli->execute(array(
-      '/yo', 'dummy-task', 'adirectory'
-    ));
-  }
-  
-  function testThrowAsarUtilityCLIExceptionWhenTaskMethodIsNotDefined() {
-    $this->setExpectedException(
-		  'Asar_Utility_CLI_Exception_UndefinedTask',
-		  "The task method 'taskSomethingToDoButCannotDo' is not defined."
-	  );
-	  $this->cli->execute(array('/a', 'something-to-do-but-cannot-do', 'arg1'));
+  function testGettingWorkingDirectory() {
+    $this->assertEquals(
+      $this->dir, $this->cli->getWorkingDirectory()
+    );
   }
 }
