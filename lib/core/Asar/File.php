@@ -50,7 +50,7 @@ class Asar_File {
   
   public static function create ($filename) {
     if (file_exists($filename)) {
-      throw new Asar_File_Exception(
+      throw new Asar_File_Exception_FileAlreadyExists(
         "Asar_File::create failed. The file '$filename' already exists."
       );
     }
@@ -66,7 +66,7 @@ class Asar_File {
   
   public static function open ($filename) {
     if (!file_exists((string) $filename)) {
-      throw new Asar_File_Exception(
+      throw new Asar_File_Exception_FileDoesNotExist(
         "Asar_File::open failed. The file '$filename' does not exist."
       );
     } else {

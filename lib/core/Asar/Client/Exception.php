@@ -1,2 +1,3 @@
 <?php
-class Asar_Client_Exception extends Exception {}
+
+class Asar_Client_Exception extends Asar_Exception {}

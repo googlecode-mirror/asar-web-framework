@@ -1,5 +1,3 @@
 <?php
-class Asar_Exception extends Exception
-{
-    
-}
+
+class Asar_Exception extends Exception {}
