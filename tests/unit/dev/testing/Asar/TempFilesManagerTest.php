@@ -19,7 +19,7 @@ class Asar_TempFilesManagerTest extends PHPUnit_Framework_TestCase {
     if (file_exists($folderPath) && is_dir($folderPath)) {
       $contents = scandir($folderPath);
       foreach ($contents as $value) {
-        if ($value != "." && $value != "..") {
+        if ($value != "." && $value != ".." && $value != '.svn') {
           $value = $folderPath . "/" . $value;
           if (is_dir($value)) {
             $this->recursiveDelete($value);

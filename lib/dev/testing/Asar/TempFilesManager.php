@@ -64,7 +64,9 @@ class Asar_TempFilesManager {
     if (file_exists($directory) && is_dir($directory)) {
       $contents = scandir($directory);
       foreach ($contents as $value) {
-        if ($value != "." && $value != ".." && $value != '.svn') {
+        if ($value == "." || $value == ".." || $value == '.svn') {
+          continue;
+        } else {
           $value = $directory . "/" . $value;
           if (is_dir($value)) {
             $this->recursiveDelete($value);

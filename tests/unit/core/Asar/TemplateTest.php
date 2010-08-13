@@ -40,9 +40,9 @@ class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
   
   function testGettingTemplateFile() {
     $this->TFM->newFile('baz.php', '');
-    $this->T->setTemplateFile($this->TFM->getPath('bar.php'));
+    $this->T->setTemplateFile($this->TFM->getPath('baz.php'));
     $this->assertEquals(
-      $this->TFM->getPath('bar.php'), $this->T->getTemplateFile()
+      $this->TFM->getPath('baz.php'), $this->T->getTemplateFile()
     );
   }
   
