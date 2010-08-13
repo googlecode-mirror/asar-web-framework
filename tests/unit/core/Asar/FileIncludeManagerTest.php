@@ -16,6 +16,10 @@ class Asar_FileIncludeManagerTest extends PHPUnit_Framework_TestCase {
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
   }
   
+  function tearDown() {
+	  $this->TFM->clearTempDirectory();
+	}
+  
   function testRequireFileOnce() {
     $this->TFM->newFile(
       'foo.php',

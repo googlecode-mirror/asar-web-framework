@@ -8,8 +8,13 @@ class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
     $this->TFM = new Asar_TempFilesManager(
       Asar::getInstance()->getFrameworkTestsDataTempPath()
     );
+    $this->TFM->clearTempDirectory();
     $this->T = new Asar_Template;
   }
+  
+  function tearDown() {
+	  $this->TFM->clearTempDirectory();
+	}
   
   function testTemplateIncludesFile() {
     $this->TFM->newFile('foo.php', 'Hello!');

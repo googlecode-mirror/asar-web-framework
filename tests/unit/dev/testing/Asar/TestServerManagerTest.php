@@ -6,6 +6,7 @@ class Asar_TestServerManagerTest extends PHPUnit_Framework_TestCase {
   function setUp() {
     $this->A = new Asar;
     $this->TFM = new Asar_TempFilesManager($this->A->getFrameworkTestsDataTempPath());
+    $this->TFM->clearTempDirectory();
     $this->TSM = new Asar_TestServerManager($this->A->getFrameworkTestsDataPath());
     $this->test_server_path = $this->A->getFrameworkTestsDataPath() . 
       DIRECTORY_SEPARATOR . 'test-server';
@@ -19,6 +20,7 @@ class Asar_TestServerManagerTest extends PHPUnit_Framework_TestCase {
   
   function tearDown() {
     $this->clearTestServer();
+    $this->TFM->clearTempDirectory();
   }
   
   private function clearTestServer() {

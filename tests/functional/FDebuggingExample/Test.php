@@ -2,7 +2,7 @@
 require_once realpath(dirname(__FILE__) . '/../../config.php');
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
-class FDebuggingExample_Test extends Asar_Test_Helper {
+class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->markTestIncomplete();
@@ -19,7 +19,7 @@ class FDebuggingExample_Test extends Asar_Test_Helper {
   }
   
   function tearDown() {
-    Asar::setMode(Asar::MODE_DEVELOPMENT);
+    #Asar::setMode(Asar::MODE_DEVELOPMENT);
   }
   
   function testDebugInformationForHtmlRequest() {
