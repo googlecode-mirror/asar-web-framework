@@ -16,11 +16,14 @@ class Asar_ApplicationFactoryTest_Test2_Config implements Asar_Config_Interface 
 class Asar_ApplicationFactoryTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
+    $this->config = $this->getMock('Asar_Config_Interface');
     $this->F = new Asar_ApplicationFactory;
   }
   
   
   function testGettingApplication() {
+   /* $this->config->expects($this->once())
+      ->method*/
     $this->assertType(
       'Asar_ApplicationFactoryTest_Application',
       $this->F->getApplication('Asar_ApplicationFactoryTest')

@@ -29,3 +29,26 @@ array(
   	),
   
 );
+
+
+array(
+  'default_classes.app' => 'Asar_ApplicationBasic',
+	'default_classes.config' => 'Asar_Config_Default',
+  'templates.engines'    => array('php' => 'Asar_Template'),
+  'templates.use_layout' => true,
+  'resource.default_content_type' => 'text/html',
+	'resource.default_language'     => 'en',
+	'resource.use_templates'        => true,
+	'resource.map'                  => array(
+		'/' => 'Index'
+	),
+  'mime_types' => array(
+  	'text/html'        => 'html',
+    'text/plain'       => 'txt',
+    'application/xml'  => 'xml',
+    'application/json' => 'json',
+		'text/css'         => 'css',
+		'text/javascript'  => 'js'
+	),
+  
+);

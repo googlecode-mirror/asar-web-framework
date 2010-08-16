@@ -28,6 +28,9 @@ class Asar_FileIncludeManagerTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(
       'hello from foo!', $this->FI->requireFileOnce($this->TFM->getPath('foo.php'))
     );
+    $this->assertSame(
+      true, $this->FI->requireFileOnce($this->TFM->getPath('foo.php'))
+    );
   }
   
   function testInclude() {

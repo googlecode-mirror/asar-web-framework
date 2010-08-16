@@ -4,10 +4,17 @@ require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 // For testing purposes only...
 class Asar_ConfigTest_ConfigSample extends Asar_Config {
-  protected $config = array(
+  public $config = array(
     'foo' => 'bar',
     'goo' => 'car',
-    'hoo' => 'dar'
+    'hoo' => 'dar',
+    'joo' => array(
+      'joo1' => 'doo1',
+      'joo2' => 'doo2',
+      'joo3' => array(
+        'a' => 32
+      )
+    )
   );
 }
 
@@ -15,6 +22,18 @@ class Asar_ConfigTest_ConfigSample2 extends Asar_Config {
   protected $config = array(
     'foo' => 'baz',
     'zoo' => 'zaz'
+  );
+}
+
+class Asar_ConfigTest_ConfigSample3 extends Asar_Config {
+  protected $config = array(
+    'joo' => array(
+      'joo1' => 'eoo1',
+      'joo3' => array(
+        'a'  => 'aye',
+        'b'  => 'bee'
+      )
+    )
   );
 }
 
@@ -26,10 +45,7 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGettingConfig() {
-    $this->assertEquals(
-      array('foo' => 'bar', 'goo' => 'car', 'hoo' => 'dar'),
-      $this->config->getConfig()
-    );
+    $this->assertEquals($this->config->config, $this->config->getConfig());
   }
   
   function testGettingSpecificConfig() {
@@ -40,6 +56,11 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
   function testGettingSpecificConfigThatDoesNotExistReturnsNull() {
     $this->assertEquals(null, $this->config->getConfig('zoo'));
     $this->assertEquals(null, $this->config->getConfig('boo'));
+  }
+  
+  function testGettingSpecificConfigArrayKeys() {
+    $this->assertEquals('doo1', $this->config->getConfig('joo.joo1'));
+    $this->assertEquals(32, $this->config->getConfig('joo.joo3.a'));
   }
   
   function testImportingConfig() {
