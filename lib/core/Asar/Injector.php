@@ -50,7 +50,9 @@ class Asar_Injector {
   }
   
   static function injectApplicationFactory(Asar_EnvironmentScope $env_scope) {
-    return new Asar_ApplicationFactory;
+    return new Asar_ApplicationFactory(
+      self::injectConfigDefault($env_scope)
+    );
   }
   
   static function injectServerVars(Asar_EnvironmentScope $env_scope) {

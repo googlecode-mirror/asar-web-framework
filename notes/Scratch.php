@@ -4,7 +4,7 @@
 
 array(
   'default_classes' => array(
-  		'app'    => 'Asar_ApplicationBasic',
+  		'application'    => 'Asar_ApplicationBasic',
   		'config' => 'Asar_Config_Default'
   	),
   'templates' => array(

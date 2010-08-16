@@ -3,17 +3,20 @@
 // TODO: Refactor this!!!
 class Asar_ApplicationFactory {
   
-  private $default_classes = array(
-    'app'    => 'Asar_ApplicationBasic',
-    'config' => 'Asar_Config_Default'
-  );
+  private $config;
+  
+  function __construct(Asar_Config_Interface $config) {
+    $this->config = $config;
+  }
+  
   private $file_searcher;
   
   function getApplication($app_name) {
     $classes = $this->getClasses($app_name);
     $app_full_name = $classes['app'];
-    $app_config    = new Asar_Config_Default(new $classes['config']);
-    $config = $app_config->getConfig();
+    $app_config = new $classes['config'];
+    $app_config->importConfig(new Asar_Config_Default);
+    $sm = $app_config->getConfig('default_classes.status_messages');
     $template_factory = new Asar_TemplateFactory;
     $template_factory->registerTemplateEngine('php', 'Asar_Template');
     $app = new $app_full_name(
@@ -30,8 +33,8 @@ class Asar_ApplicationFactory {
           new Asar_TemplateSimpleRenderer
         )
       ),
-      new Asar_Response_StatusMessages,
-      $config['map']
+      new $sm,
+      $app_config->getConfig('map')
     );
     return $app;
   }
@@ -45,14 +48,18 @@ class Asar_ApplicationFactory {
   }
   
   private function getClasses($app_name) {
-    $classes = $this->default_classes;
+    $classes = array();
     $test = $app_name . '_Application';
     if (class_exists($test)) {
       $classes['app'] = $test;
+    } else {
+      $classes['app'] = $this->config->getConfig('default_classes.application');
     }
     $test = $app_name . '_Config';
     if (class_exists($test)) {
       $classes['config'] = $test;
+    } else {
+      $classes['config'] = $this->config->getConfig('default_classes.config');
     }
     return $classes;
   }
