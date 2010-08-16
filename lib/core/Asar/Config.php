@@ -7,8 +7,7 @@ abstract class Asar_Config implements Asar_Config_Interface {
       $keys = explode('.', $key);
       for (
         $i=0, $els = count($keys), $e = null, $arr = $this->config;
-        $i < $els;
-        $i++
+        $i < $els; $i++
       ) { 
         if (isset($arr[$keys[$i]])) {
           $a = $arr[$keys[$i]];

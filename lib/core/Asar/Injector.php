@@ -115,4 +115,8 @@ class Asar_Injector {
   static function injectFileHelper(Asar_EnvironmentScope $env_scope) {
     return new Asar_FileHelper;
   }
+  
+  static function injectConfigDefault(Asar_EnvironmentScope $env_scope) {
+    return new Asar_Config_Default;
+  }
 }

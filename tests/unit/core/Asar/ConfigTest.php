@@ -71,6 +71,7 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('doo1', $this->config->getConfig('joo.joo1'));
     $this->assertEquals(32, $this->config->getConfig('joo.joo3.a'));
     $this->assertEquals(null, $this->config->getConfig('joo.joo3.b'));
+    $this->assertEquals(null, $this->config->getConfig('joo.joo8.a'));
   }
   
   function testImportingConfig() {
