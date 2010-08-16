@@ -32,7 +32,16 @@ class Asar_ConfigTest_ConfigSample3 extends Asar_Config {
       'joo3' => array(
         'a'  => 'aye',
         'b'  => 'bee'
-      )
+      ),
+      'joo4' => 'doo4'
+    )
+  );
+}
+
+class Asar_ConfigTest_ConfigSample4 extends Asar_Config {
+  protected $config = array(
+    'joo' => array(
+      'joo3' => 'meh'
     )
   );
 }
@@ -61,12 +70,34 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
   function testGettingSpecificConfigArrayKeys() {
     $this->assertEquals('doo1', $this->config->getConfig('joo.joo1'));
     $this->assertEquals(32, $this->config->getConfig('joo.joo3.a'));
+    $this->assertEquals(null, $this->config->getConfig('joo.joo3.b'));
   }
   
   function testImportingConfig() {
     $this->config->importConfig($this->config2);
     $this->assertEquals('bar', $this->config->getConfig('foo'));
     $this->assertEquals('zaz', $this->config->getConfig('zoo'));
+  }
+  
+  function testImportingConfigWithArrays() {
+    $config3 = new Asar_ConfigTest_ConfigSample3;
+    $this->config->importConfig($config3);
+    $this->assertSame('doo1', $this->config->getConfig('joo.joo1'));
+    $this->assertSame('doo2', $this->config->getConfig('joo.joo2'));
+    $this->assertSame('doo4', $this->config->getConfig('joo.joo4'));
+    $this->assertSame(32, $this->config->getConfig('joo.joo3.a'));
+    $this->assertSame('bee', $this->config->getConfig('joo.joo3.b'));
+  }
+  
+  function testImportingConfigArrayConflict() {
+    $this->setExpectedException(
+	    'Asar_Config_Exception',
+	    'Asar_Config::importConfig() failed. Type mismatch. '.
+	      'Unable to merge \'joo.joo3\' => '.
+	      '\'meh\' with Array.'
+    );
+    $config4 = new Asar_ConfigTest_ConfigSample4;
+    $this ->config->importConfig($config4);
   }
   
 }

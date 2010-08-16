@@ -5,13 +5,18 @@ abstract class Asar_Config implements Asar_Config_Interface {
   function getConfig($key = null) {
     if (is_string($key)) {
       $keys = explode('.', $key);
-      $arr = $this->config;
-      $e = null;
-      for ($i=0; $i < count($keys); $i++) { 
-        if (array_key_exists($keys[$i], $arr)) {
-          $e = $arr[$keys[$i]];
-          if (is_array($e)) {
-            $arr = $e;
+      for (
+        $i=0, $els = count($keys), $e = null, $arr = $this->config;
+        $i < $els;
+        $i++
+      ) { 
+        if (isset($arr[$keys[$i]])) {
+          $a = $arr[$keys[$i]];
+          if (is_array($a)) {
+            $arr = $a;
+          }
+          if ($i == $els - 1) {
+            $e = $a;
           }
         }
       }
@@ -21,7 +26,27 @@ abstract class Asar_Config implements Asar_Config_Interface {
   }
   
   function importConfig(Asar_Config_Interface $config) {
-    $this->config = array_merge($config->getConfig(), $this->config);
+    $this->config = $this->configMerge($config->getConfig(), $this->config);
+  }
+  
+  private function configMerge($from, $to, $parent_key = null) {
+    foreach ($from as $key => $value) {
+      if (isset($to[$key])) {
+        $thekey = !$parent_key ? $key : "$parent_key.$key";
+        if (is_array($value) XOR is_array($to[$key])) {
+          throw new Asar_Config_Exception(
+            "Asar_Config::importConfig() failed. Type mismatch. Unable to " .
+            "merge '$thekey' => '$value' with Array."
+          );
+        }          
+        if (is_array($value)) {
+          $to[$key] = $this->configMerge($value, $to[$key], $thekey);
+        }
+      } else {
+        $to[$key] = $value;
+      }
+    }
+    return $to;
   }
   
   private function strHasDot($str) {
