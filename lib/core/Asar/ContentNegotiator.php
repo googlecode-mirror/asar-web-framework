@@ -2,8 +2,13 @@
 
 class Asar_ContentNegotiator implements Asar_ContentNegotiator_Interface {
   
-  function negotiateFormat($accept_header, $available_formats) {
-    //echo "\n\n====\n";
+  function negotiateFormat($accept_header, array $available_formats) {
+    if (empty($available_formats)) {
+      throw new Asar_ContentNegotiator_Exception(
+         'Asar_ContentNegotiator::negotiateFormat(). 2nd argument '.
+          'must not be empty. Please specify available formats.'
+      );
+    }
     $accept_list = $this->getAcceptList($accept_header);
     foreach ($available_formats as $format) {
       if (!isset($preferred_format)) {

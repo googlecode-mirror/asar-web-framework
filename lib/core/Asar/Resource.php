@@ -1,9 +1,10 @@
 <?php
 
 class Asar_Resource 
-  implements Asar_Resource_Interface, Asar_Configurable_Interface,
-  Asar_Named
+  implements Asar_Resource_Interface, Asar_Named, Asar_Config_Interface
 {
+  
+  protected $config_bag = null;
   
   protected $config = array(
     'default_content_type' => 'text/html',
@@ -14,22 +15,25 @@ class Asar_Resource
   protected $request = null;
   
   function __construct() {
+    $this->config_bag = new Asar_Config();
     $this->setUp();
+    $this->config_bag->importConfig(new Asar_Config($this->config));
   }
   
   protected function setUp() {}
   
-  function getConfig($key) {
-    if (array_key_exists($key, $this->config)) {
-      return $this->config[$key];
-    }
+  function getConfig($key = null) {
+    return $this->config_bag->getConfig($key);
   }
   
-  // TODO: Is this still needed?
-  function setConfig($key, $value) {
-    if (!isset($this->config[$key])) {
-      $this->config[$key] = $value;
-    }
+  protected function setConfig($key, $value) {
+    $new_config_bag = new Asar_Config(array($key => $value));
+    $new_config_bag->importConfig($this->config_bag);
+    $this->config_bag = $new_config_bag;
+  }
+  
+  function importConfig(Asar_Config_Interface $config) {
+    return $this->config_bag->importConfig($config);
   }
   
   function getName() {

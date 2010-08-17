@@ -1,6 +1,14 @@
 <?php
 
-abstract class Asar_Config implements Asar_Config_Interface {
+class Asar_Config implements Asar_Config_Interface {
+  
+  protected $config = array();
+  
+  function __construct($init_config = array()) {
+    if ($init_config) {
+      $this->config = $this->configMerge($init_config, $this->config);
+    }
+  }
   
   function getConfig($key = null) {
     if (is_string($key)) {

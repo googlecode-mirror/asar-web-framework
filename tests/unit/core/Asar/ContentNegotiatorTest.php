@@ -76,4 +76,14 @@ class Asar_ContentNegotiatorTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testFormatNegotiationWhenAvailableFormatsIsEmpty() {
+    $this->CN = new Asar_ContentNegotiator;
+    $this->setExpectedException(
+      'Asar_ContentNegotiator_Exception',
+      'Asar_ContentNegotiator::negotiateFormat(). 2nd argument '.
+      'must not be empty. Please specify available formats.'
+    );
+    $this->CN->negotiateFormat('text/html', array());
+  }
+  
 }

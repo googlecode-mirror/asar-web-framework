@@ -12,10 +12,4 @@ class Asar_Config_Default extends Asar_Config {
     ),
   );
   
-  function __construct(Asar_Config_Interface $config = null) {
-    if ($config) {
-      $this->config = array_merge($this->config, $config->getConfig());
-    }
-  }
-  
 }

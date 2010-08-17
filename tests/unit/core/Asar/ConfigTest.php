@@ -101,4 +101,17 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
     $this ->config->importConfig($config4);
   }
   
+  function testConfigConstruction() {
+    $config_arr = array(
+      'foo' => 1,
+      'bar' => 2,
+      'jar' => array(
+        'a' => 'Aye'
+      )
+    );
+    $config = new Asar_Config($config_arr);
+    $this->assertSame(2, $config->getConfig('bar'));
+    $this->assertEquals('Aye', $config->getConfig('jar.a'));
+  }
+  
 }

@@ -1,5 +1,5 @@
 NEXT:
-- Make ApplicationFactory Use Asar_Default_Config
+- Make Asar_Resource Use Asar_Config
 ALL:
 - Since the Application classes are only used for configuration and the setUp;
   maybe it's better if we move the configuration to a separate class and do

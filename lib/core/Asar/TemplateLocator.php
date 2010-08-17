@@ -95,6 +95,7 @@ class Asar_TemplateLocator {
     $available_types = array();
     $available_files = array();
     foreach ($template_files as $file) {
+      // TODO: make this more efficient by using startswith
       if ($file == '.' || $file == '..') {
         continue;
       }

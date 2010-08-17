@@ -17,25 +17,14 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->assertType('Asar_Resource_Interface', $this->R);
   }
   
-  function testResourceImplementsConfiguredInterface() {
-    $this->assertType('Asar_Configurable_Interface', $this->R);
-    $this->R->setConfig('foo', 'bar');
+  function testResourceImplementsConfigInterface() {
+    $this->assertType('Asar_Config_Interface', $this->R);
+    $this->config = $this->getMock('Asar_Config_Interface');
+    $this->config->expects($this->once())
+      ->method('getConfig')
+      ->will($this->returnValue(array('foo' => 'bar')));
+    $this->R->importConfig($this->config);
     $this->assertEquals('bar', $this->R->getConfig('foo'));
-  }
-  
-  function testSettingConfigurationDoesNotOverwriteInternalConfig() {
-    $classname = get_class($this) . '_Configuration';
-    eval('
-      class ' . $classname . ' extends Asar_Resource {
-        function setUp() {
-          $this->config["foo"] = "baz";
-        }
-      }
-    ');
-    $R = new $classname;
-    $this->assertEquals('baz', $R->getConfig('foo'));
-    $R->setConfig('foo', 'bar');
-    $this->assertEquals('baz', $R->getConfig('foo'));
   }
   
   function testResourceReturnsAResponse() {
@@ -191,9 +180,21 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
       }
     ');
     $R = new $cname;
-    $this->assertFalse(
-      $R->getConfig('use_templates')
-    );
+    $this->assertFalse($R->getConfig('use_templates'));
+  }
+  
+  function testModifyConfigValue() {
+    $cname = get_class($this) . '_ChangeConfigValues';
+    eval('
+      class '. $cname . ' extends Asar_Resource {
+        function GET() {
+          $this->setConfig("foo", "bar");
+        }
+      }
+    ');
+    $R = new $cname;
+    $R->GET();
+    $this->assertEquals( "bar", $R->getConfig('foo'));
   }
   
   function testGetConfigOnUnknownConfigReturnsNull() {
