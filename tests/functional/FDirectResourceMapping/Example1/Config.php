@@ -6,19 +6,12 @@
  * named 'Example1'. This test application is used only for integration
  * testing.
  */
-class Example1_Config implements Asar_Config_Interface {
+class Example1_Config extends Asar_Config {
   
-  function getConfig($key = null) {
-    return array(
-      
-      'map' => array(
-        '/'     => 'Index',
-        '/what' => 'What'
-      ),
-      
-    );
-  }
-  
-  function importConfig(Asar_Config_Interface $config) {}
-  
+  protected $config = array(
+    'map' => array(
+      '/what' => 'What'
+    ),
+  );
+
 }
