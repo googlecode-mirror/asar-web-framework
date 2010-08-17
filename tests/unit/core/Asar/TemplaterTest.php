@@ -30,6 +30,19 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
     
   }
   
+  function testTemplaterImplementsAsarConfigInterface() {
+    $this->assertType('Asar_Config_Interface', $this->templater);
+  }
+  
+  function testTemplaterDelagatesConfigToResource() {
+    $this->markTestIncomplete();
+    $this->resource->expects($this->once())
+      ->method('getConfig')
+      ->with('foo')
+      ->will($this->returnValue('bar'));
+    $this->assertEquals('bar', $this->templater->getConfig('foo'));
+  }
+  
   function testResourceReceivesRequest() {
     $this->resourceReturnsResponse();
     $request = new Asar_Request(array('path' => '/foo'));

@@ -1,6 +1,7 @@
 <?php
 // TODO: This object seems to have too much responsibility. Refactor.
-class Asar_Templater implements Asar_Resource_Interface {
+class Asar_Templater
+  implements Asar_Resource_Interface, Asar_Config_Interface {
   
   private $resource, $renderer;
   
@@ -26,6 +27,14 @@ class Asar_Templater implements Asar_Resource_Interface {
   private function responseTemplatable($response) {
     return $this->resource->getConfig('use_templates') && 
     $response->getStatus() == 200;
+  }
+  
+  function getConfig($key = null) {
+    return $this->resource->getConfig($key);
+  }
+  
+  function importConfig(Asar_Config_Interface $config) {
+    
   }
   
 }
