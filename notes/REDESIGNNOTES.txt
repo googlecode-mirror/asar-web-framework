@@ -1,10 +1,6 @@
 NEXT:
-- Make Asar_Resource Use Asar_Config
+- Make Asar_Resource import Application config
 ALL:
-- Since the Application classes are only used for configuration and the setUp;
-  maybe it's better if we move the configuration to a separate class and do
-  away with the Application class altogether. 
-  - For 5.3, maybe the application class implements the __invoke() method.
 - Cascading Configurations: 
   - We have default configurations created by the framework
   - Each app can override these configurations
