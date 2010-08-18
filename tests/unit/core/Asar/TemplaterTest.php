@@ -6,11 +6,12 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->resource = $this->getMock(
-      'Asar_Resource', array('handleRequest', 'getConfig')
+      'Asar_Resource', array('handleRequest', 'getConfig', 'importConfig')
     );
     $this->renderer  = $this->getMock(
       'Asar_TemplateRenderer', array('renderFor'), array(), '', false
     );
+    $this->conf = $this->getMock('Asar_Config_Interface');
     $this->templater = new Asar_Templater($this->resource, $this->renderer);
   }
   
@@ -34,13 +35,27 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
     $this->assertType('Asar_Config_Interface', $this->templater);
   }
   
-  function testTemplaterDelagatesConfigToResource() {
-    $this->markTestIncomplete();
+  function testTemplaterDelagatesGetConfigToResource() {
     $this->resource->expects($this->once())
       ->method('getConfig')
       ->with('foo')
       ->will($this->returnValue('bar'));
     $this->assertEquals('bar', $this->templater->getConfig('foo'));
+  }
+  
+  function testTemplaterDelagatesImportConfigToResource() {
+    $this->resource->expects($this->once())
+      ->method('importConfig')
+      ->with($this->conf);
+    $this->templater->importConfig($this->conf);
+  }
+  
+  function testIfResourceIsNotAsarConfigImportConfigCreatesConfig() {
+    $resource = $this->getMock('Asar_Resource_Interface');
+    $conf = new Asar_Config(array('foo' => 'bar'));
+    $templater = new Asar_Templater($resource, $this->renderer);
+    $templater->importConfig($conf);
+    $this->assertEquals('bar', $templater->getConfig('foo'));
   }
   
   function testResourceReceivesRequest() {

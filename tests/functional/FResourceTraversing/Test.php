@@ -11,7 +11,12 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testBasic() {
-    $this->markTestIncomplete();
+    $response = $this->app->handleRequest(new Asar_Request);
+    //var_dump($response);
+    $this->assertEquals(200, $response->getStatus());
+    $this->assertEquals(
+      'ResourceTraversing/Index GET.', $response->getContent()
+    );
   }
 
 }

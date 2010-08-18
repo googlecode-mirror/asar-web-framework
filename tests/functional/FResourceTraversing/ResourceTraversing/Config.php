@@ -2,12 +2,8 @@
 
 class ResourceTraversing_Config extends Asar_Config {
   
-  protected $config =array(
-    'use_templates' => false,
-    'map' => array(
-      
-    ),
-    
+  protected $config = array(
+    'use_templates' => false
   );
   
 }

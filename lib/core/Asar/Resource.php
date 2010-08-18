@@ -7,9 +7,9 @@ class Asar_Resource
   protected $config_bag = null;
   
   protected $config = array(
-    'default_content_type' => 'text/html',
-    'default_language'     => 'en',
-    'use_templates'        => true
+    //'default_content_type' => 'text/html',
+    //'default_language'     => 'en',
+    //'use_templates'        => true
   );
   
   protected $request = null;

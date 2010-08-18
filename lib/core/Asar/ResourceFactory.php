@@ -4,10 +4,12 @@ class Asar_ResourceFactory {
   
   function __construct(
     Asar_TemplateLFactory $tl_factory,
-    Asar_TemplateSimpleRenderer $ts_renderer
+    Asar_TemplateSimpleRenderer $ts_renderer,
+    Asar_Config_Interface $config
   ) {
     $this->tl_factory = $tl_factory;
     $this->ts_renderer = $ts_renderer;
+    $this->config = $config;
   }
   
   // TODO: This can be better designed by using delegation
@@ -23,6 +25,9 @@ class Asar_ResourceFactory {
           $this->tl_factory, $this->ts_renderer
         )
       );
+    }
+    if ($resource instanceof Asar_Config_Interface) {
+      $resource->importConfig($this->config);
     }
     return $resource;
   }

@@ -3,13 +3,18 @@
 class Asar_Templater
   implements Asar_Resource_Interface, Asar_Config_Interface {
   
-  private $resource, $renderer;
+  private $resource, $renderer, $config;
   
   function __construct(
     Asar_Resource_Interface $resource,
     Asar_TemplateRenderer $renderer
   ) {
     $this->resource = $resource;
+    if ($this->resource instanceof Asar_Config_Interface) {
+      $this->config = $resource;
+    } else {
+      $this->config = new Asar_Config;
+    }
     $this->renderer = $renderer;
   }
   
@@ -30,11 +35,11 @@ class Asar_Templater
   }
   
   function getConfig($key = null) {
-    return $this->resource->getConfig($key);
+    return $this->config->getConfig($key);
   }
   
   function importConfig(Asar_Config_Interface $config) {
-    
+    return $this->config->importConfig($config);
   }
   
 }

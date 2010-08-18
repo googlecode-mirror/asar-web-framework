@@ -1,5 +1,5 @@
 NEXT:
-- Make Asar_Resource import Application config
+- Fix Response Defaults
 ALL:
 - Cascading Configurations: 
   - We have default configurations created by the framework
@@ -18,3 +18,8 @@ ALL:
 - Better dependency injection
   - Phemto? http://phemto.sourceforge.net/quick-start.php
   - Pimple? http://github.com/fabpot/Pimple
+- Refactor Configuration system
+  - Rethink this:
+    $this->config_bag = new Asar_Config();
+    $this->setUp();
+    $this->config_bag->importConfig(new Asar_Config($this->config));

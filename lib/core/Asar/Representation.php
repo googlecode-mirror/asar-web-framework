@@ -1,7 +1,7 @@
 <?php
 
 class Asar_Representation
-  implements Asar_Resource_Interface, Asar_Configurable_Interface
+  implements Asar_Resource_Interface, Asar_Config_Interface
 {
   
   protected
@@ -16,19 +16,22 @@ class Asar_Representation
   
   function __construct(Asar_Resource_Interface $resource) {
     $this->resource = $resource;
+    $this->config_bag = new Asar_Config();
     $this->setUp();
+    $this->config_bag->importConfig(new Asar_Config($this->config));
   }
   
   protected function setUp() {}
   
-  function setConfig($key, $value) {
-    if (!isset($this->config[$key])) {
-      $this->config[$key] = $value;
-    }
+  function getConfig($key = null) {
+    return $this->config_bag->getConfig($key);
   }
   
-  function getConfig($key) {
-    return $this->config[$key];
+  function importConfig(Asar_Config_Interface $config) {
+    if ($this->resource instanceof Asar_Config_Interface) {
+      $this->resource->importConfig($config);
+    }
+    return $this->config_bag->importConfig($config);
   }
   
   function handleRequest(Asar_Request_Interface $request) {

@@ -7,7 +7,7 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   private $types = array('Txt', 'Html', 'Xml', 'Json');
 
   function setUp() {
-    $this->resource = $this->getMock('Asar_Resource', array('handleRequest'));
+    $this->resource = $this->getMock('Asar_Resource');
   }
   
   private function resourceExpectsOnceHandleRequest() {
@@ -146,14 +146,28 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('bar', $_POST['foo']);
   }
   
-  function testRepresentationIsConfigurable() {
+  function testRepresentationIsConfig() {
     $R = new Asar_Representation($this->resource);
-    $R->setConfig('foo', 'Foo');
-    $this->assertType('Asar_Configurable_Interface', $R);
-    $this->assertEquals('Foo', $R->getConfig('foo'));
+    $this->assertType('Asar_Config_Interface', $R);
   }
   
-  function testSettingConfigurationDoesNotOverrideInternalConfig() {
+  function testImportConfigPassesConfigToResource() {
+    $R = new Asar_Representation($this->resource);
+    $config = new Asar_Config( array('yo' => 'ya') );
+    $this->resource->expects($this->once())
+      ->method('importConfig')
+      ->with($config);
+    $R->importConfig($config);
+  }
+  
+  function testImportConfigDoesNotPassConfigToResourceIfNotConfigInterface() {
+    $resource = $this->getMock('Asar_Resource_Interface');
+    $R = new Asar_Representation($resource);
+    $config = new Asar_Config( array('yo' => 'ya') );
+    $R->importConfig($config);
+  }
+  
+  function testImportingConfigurationDoesNotOverrideInternalConfig() {
     $classname = get_class($this) . '_Configuration';
     eval('
       class ' . $classname . ' extends Asar_Representation {
@@ -163,8 +177,8 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
       }
     ');
     $R = new $classname($this->resource);
-    $R->setConfig('foo', 'bar');
-    $this->assertType('Asar_Configurable_Interface', $R);
+    $R->importConfig(new Asar_Config(array('foo' => 'bar', 'doo' => 'jar')));
+    $this->assertEquals('jar', $R->getConfig('doo'));
     $this->assertEquals('baz', $R->getConfig('foo'));
   }
 

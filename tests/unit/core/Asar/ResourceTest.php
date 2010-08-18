@@ -164,12 +164,6 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     );
   }
   
-  function testGetConfigUseTemplates() {
-    $this->assertTrue(
-      $this->R->getConfig('use_templates')
-    );
-  }
-  
   function testModifyConfigUseTemplates() {
     $cname = get_class($this) . '_DefaultUseTemplatesConfiguration';
     eval('

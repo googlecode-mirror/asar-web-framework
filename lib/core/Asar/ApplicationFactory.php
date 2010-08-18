@@ -30,7 +30,8 @@ class Asar_ApplicationFactory {
             ),
             $template_factory
           ),
-          new Asar_TemplateSimpleRenderer
+          new Asar_TemplateSimpleRenderer,
+          $app_config
         )
       ),
       new $sm,
