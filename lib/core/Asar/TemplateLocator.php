@@ -149,7 +149,7 @@ class Asar_TemplateLocator {
   }
   
   private function getType($mime_type) {
-    if (array_key_exists($mime_type, $this->mime_types)) {
+    if (is_string($mime_type) && array_key_exists($mime_type, $this->mime_types)) {
       return $this->mime_types[$mime_type];
     }
     return FALSE;

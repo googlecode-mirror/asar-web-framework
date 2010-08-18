@@ -152,6 +152,18 @@ class Asar_TemplateLocatorTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testReturnFalseWhenNegotiatorReturnsFalse() {
+    $this->TFM->newFile('Representation/AResource/Go.GET.html.php', '');
+    $this->content_negotiator->expects($this->once())
+      ->method('negotiateFormat')
+      ->will($this->returnValue(FALSE));
+    $this->assertEquals(
+      FALSE, $this->RT->locateFor(
+        'Moonda_Resource_AResource_Go', new Asar_Request
+      )
+    );
+  }
+  
   /**
    * @dataProvider dataLocateLayout
    */

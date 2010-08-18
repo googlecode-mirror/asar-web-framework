@@ -71,7 +71,6 @@ class FStatusCodesExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   public function testStatus406($mimetype = 'unknown/mime-type') {
-    $this->markTestIncomplete();
     $response = $this->client->GET($this->app, array(
       'path' => '/page', 
       'headers' => array('Accept' => $mimetype)
