@@ -119,7 +119,9 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $response = new Asar_Response(array('status' => 405));
     $this->routerReturnsResource();
     $this->resourceExpects()->will($this->returnValue($response));
-    $this->setStatusMessagesMock()->with($response, $request);
+    // This is a hack
+    $response_test = clone $response;
+    $this->setStatusMessagesMock()->with($response_test, $request);
     $this->app->handleRequest($request);
   }
   
@@ -185,6 +187,28 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $app = new $cname($app_name, $this->router, $this->sm);
     $map = $app->getMap();
     $this->assertEquals($map['/foo_ra'], $resource);
+  }
+  
+  function testAppSetsDefaultHeaders() {
+    $request = new Asar_Request;
+    $response = new Asar_Response;
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($response));
+    $app_response = $this->app->handleRequest($request);
+    $this->assertEquals('text/html', $app_response->getHeader('Content-Type'));
+    $this->assertEquals('en', $app_response->getHeader('Content-Language'));
+  }
+  
+  function testAppSkipsSettingDefaultHeadersWhenTheyAreDefined() {
+    $request = new Asar_Request;
+    $response = new Asar_Response;
+    $response->setHeader('Content-Type', 'text/plain');
+    $response->setHeader('Content-Language', 'tl');
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($response));
+    $app_response = $this->app->handleRequest($request);
+    $this->assertEquals('text/plain', $app_response->getHeader('Content-Type'));
+    $this->assertEquals('tl', $app_response->getHeader('Content-Language'));
   }
 
 }

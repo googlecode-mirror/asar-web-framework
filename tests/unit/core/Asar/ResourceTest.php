@@ -97,11 +97,6 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $response->getStatus());
   }
   
-  function testResponseContentTypeShouldBeHtmlByDefaultGetRequest() {
-    $response = $this->requestProcessingTests();
-    $this->assertEquals('text/html', $response->getHeader('Content-Type'));
-  }
-  
   function testExecutingPOSTMethodSetsContentOfPostGlobalVariable() {
     $this->requestProcessingTests(
       array('content' => array('foo'=>'bar', 'one' => 1)), 'POST'
@@ -156,12 +151,6 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $R = new $cname;
     $this->assertTrue(array_key_exists('foo', $_POST));
     $this->assertEquals('bar', $_POST['foo']);
-  }
-  
-  function testGetConfig() {
-    $this->assertEquals(
-      'text/html', $this->R->getConfig('default_content_type')
-    );
   }
   
   function testModifyConfigUseTemplates() {
@@ -223,12 +212,6 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
       $R->handleRequest(new Asar_Request(array(
         'headers' => array('Accept' => 'application/xml')
       )))->getHeader('Content-Type')
-    );
-  }
-  
-  function testGetDefaultLanguageConfig() {
-    $this->assertEquals(
-      'en', $this->R->getConfig('default_language')
     );
   }
   

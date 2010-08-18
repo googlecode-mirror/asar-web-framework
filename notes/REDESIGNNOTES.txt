@@ -1,5 +1,6 @@
 NEXT:
-- Fix Response Defaults
+- Make Asar_Application use App_Config. Remove setting response default headers
+  from Asar_Resource to Asar_Application.
 ALL:
 - Cascading Configurations: 
   - We have default configurations created by the framework
@@ -9,6 +10,8 @@ ALL:
   GET, POST, PUT, DELETE as necessary and just a required __construct interface
   where all the dependency needed is passed. The HTTP methods need only return
   something interesting.
+- Make sure we're using the right Content-Language header (See Asar_Application)
+  and using 'en';
 - Filters need only implement the Asar_Resource_Interface
 - For Router, only one kind of word separator (e.g. '_' in 'the_quick_brown').
   This will prevent multiple URLs pointing to the same resource.

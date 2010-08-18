@@ -72,6 +72,12 @@ class Asar_Application implements Asar_Resource_Interface {
         $response->setContent($msg);
       }
     }
+    if (!$response->getHeader('Content-Type')) {
+      $response->setHeader('Content-Type', 'text/html');
+    }
+    if (!$response->getHeader('Content-Language')) {
+      $response->setHeader('Content-Language', 'en');
+    }
   }
   
 }
