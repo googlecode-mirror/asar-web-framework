@@ -10,12 +10,24 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
     $this->app = $f->getApplication('ResourceTraversing');
   }
   
-  function testBasic() {
-    $response = $this->app->handleRequest(new Asar_Request);
-    //var_dump($response);
+  /**
+   * @dataProvider dataTraversingSuccess
+   */
+  function testTraversingSuccess($path, $expected_content) {
+    $response = $this->app->handleRequest(new Asar_Request(
+      array('path' => $path)
+    ));
     $this->assertEquals(200, $response->getStatus());
-    $this->assertEquals(
-      'ResourceTraversing/Index GET.', $response->getContent()
+    $this->assertEquals($expected_content, $response->getContent());
+  }
+  
+  function dataTraversingSuccess() {
+    return array(
+      array('/', '/ GET.'),
+      array('/blog', '/blog GET.'),
+      array('/parent', '/parent GET.'),
+      array('/parent/child', '/parent/child GET.'),
+      array('/parent/child/grand-child', '/parent/child/grand-child GET.')
     );
   }
 
