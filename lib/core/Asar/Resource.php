@@ -69,4 +69,8 @@ class Asar_Resource
     throw new Asar_Resource_Exception_MethodUndefined;
   }
   
+  function forwardTo($resource_name) {
+    
+  }
+  
 }

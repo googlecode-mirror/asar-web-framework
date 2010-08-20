@@ -17,7 +17,9 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
     $response = $this->app->handleRequest(new Asar_Request(
       array('path' => $path)
     ));
-    $this->assertEquals(200, $response->getStatus());
+    if ($response->getStatus() !== 200) {
+      $this->fail($response->getContent());
+    }
     $this->assertEquals($expected_content, $response->getContent());
   }
   
@@ -27,8 +29,13 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
       array('/blog', '/blog GET.'),
       array('/parent', '/parent GET.'),
       array('/parent/child', '/parent/child GET.'),
-      array('/parent/child/grand-child', '/parent/child/grand-child GET.')
+      array('/parent/child/grand-child', '/parent/child/grand-child GET.'),
+      array('/forward-to-child', '/parent/child GET.')
     );
+  }
+  
+  function testRedirection() {
+    $this->markTestIncomplete();
   }
 
 }
