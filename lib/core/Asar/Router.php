@@ -11,8 +11,6 @@ class Asar_Router implements Asar_Router_Interface {
   function route($app_name, $path, $map) {
     if (is_array($map) && array_key_exists($path, $map)) {
       $rname = $this->getResourceNamePrefix($app_name) . '_' . $map[$path];
-    } elseif ($path == '/') {
-      $rname = $this->getResourceNamePrefix($app_name) . '_Index';
     } else {
       $rname = $this->getNameFromPath($app_name, $path);
     }

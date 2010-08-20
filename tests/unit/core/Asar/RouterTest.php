@@ -12,10 +12,6 @@ class Asar_RouterTest extends PHPUnit_Framework_TestCase {
       'Asar_ResourceFactory', array('getResource'), array(), '', FALSE
     );
     $this->router = new Asar_Router($this->resource_factory);
-    /*$this->app = $this->getMock(
-      'Asar_Application', array('getMap'), array($this->router),
-      self::generateRandomClassName(get_class($this), 'Application')
-    );*/
   }
   
   static function generateRandomClassName($prefix = 'Amock', $suffix = '') {
@@ -57,7 +53,7 @@ class Asar_RouterTest extends PHPUnit_Framework_TestCase {
   
   function dataReturnsRoutedResource() {
     return array(
-      array('/', 'Index'),
+      //array('/', 'Index'),
       array('/basic', 'Basic'),
       array('/page', 'Page'),
       array('/some-where', 'SomeWhere'),
@@ -68,11 +64,17 @@ class Asar_RouterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRouterReturnsObjFromResourceFactory() {
+    $app_name = self::generateRandomClassName(get_class($this));
+    eval (sprintf("class %s {}", $app_name . '_Resource_Foo'));
     $obj = $this->getMock('Asar_Resource');
     $this->resource_factory->expects($this->once())
       ->method('getResource')
       ->will($this->returnValue($obj));
-    $this->assertSame($obj, $this->router->route('Some_Name', '/', array()));
+    try {
+      $this->assertSame($obj, $this->router->route($app_name, '/foo', array()));
+    } catch (Exception $e) {
+      $this->fail($e->getMessage());
+    }
   }
   
   /**
