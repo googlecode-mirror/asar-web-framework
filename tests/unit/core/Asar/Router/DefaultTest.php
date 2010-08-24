@@ -1,17 +1,17 @@
 <?php
 
-require_once realpath(dirname(__FILE__). '/../../../config.php');
+require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
 /**
  * TODO: Make the tests more readable.
  */
-class Asar_RouterTest extends PHPUnit_Framework_TestCase {
+class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->resource_factory = $this->getMock(
       'Asar_ResourceFactory', array('getResource'), array(), '', FALSE
     );
-    $this->router = new Asar_Router($this->resource_factory);
+    $this->router = new Asar_Router_Default($this->resource_factory);
   }
   
   static function generateRandomClassName($prefix = 'Amock', $suffix = '') {
@@ -101,6 +101,10 @@ class Asar_RouterTest extends PHPUnit_Framework_TestCase {
   function testRouterThrowsResourceNotFoundException() {
     $this->setExpectedException('Asar_Router_Exception_ResourceNotFound');
     $this->router->route('A_Name', '/nowhere', array());
+  }
+  
+  function testRouterGettingUrl() {
+    $this->markTestIncomplete();
   }
   
 }

@@ -19,9 +19,10 @@ class Asar_ApplicationFactory {
     $sm = $app_config->getConfig('default_classes.status_messages');
     $template_factory = new Asar_TemplateFactory;
     $template_factory->registerTemplateEngine('php', 'Asar_Template');
+    $router_class = $app_config->getConfig('default_classes.router');
     $app = new $app_full_name(
       $app_name,
-      new Asar_Router(
+      new $router_class(
         new Asar_ResourceFactory(
           new Asar_TemplateLFactory(
             new Asar_TemplateLocator(

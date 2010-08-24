@@ -1,6 +1,6 @@
 <?php
 
-class Asar_Router implements Asar_Router_Interface {
+class Asar_Router_Default implements Asar_Router_Interface {
   
   private $resource_factory;
   

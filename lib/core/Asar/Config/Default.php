@@ -7,9 +7,10 @@ class Asar_Config_Default extends Asar_Config {
     'template_engines' => array('php' => 'Asar_Template'),
     'use_templates'    => true,
     'default_classes'  => array(
-      'application'      => 'Asar_ApplicationBasic',
-  		'config'           => 'Asar_Config_Default',
-  		'status_messages'  => 'Asar_Response_StatusMessages',
+      'application'     => 'Asar_ApplicationBasic',
+  		'config'          => 'Asar_Config_Default',
+  		'status_messages' => 'Asar_Response_StatusMessages',
+  		'router'          => 'Asar_Router_Default',
     ),
   );
   
