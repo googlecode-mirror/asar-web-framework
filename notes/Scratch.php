@@ -30,9 +30,14 @@ array(
   
 );
 
-// Routing with prefix magic
+// Routing with prefix/suffix magic
 // maps to app-name/{/[0-9]+/}/{/[0-12]+/}
 class AppName_RtIntYowza_RtMnYeba {}
 ** class AppName_RtintYowza_RtmnYeba {}
+** class AppName_YowzaRtint_YebaRtmon {}
 class AppName_rtintYowza_rtmnYeba {}
 
+Rtint => Integer => '/\d+/'
+Rtmon => Month   => '/\d{2}/'
+Rtyr  => Year    => '/\d{4}/'
+Rtany => Any     => '/[.]+/'
