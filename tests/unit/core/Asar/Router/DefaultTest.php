@@ -33,7 +33,6 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
    */
   function testReturnsRoutedResource($path, $resource_name) {
     $app_name = self::generateRandomClassName(get_class($this));
-    
     $resource_levels = explode('_', $resource_name);
     $test_resource = $app_name . '_Resource';
     foreach ($resource_levels as $level) {
@@ -43,12 +42,14 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
       }
     }
     $expected_resource = $app_name . '_Resource_' . $resource_name;
-    
     $this->resource_factory->expects($this->once())
       ->method('getResource')
       ->with($expected_resource);
-    
-    $this->router->route($app_name, $path, array());
+    try {
+      $this->router->route($app_name, $path, array());
+    } catch (Asar_Router_Exception $e) {
+      $this->fail();
+    }
   }
   
   function dataReturnsRoutedResource() {
@@ -58,6 +59,12 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
       array('/page', 'Page'),
       array('/some-where', 'SomeWhere'),
       array('/when/the-going/gets_tough', 'When_TheGoing_GetsTough'),
+      array('/blog/2010/8/25', 'Blog_RtYear_RtMonth_RtDay'),
+      array(
+        '/news/2010/8/25',
+        'News_RtyrYearPublished_RtmonMonthPublished_RtdayDayReleased'
+      ),
+      array('/articles/This-is-an-article-title', 'Articles_RtanyTitle'),
     );
   }
   
