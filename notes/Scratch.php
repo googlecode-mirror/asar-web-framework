@@ -33,3 +33,6 @@ array(
 // Routing with prefix magic
 // maps to app-name/{/[0-9]+/}/{/[0-12]+/}
 class AppName_RtIntYowza_RtMnYeba {}
+** class AppName_RtintYowza_RtmnYeba {}
+class AppName_rtintYowza_rtmnYeba {}
+

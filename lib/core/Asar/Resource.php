@@ -73,4 +73,6 @@ class Asar_Resource
     
   }
   
+  function getPath() {}
+  
 }

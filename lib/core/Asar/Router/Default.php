@@ -25,14 +25,9 @@ class Asar_Router_Default implements Asar_Router_Interface {
     $levels = explode('/', ltrim($path, '/'));
     $rname = $this->getResourceNamePrefix($app_name);
     foreach($levels as $level) {
-      $test = $rname . '_' . Asar_Utility_String::camelCase($level);
-      if (class_exists($test)) {
-        $rname = $test;
-      } else {
-        $rname = $rname .'_Item';
-        if (!class_exists($rname)) {
-          throw new Asar_Router_Exception_ResourceNotFound;
-        }
+      $rname = $rname . '_' . Asar_Utility_String::camelCase($level);
+      if (!class_exists($rname)) {
+         throw new Asar_Router_Exception_ResourceNotFound;
       }
     }
     return $rname;

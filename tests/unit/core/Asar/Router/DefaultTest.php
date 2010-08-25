@@ -58,8 +58,6 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
       array('/page', 'Page'),
       array('/some-where', 'SomeWhere'),
       array('/when/the-going/gets_tough', 'When_TheGoing_GetsTough'),
-      array('/pages/a-name-of-a-page', 'Pages_Item'),
-      array('/pages/another-page', 'Pages_Item'),
     );
   }
   
