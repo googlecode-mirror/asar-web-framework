@@ -3,13 +3,11 @@
 // TODO: Refactor this!!!
 class Asar_ApplicationFactory {
   
-  private $config;
+  private $config, $file_searcher;
   
   function __construct(Asar_Config_Interface $config) {
     $this->config = $config;
   }
-  
-  private $file_searcher;
   
   function getApplication($app_name) {
     $classes = $this->getClasses($app_name);
@@ -34,9 +32,7 @@ class Asar_ApplicationFactory {
           new Asar_TemplateSimpleRenderer,
           $app_config
         ),
-        new Asar_ResourceLister(
-          new Asar_FileSearcher
-        )
+        new Asar_ResourceLister($this->getFileSearcher())
       ),
       new $sm,
       $app_config->getConfig('map')
@@ -44,11 +40,15 @@ class Asar_ApplicationFactory {
     return $app;
   }
   
-  private function getAppPath($app_name) {
+  private function getFileSearcher() {
     if (!$this->file_searcher) {
       $this->file_searcher = new Asar_FileSearcher;
     }
-    $app_path = $this->file_searcher->find($app_name);
+    return $this->file_searcher;
+  }
+  
+  private function getAppPath($app_name) {
+    $app_path = $this->getFileSearcher()->find($app_name);
     return $app_path;
   }
   
