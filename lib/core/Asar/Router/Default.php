@@ -2,10 +2,14 @@
 
 class Asar_Router_Default implements Asar_Router_Interface {
   
-  private $resource_factory;
+  private $resource_factory, $resource_lister;
   
-  function __construct(Asar_ResourceFactory $resource_factory) {
+  function __construct(
+    Asar_ResourceFactory $resource_factory,
+    Asar_ResourceLister_Interface $resource_lister
+  ) {
     $this->resource_factory = $resource_factory;
+    $this->resource_lister  = $resource_lister;
   }
   
   function route($app_name, $path, $map) {
@@ -25,9 +29,7 @@ class Asar_Router_Default implements Asar_Router_Interface {
     $levels = explode('/', ltrim($path, '/'));
     $rname = $this->getResourceNamePrefix($app_name);
     $ref = count($levels) - 1;
-    $class_starts_with = $this->getClassesWithPrefix(
-      $app_name, get_declared_classes()
-    );
+    $class_starts_with = $this->resource_lister->getResourceListFor($app_name);
     foreach($levels as $level) {
       $old_rname = $rname;
       $rname = $rname . '_' . Asar_Utility_String::camelCase($level);

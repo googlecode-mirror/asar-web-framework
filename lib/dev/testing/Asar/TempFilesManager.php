@@ -25,6 +25,7 @@ class Asar_TempFilesManager {
     if ($this->isfileNameInDirectory($file_name)) {
       $this->createDirectoriesFirst($file_name);
     }
+    //echo "\n$file_name";
     $file = fopen($this->getPath($file_name), 'w+');
     fwrite($file, $contents);
     fclose($file);

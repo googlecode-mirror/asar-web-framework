@@ -33,6 +33,9 @@ class Asar_ApplicationFactory {
           ),
           new Asar_TemplateSimpleRenderer,
           $app_config
+        ),
+        new Asar_ResourceLister(
+          new Asar_FileSearcher
         )
       ),
       new $sm,

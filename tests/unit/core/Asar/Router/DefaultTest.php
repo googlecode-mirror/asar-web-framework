@@ -19,7 +19,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     );
   }
   
-  static function generateRandomClassName($prefix = 'Amock', $suffix = '') {
+  function generateRandomClassName($prefix = 'Amock', $suffix = '') {
     if ($suffix)
       $suffix = '_' . $suffix;
     do {
@@ -37,15 +37,13 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
    * @dataProvider dataReturnsRoutedResource
    */
   function testReturnsRoutedResource($path, $resource_name) {
-    $app_name = self::generateRandomClassName(get_class($this));
-    $resource_levels = explode('_', $resource_name);
-    $test_resource = $app_name . '_Resource';
-    foreach ($resource_levels as $level) {
-      $test_resource .= '_' . $level;
-      if (!class_exists($test_resource)) {
-        eval ("class $test_resource {}");
-      }
-    }
+    $app_name = $this->generateRandomClassName(get_class($this));
+    $classes = $this->createClassesBasedOnResourceName(
+      $app_name, $resource_name
+    );
+    $this->resource_lister->expects($this->any())
+      ->method('getResourceListFor')
+      ->will($this->returnValue($classes));
     $expected_resource = $app_name . '_Resource_' . $resource_name;
     $this->resource_factory->expects($this->once())
       ->method('getResource')
@@ -59,7 +57,6 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   
   function dataReturnsRoutedResource() {
     return array(
-      //array('/', 'Index'),
       array('/basic', 'Basic'),
       array('/page', 'Page'),
       array('/some-where', 'SomeWhere'),
@@ -73,8 +70,72 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  private function createClassesBasedOnResourceName($app_name, $resource_name) {
+    $resource_levels = explode('_', $resource_name);
+    $test_resource = $app_name . '_Resource';
+    $classes_used = array();
+    foreach ($resource_levels as $level) {
+      $test_resource .= '_' . $level;
+      $classes_used[] = $test_resource;
+      if (!class_exists($test_resource)) {
+        eval ("class $test_resource {}");
+      }
+    }
+    return $classes_used;
+  }
+
+  function testReturnsRoutedResource2() {
+    $path = '/blogs/This-is-a-blog-title';
+    $app_name = $this->generateRandomClassName(get_class($this));
+    $resource_name1 = 'Blogs_RtTitle';
+    $resource_name2 = 'Blogs_Foo';
+    $classes1 = $this->createClassesBasedOnResourceName(
+      $app_name, $resource_name1
+    );
+    $classes2 = $this->createClassesBasedOnResourceName(
+      $app_name, $resource_name2
+    );
+    $this->resource_lister->expects($this->any())
+      ->method('getResourceListFor')
+      ->will($this->returnValue(array_unique(array_merge($classes1, $classes2))));
+    $expected_resource = $app_name . '_Resource_' . $resource_name1;
+    $this->resource_factory->expects($this->once())
+      ->method('getResource')
+      ->with($expected_resource);
+    try {
+      $this->router->route($app_name, $path, array());
+    } catch (Asar_Router_Exception $e) {
+      $this->fail();
+    }
+  }
+  
+  function testReturnsRoutedResource3() {
+    $path = '/vlogs/Foo';
+    $app_name = $this->generateRandomClassName(get_class($this));
+    $resource_name1 = 'Vlogs_RtTitle';
+    $resource_name2 = 'Vlogs_Foo';
+    $classes1 = $this->createClassesBasedOnResourceName(
+      $app_name, $resource_name1
+    );
+    $classes2 = $this->createClassesBasedOnResourceName(
+      $app_name, $resource_name2
+    );
+    $this->resource_lister->expects($this->any())
+      ->method('getResourceListFor')
+      ->will($this->returnValue(array_unique(array_merge($classes1, $classes2))));
+    $expected_resource = $app_name . '_Resource_' . $resource_name2;
+    $this->resource_factory->expects($this->once())
+      ->method('getResource')
+      ->with($expected_resource);
+    try {
+      $this->router->route($app_name, $path, array());
+    } catch (Asar_Router_Exception $e) {
+      $this->fail();
+    }
+  }
+  
   function testRouterReturnsObjFromResourceFactory() {
-    $app_name = self::generateRandomClassName(get_class($this));
+    $app_name = $this->generateRandomClassName(get_class($this));
     eval (sprintf("class %s {}", $app_name . '_Resource_Foo'));
     $obj = $this->getMock('Asar_Resource');
     $this->resource_factory->expects($this->once())
@@ -92,7 +153,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
    */
   function testRouterUsesMap($path, $resource_name) {
     $map = array($path => $resource_name);
-    $app_name = self::generateRandomClassName(get_class($this));
+    $app_name = $this->generateRandomClassName(get_class($this));
     eval (sprintf("class %s {}", $app_name . '_Resource_' . $resource_name));
     $this->resource_factory->expects($this->once())
       ->method('getResource')
@@ -109,6 +170,9 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRouterThrowsResourceNotFoundException() {
+    $this->resource_lister->expects($this->any())
+      ->method('getResourceListFor')
+      ->will($this->returnValue(array()));
     $this->setExpectedException('Asar_Router_Exception_ResourceNotFound');
     $this->router->route('A_Name', '/nowhere', array());
   }

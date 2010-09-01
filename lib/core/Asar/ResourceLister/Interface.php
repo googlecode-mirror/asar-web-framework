@@ -1,5 +1,5 @@
 <?php
 
 interface Asar_ResourceLister_Interface {
-  function getResourceListFor($app);
+  function getResourceListFor($app_name);
 }
