@@ -8,10 +8,15 @@ require_once realpath(dirname(__FILE__). '/../../../../config.php');
 class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
+    $this->resource_lister  = $this->getMock(
+      'Asar_ResourceLister_Interface', array('getResourceListFor')
+    );
     $this->resource_factory = $this->getMock(
       'Asar_ResourceFactory', array('getResource'), array(), '', FALSE
     );
-    $this->router = new Asar_Router_Default($this->resource_factory);
+    $this->router = new Asar_Router_Default(
+      $this->resource_factory, $this->resource_lister
+    );
   }
   
   static function generateRandomClassName($prefix = 'Amock', $suffix = '') {
@@ -62,9 +67,9 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
       array('/blog/2010/8/25', 'Blog_RtYear_RtMonth_RtDay'),
       array(
         '/news/2010/8/25',
-        'News_RtyrYearPublished_RtmonMonthPublished_RtdayDayReleased'
+        'News_RtYear_RtMonth_RtDay'
       ),
-      array('/articles/This-is-an-article-title', 'Articles_RtanyTitle'),
+      array('/articles/This-is-an-article-title', 'Articles_RtTitle'),
     );
   }
   
