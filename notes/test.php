@@ -1,3 +1,20 @@
 <?php
-for($i=0, $s=""; $i<250; $s=socket_strerror($i), $i++)
-  !empty($s) && ('Unknown error' != (substr($s,0,13)) ) && print "{$i} => {$s}\n";
+
+class CustomException extends Exception {
+  private $payload;
+  
+  function setPayload($payload) {
+    $this->payload = $payload;
+  }
+  
+  function getPayload() {
+    return $this->payload;
+  }
+
+}
+
+$payload = array(1,2,3);
+$e = new CustomException('Message');
+$e->setPayload($payload);
+var_dump($e->getPayload());
+throw $e;

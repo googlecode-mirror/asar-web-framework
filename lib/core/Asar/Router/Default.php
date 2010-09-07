@@ -28,7 +28,6 @@ class Asar_Router_Default implements Asar_Router_Interface {
   private function getNameFromPath($app_name, $path) {
     $levels = explode('/', ltrim($path, '/'));
     $rname = $this->getResourceNamePrefix($app_name);
-    $ref = count($levels) - 1;
     $class_starts_with = $this->resource_lister->getResourceListFor($app_name);
     foreach($levels as $level) {
       $old_rname = $rname;

@@ -30,10 +30,6 @@ class Asar_Application implements Asar_Resource_Interface {
     return $this->map;
   }
   
-  function getName() {
-    return $this->name;
-  }
-  
   function handleRequest(Asar_Request_Interface $request) {
     $response = new Asar_Response;
     try {
@@ -57,12 +53,15 @@ class Asar_Application implements Asar_Resource_Interface {
       $response->setStatus(404);
     } catch (Exception $e) {
       $response->setStatus(500);
-      $response->setContent(
-        $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine()
-      );
+      $response->setContent($this->set500Message($e));
     }
     $this->setResponseDefaults($response, $request);
     return $response;
+  }
+  
+  private function set500Message($e) {
+    return $e->getMessage() . 
+      "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine();
   }
   
   private function setResponseDefaults($response, $request) {

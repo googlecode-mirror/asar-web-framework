@@ -21,10 +21,6 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   function testApplicationImplementsResourceInterface() {
     $this->assertType('Asar_Resource_Interface', $this->app);
   }
-  
-  function testApplicationGetName() {
-    $this->assertEquals('Some_Name', $this->app->getName());
-  }
 
   function testAppRunsSetupMethodOnConstruction() {
     $old_post = $_POST;

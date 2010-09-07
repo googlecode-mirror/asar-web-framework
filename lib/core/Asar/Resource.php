@@ -1,7 +1,7 @@
 <?php
 
 class Asar_Resource 
-  implements Asar_Resource_Interface, Asar_Named, Asar_Config_Interface
+  implements Asar_Resource_Interface, Asar_Config_Interface
 {
   
   protected $config_bag = null;
@@ -32,10 +32,6 @@ class Asar_Resource
     return $this->config_bag->importConfig($config);
   }
   
-  function getName() {
-    return get_class($this);
-  }
-  
   function handleRequest(Asar_Request_Interface $request) {
     $this->request = $request;
     $response = new Asar_Response(array(
@@ -51,6 +47,8 @@ class Asar_Resource
       );
     } catch (Asar_Resource_Exception_MethodUndefined $e) {
       $response->setStatus(405);
+    } catch (Asar_Resource_Exception_ForwardRequest $e) {
+      throw $e;
     } catch (Exception $e) {
       $response->setStatus(500);
       $response->setContent($e->getMessage());
@@ -70,9 +68,21 @@ class Asar_Resource
   }
   
   function forwardTo($resource_name) {
-    
+    $e = new Asar_Resource_Exception_ForwardRequest($resource_name);
+    $e->setPayload(array('request' => $this->request));
+    throw $e;
   }
   
-  function getPath() {}
+  function getPath() {
+    return $this->request->getPath();
+  }
+  
+  function getPermaPath() {
+    $cname = get_class($this);
+    $relevant = explode('_', substr($cname, strpos($cname, '_Resource_') + 9));
+    return implode('/', array_map(
+      array('Asar_Utility_String', 'dashLowerCase'), $relevant
+    ));
+  }
   
 }

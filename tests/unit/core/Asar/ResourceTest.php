@@ -33,11 +33,6 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     );
   }
   
-  function testGetNameGetsClassName() {
-    $R = $this->getMock('Asar_Resource', array('handleRequest'));
-    $this->assertEquals(get_class($R), $R->getName());
-  }
-  
   function testShouldBeAbleToSetRequestAttribute() {
     $this->request = new Asar_Request;
     $this->R = $this->getMock('Asar_Resource', array('GET'));
@@ -244,6 +239,55 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
         'headers' => array('Accept' => 'de')
       )))->getHeader('Content-Language')
     );
+  }
+  
+  function testGetPath() {
+    $cname = get_class($this) . '_GetPath';
+    eval('
+      class '. $cname . ' extends Asar_Resource {
+        function GET() {
+          return $this->getPath();
+        }
+      }
+    ');
+    $R = new $cname;
+    $this->assertEquals(
+      '/foo/bar/baz',
+      $R->handleRequest(new Asar_Request(array(
+        'path' => '/foo/bar/baz'
+      )))->getContent()
+    );
+  }
+  
+  function testGetPermaPath() {
+    $cname = get_class($this) . '_GetPermaPath_Resource_Baz_Bar_Foo';
+    eval('
+      class '. $cname . ' extends Asar_Resource {}
+    ');
+    $R = new $cname;
+    $this->assertEquals('/baz/bar/foo', $R->getPermaPath());
+  }
+  
+  function testForwardTo() {
+    $cname = get_class($this) . '_Forwarding';
+    eval('
+      class '. $cname . ' extends Asar_Resource {
+        function GET() {
+          return $this->forwardTo("Some_Resource");
+        }
+      }
+    ');
+    $R = new $cname;
+    $request = new Asar_Request(array('path'=>'/foo/bar'));
+    try {
+      $R->handleRequest($request);
+    } catch (Asar_Resource_Exception_ForwardRequest $e) {
+      $this->assertEquals('Some_Resource', $e->getMessage());
+      $payload = $e->getPayload();
+      $this->assertEquals($request, $payload['request']);
+      return TRUE;
+    }
+    $this->fail('Did not throw Asar_Resource_Exception_ForwardRequest.');
   }
   
 }
