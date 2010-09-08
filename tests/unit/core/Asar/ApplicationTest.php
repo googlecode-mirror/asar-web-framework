@@ -16,6 +16,8 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->app = new Asar_Application(
       'Some_Name', $this->router, $this->sm, $this->map
     );
+    $this->request = new Asar_Request;
+    $this->response = new Asar_Response;
   }
   
   function testApplicationImplementsResourceInterface() {
@@ -52,31 +54,29 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testApplicationSendsApplicationNamePathAndMapToRouter() {
     $path = '/foo/bar';
-    $request = new Asar_Request(array('path'=>$path));
+    $this->request->setPath($path);
     $this->routerExpects()->with('Some_Name', $path, $this->app->getMap());
-    $this->app->handleRequest($request);
+    $this->app->handleRequest($this->request);
   }
   
   function testAppPassesRequestToResourcePassedFromRouter() {
-    $request = new Asar_Request(array('path' => '/foo'));
+    $this->request->setPath('/foo');
     $this->routerReturnsResource();
-    $this->resourceExpects()->with($request);
-    $this->app->handleRequest($request);
+    $this->resourceExpects()->with($this->request);
+    $this->app->handleRequest($this->request);
   }
   
   function testHandleRequestUsesReturnValueFromResource() {
-    $request = new Asar_Request;
-    $response = new Asar_Response;
     $this->routerReturnsResource();
-    $this->resourceExpects()->will($this->returnValue($response));
-    $app_response = $this->app->handleRequest($request);
-    $this->assertEquals($response, $app_response);
+    $this->resourceExpects()->will($this->returnValue($this->response));
+    $app_response = $this->app->handleRequest($this->request);
+    $this->assertEquals($this->response, $app_response);
   }
   
   function testSends404ResponseWhenRouterThrowsNotFoundException() {
     $this->routerExpects()
       ->will($this->throwException(new Asar_Router_Exception_ResourceNotFound));
-    $response = $this->app->handleRequest(new Asar_Request);
+    $response = $this->app->handleRequest($this->request);
     $this->assertEquals(404, $response->getStatus());
   }
   
@@ -84,7 +84,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->routerReturnsResource();
     $this->resourceExpects()
       ->will($this->throwException(new Exception));
-    $response = $this->app->handleRequest(new Asar_Request);
+    $response = $this->app->handleRequest($this->request);
     $this->assertEquals(500, $response->getStatus());
   }
   
@@ -93,7 +93,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->resourceExpects()
       ->will($this->throwException(new Exception('Foo message')));
     $this->setStatusMessagesMock()->will($this->returnCallBack(array($this, 'cbSM')));
-    $response = $this->app->handleRequest(new Asar_Request);
+    $response = $this->app->handleRequest($this->request);
     $this->assertRegExp(
       '/\nLine: [0-9]+/', $response->getContent()
     );
@@ -102,7 +102,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     );
   }
   
-  public function cbSM($response, $request) {
+  function cbSM($response, $request) {
     return $response->getContent();
   }
   
@@ -111,35 +111,32 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testAppPassesResponseAndRequestToStatusMessageCreator() {
-    $request = new Asar_Request(array('path' => '/foo/bar'));
-    $response = new Asar_Response(array('status' => 405));
+    $this->request->setPath('/foo/bar');
+    $this->response->setStatus(405);
     $this->routerReturnsResource();
-    $this->resourceExpects()->will($this->returnValue($response));
+    $this->resourceExpects()->will($this->returnValue($this->response));
     // This is a hack
-    $response_test = clone $response;
-    $this->setStatusMessagesMock()->with($response_test, $request);
-    $this->app->handleRequest($request);
+    $response_test = clone $this->response;
+    $this->setStatusMessagesMock()->with($response_test, $this->request);
+    $this->app->handleRequest($this->request);
   }
   
   function testAppUsesStatusMessageCreatorReturnAsReponseContent() {
-    $request = new Asar_Request;
-    $response = new Asar_Response;
     $this->routerReturnsResource();
-    $this->resourceExpects()->will($this->returnValue($response));
+    $this->resourceExpects()->will($this->returnValue($this->response));
     $this->setStatusMessagesMock()->will($this->returnValue('foo bar baz'));
     $this->assertContains(
-      'foo bar baz', $this->app->handleRequest($request)->getContent()
+      'foo bar baz', $this->app->handleRequest($this->request)->getContent()
     );
   }
   
   function testAppReturnsPlainResponseWhenStatusMessageReturnsFalse() {
-    $request = new Asar_Request;
-    $response = new Asar_Response(array('content' => 'foo'));
+    $this->response->setContent('foo');
     $this->routerReturnsResource();
-    $this->resourceExpects()->will($this->returnValue($response));
+    $this->resourceExpects()->will($this->returnValue($this->response));
     $this->setStatusMessagesMock()->will($this->returnValue(false));
     $this->assertContains(
-      'foo', $this->app->handleRequest($request)->getContent()
+      'foo', $this->app->handleRequest($this->request)->getContent()
     );
   }
   
@@ -186,25 +183,25 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testAppSetsDefaultHeaders() {
-    $request = new Asar_Request;
-    $response = new Asar_Response;
     $this->routerReturnsResource();
-    $this->resourceExpects()->will($this->returnValue($response));
-    $app_response = $this->app->handleRequest($request);
+    $this->resourceExpects()->will($this->returnValue($this->response));
+    $app_response = $this->app->handleRequest($this->request);
     $this->assertEquals('text/html', $app_response->getHeader('Content-Type'));
     $this->assertEquals('en', $app_response->getHeader('Content-Language'));
   }
   
   function testAppSkipsSettingDefaultHeadersWhenTheyAreDefined() {
-    $request = new Asar_Request;
-    $response = new Asar_Response;
-    $response->setHeader('Content-Type', 'text/plain');
-    $response->setHeader('Content-Language', 'tl');
+    $this->response->setHeader('Content-Type', 'text/plain');
+    $this->response->setHeader('Content-Language', 'tl');
     $this->routerReturnsResource();
-    $this->resourceExpects()->will($this->returnValue($response));
-    $app_response = $this->app->handleRequest($request);
+    $this->resourceExpects()->will($this->returnValue($this->response));
+    $app_response = $this->app->handleRequest($this->request);
     $this->assertEquals('text/plain', $app_response->getHeader('Content-Type'));
     $this->assertEquals('tl', $app_response->getHeader('Content-Language'));
+  }
+  
+  function testAppForwardsRequestToAnotherResource() {
+    $this->markTestIncomplete();
   }
 
 }
