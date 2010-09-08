@@ -202,6 +202,11 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testAppForwardsRequestToAnotherResource() {
     $this->markTestIncomplete();
+    $this->router->expects($this->at(0))
+      ->method('route')
+      ->will($this->throwException());
+    $this->resource->expects($this->once);
+    
   }
 
 }
