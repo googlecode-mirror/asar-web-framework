@@ -1,6 +1,5 @@
 NEXT:
-- Make Asar_Application use App_Config. Remove setting response default headers
-  from Asar_Resource to Asar_Application.
+- 
 ALL:
 - Cascading Configurations: 
   - We have default configurations created by the framework
@@ -26,3 +25,4 @@ ALL:
     $this->config_bag = new Asar_Config();
     $this->setUp();
     $this->config_bag->importConfig(new Asar_Config($this->config));
+- Better and helpful Error messages (500 Status exception messages, etc.);

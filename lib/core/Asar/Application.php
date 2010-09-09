@@ -2,7 +2,9 @@
 
 class Asar_Application implements Asar_Resource_Interface {
   
-  private $router, $status_messages, $map;
+  private
+    $router, $status_messages, $map,
+    $forward_level_max = 20, $forward_recursion = 0;
   
   function __construct(
     $name, Asar_Router_Interface $router,
@@ -32,15 +34,29 @@ class Asar_Application implements Asar_Resource_Interface {
   
   function handleRequest(Asar_Request_Interface $request) {
     $response = new Asar_Response;
+    $this->forward_recursion = 0;
+    try {
+      $response = $this->passRequest($request, $response, $request->getPath());
+    } catch (Exception $e) {
+      $response->setStatus(500);
+      $response->setContent($this->set500Message($e));
+    }
+    $this->setResponseDefaults($response, $request);
+    return $response;
+  }
+  
+  private function passRequest($request, $response, $path) {
+    if ($this->forward_recursion >= $this->forward_level_max) {
+      throw new Exception(
+        "Routing recursion for path '${$request->getPath()}'."
+      );
+    }
+    $this->forward_recursion++;
     try {
       $resource = $this->router->route(
-        $this->name, $request->getPath(), $this->getMap()
+        $this->name, $path, $this->getMap()
       );
-      if (!$resource instanceof Asar_Resource_Interface) {
-        throw new Exception(
-          'Router did not return an Asar_Resource_Interface object.'
-        );
-      }
+      $this->checkIfResource($resource);
       $a_response = $resource->handleRequest($request);
       if ($a_response instanceof Asar_Response_Interface) {
         $response = $a_response;
@@ -51,11 +67,9 @@ class Asar_Application implements Asar_Resource_Interface {
       }
     } catch (Asar_Router_Exception_ResourceNotFound $e) {
       $response->setStatus(404);
-    } catch (Exception $e) {
-      $response->setStatus(500);
-      $response->setContent($this->set500Message($e));
+    } catch (Asar_Resource_Exception_ForwardRequest $e) {
+      $response = $this->passRequest($request, $response, $e->getMessage());
     }
-    $this->setResponseDefaults($response, $request);
     return $response;
   }
   
@@ -64,12 +78,18 @@ class Asar_Application implements Asar_Resource_Interface {
       "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine();
   }
   
+  private function checkIfResource($resource) {
+    if (!$resource instanceof Asar_Resource_Interface) {
+      throw new Exception(
+        'Router did not return an Asar_Resource_Interface object.'
+      );
+    }
+  }
+  
   private function setResponseDefaults($response, $request) {
-    if ($this->status_messages) {
-      $msg = $this->status_messages->getMessage($response, $request);
-      if ($msg !== false) {
-        $response->setContent($msg);
-      }
+    $msg = $this->status_messages->getMessage($response, $request);
+    if ($msg) {
+      $response->setContent($msg);
     }
     if (!$response->getHeader('Content-Type')) {
       $response->setHeader('Content-Type', 'text/html');

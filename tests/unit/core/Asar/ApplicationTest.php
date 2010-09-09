@@ -40,12 +40,15 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $_POST = $old_post;
   }
   
-  private function routerExpects() {
-    return $this->router->expects($this->once())->method('route');
+  private function routerExpects($at = 0) {
+    return $this->router->expects($this->at($at))->method('route');
   }
   
-  private function routerReturnsResource() {
-    return $this->routerExpects()->will($this->returnValue($this->resource));
+  private function routerReturnsResource($at = 0, $resource = null) {
+    if (!$resource) {
+      $resource = $this->resource;
+    }
+    return $this->routerExpects($at)->will($this->returnValue($resource));
   }
   
   private function resourceExpects() {
@@ -92,7 +95,9 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->routerReturnsResource();
     $this->resourceExpects()
       ->will($this->throwException(new Exception('Foo message')));
-    $this->setStatusMessagesMock()->will($this->returnCallBack(array($this, 'cbSM')));
+    $this->setStatusMessagesMock()->will(
+      $this->returnCallBack(array($this, 'cbSM'))
+    );
     $response = $this->app->handleRequest($this->request);
     $this->assertRegExp(
       '/\nLine: [0-9]+/', $response->getContent()
@@ -200,13 +205,68 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('tl', $app_response->getHeader('Content-Language'));
   }
   
-  function testAppForwardsRequestToAnotherResource() {
-    $this->markTestIncomplete();
-    $this->router->expects($this->at(0))
+  function testForwardingRequestToAnotherResource() {
+    $this->request->setPath('/bar');
+    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e->setPayload(array('request' => $this->request));
+    $this->resource->expects($this->once())
+      ->method('handleRequest')
+      ->will($this->throwException($e));
+    $final_resource = $this->getMock('Asar_Resource_Interface');
+    $final_resource->expects($this->once())
+      ->method('handleRequest')
+      ->with($this->request);
+    $this->routerReturnsResource();
+    $this->routerReturnsResource(1, $final_resource);
+    $this->app->handleRequest($this->request);
+  }
+  
+  function testForwardingUsesResponseFromFinalResource() {
+    $this->response->setContent('Foo!');
+    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e->setPayload(array('request' => $this->request));
+    $this->resource->expects($this->once())
+      ->method('handleRequest')
+      ->will($this->throwException($e));
+    $final_resource = $this->getMock('Asar_Resource_Interface');
+    $final_resource->expects($this->once())
+      ->method('handleRequest')
+      ->will($this->returnValue($this->response));
+    $this->routerReturnsResource();
+    $this->routerReturnsResource(1, $final_resource);
+    $this->assertEquals(
+      'Foo!', $this->app->handleRequest($this->request)->getContent()
+    );
+  }
+  
+  function testForwardingSetsPathAsFileName() {
+    $this->response->setContent('Foo!');
+    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e->setPayload(array('request' => $this->request));
+    $this->resource->expects($this->once())
+      ->method('handleRequest')
+      ->will($this->throwException($e));    
+    $this->routerReturnsResource();
+    $this->routerExpects(1)
+      ->with('Some_Name', 'Foo', $this->map);
+    $this->app->handleRequest($this->request);
+  }
+  
+  function testForwardingChecksForRecursion() {
+    $this->request->setPath('/foo/bar');
+    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e->setPayload(array('request' => $this->request));
+    $this->resource->expects($this->any())
+      ->method('handleRequest')
+      ->will($this->throwException($e));    
+    $this->router->expects($this->any())
       ->method('route')
-      ->will($this->throwException());
-    $this->resource->expects($this->once);
-    
+      ->will($this->returnValue($this->resource));
+    $response = $this->app->handleRequest($this->request);
+    $this->assertEquals(500, $response->getStatus());
+    $this->assertContains(
+      "Routing recursion for path '/foo/bar'.", $response->getContent()
+    );
   }
 
 }
