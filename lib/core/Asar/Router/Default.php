@@ -16,13 +16,25 @@ class Asar_Router_Default implements Asar_Router_Interface {
     if (is_array($map) && array_key_exists($path, $map)) {
       $rname = $this->getResourceNamePrefix($app_name) . '_' . $map[$path];
     } else {
-      $rname = $this->getNameFromPath($app_name, $path);
+      if (preg_match('/^\//', $path)) {
+        $rname = $this->getNameFromPath($app_name, $path);
+      } else {
+        $rname = $this->getNameFromClassSuffix($app_name, $path);
+      }
     }
     return $this->resource_factory->getResource($rname);
   }
   
   private function getResourceNamePrefix($app_name) {
     return $app_name . '_Resource';
+  }
+  
+  private function getNameFromClassSuffix($app_name, $name) {
+    $rname = $this->getResourceNamePrefix($app_name) . '_' . $name;
+    if (!class_exists($rname)) {
+      throw new Asar_Router_Exception_ResourceNotFound;
+    }
+    return $rname;
   }
   
   private function getNameFromPath($app_name, $path) {
@@ -46,6 +58,10 @@ class Asar_Router_Default implements Asar_Router_Interface {
       }
     }
     return $rname;
+  }
+  
+  private function getStraightClassName($path) {
+    return $path;
   }
   
   

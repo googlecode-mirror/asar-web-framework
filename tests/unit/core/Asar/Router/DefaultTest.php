@@ -67,6 +67,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
         'News_RtYear_RtMonth_RtDay'
       ),
       array('/articles/This-is-an-article-title', 'Articles_RtTitle'),
+      array('Articles_RtTitle', 'Articles_RtTitle'),
     );
   }
   
@@ -175,6 +176,14 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
       ->will($this->returnValue(array()));
     $this->setExpectedException('Asar_Router_Exception_ResourceNotFound');
     $this->router->route('A_Name', '/nowhere', array());
+  }
+  
+  function testRouterThrowsResourceNotFoundException2() {
+    $this->resource_lister->expects($this->any())
+      ->method('getResourceListFor')
+      ->will($this->returnValue(array()));
+    $this->setExpectedException('Asar_Router_Exception_ResourceNotFound');
+    $this->router->route('A_Name', 'Nowhere', array());
   }
   
   function testRouterGettingUrl() {

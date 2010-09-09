@@ -48,7 +48,7 @@ class Asar_Application implements Asar_Resource_Interface {
   private function passRequest($request, $response, $path) {
     if ($this->forward_recursion >= $this->forward_level_max) {
       throw new Exception(
-        "Routing recursion for path '${$request->getPath()}'."
+        "Maximum forwards reached for path '{$request->getPath()}'."
       );
     }
     $this->forward_recursion++;
@@ -57,18 +57,14 @@ class Asar_Application implements Asar_Resource_Interface {
         $this->name, $path, $this->getMap()
       );
       $this->checkIfResource($resource);
-      $a_response = $resource->handleRequest($request);
-      if ($a_response instanceof Asar_Response_Interface) {
-        $response = $a_response;
-      } else {
-        throw new Exception(
-          gettype($a_response) . "is not a valid response object."
-        );
-      }
+      $response = $this->returnIfResponse($resource->handleRequest($request));
     } catch (Asar_Router_Exception_ResourceNotFound $e) {
       $response->setStatus(404);
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
-      $response = $this->passRequest($request, $response, $e->getMessage());
+      $payload = $e->getPayload();
+      $response = $this->passRequest(
+        $payload['request'], $response, $e->getMessage()
+      );
     }
     return $response;
   }
@@ -84,6 +80,15 @@ class Asar_Application implements Asar_Resource_Interface {
         'Router did not return an Asar_Resource_Interface object.'
       );
     }
+  }
+  
+  private function returnIfResponse($response) {
+    if (!$response instanceof Asar_Response_Interface) {
+      throw new Exception(
+        gettype($a_response) . "is not a valid response object."
+      );
+    }
+    return $response;
   }
   
   private function setResponseDefaults($response, $request) {

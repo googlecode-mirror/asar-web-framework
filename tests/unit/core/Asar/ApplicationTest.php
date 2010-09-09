@@ -214,8 +214,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
       ->will($this->throwException($e));
     $final_resource = $this->getMock('Asar_Resource_Interface');
     $final_resource->expects($this->once())
-      ->method('handleRequest')
-      ->with($this->request);
+      ->method('handleRequest');
     $this->routerReturnsResource();
     $this->routerReturnsResource(1, $final_resource);
     $this->app->handleRequest($this->request);
@@ -265,8 +264,24 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $response = $this->app->handleRequest($this->request);
     $this->assertEquals(500, $response->getStatus());
     $this->assertContains(
-      "Routing recursion for path '/foo/bar'.", $response->getContent()
+      "Maximum forwards reached for path '/foo/bar'.", $response->getContent()
     );
+  }
+  
+  function testForwardingPassesRequestFromExceptionPayload() {
+    $request = new Asar_Request(array('content' => "bar"));
+    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e->setPayload(array('request' => $request));
+    $this->resource->expects($this->once())
+      ->method('handleRequest')
+      ->will($this->throwException($e));    
+    $final_resource = $this->getMock('Asar_Resource_Interface');
+    $final_resource->expects($this->once())
+      ->method('handleRequest')
+      ->with($request);
+    $this->routerReturnsResource();
+    $this->routerReturnsResource(1, $final_resource);
+    $this->app->handleRequest($this->request);
   }
 
 }
