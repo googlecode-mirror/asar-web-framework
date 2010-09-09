@@ -186,8 +186,4 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     $this->router->route('A_Name', 'Nowhere', array());
   }
   
-  function testRouterGettingUrl() {
-    $this->markTestIncomplete();
-  }
-  
 }
