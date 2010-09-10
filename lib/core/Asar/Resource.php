@@ -42,9 +42,14 @@ class Asar_Resource
     ));
     
     try {
+      if (!$this->qualify()) {
+        throw new Asar_Resource_Exception_NotFound;
+      }
       $response->setContent(
         $this->runIfExists($request->getMethod())
       );
+    } catch (Asar_Resource_Exception_NotFound $e) {
+      $response->setStatus(404);
     } catch (Asar_Resource_Exception_MethodUndefined $e) {
       $response->setStatus(405);
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
@@ -83,6 +88,14 @@ class Asar_Resource
     return implode('/', array_map(
       array('Asar_Utility_String', 'dashLowerCase'), $relevant
     ));
+  }
+  
+  function qualify() {
+    return TRUE;
+  }
+  
+  function getPathComponents() {
+    return array();
   }
   
 }

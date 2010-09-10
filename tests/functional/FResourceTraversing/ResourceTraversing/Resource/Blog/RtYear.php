@@ -8,7 +8,7 @@ class ResourceTraversing_Resource_Blog_RtYear extends Asar_Resource {
   
   function qualify() {
     $path = $this->getPathComponents();
-    return preg_match('/^[1-9][0-9]{3}$/' , $this->path['year']);
+    return preg_match('/^[1-9][0-9]{3}$/' , $path['year']);
   }
 }
 

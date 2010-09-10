@@ -290,4 +290,46 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->fail('Did not throw Asar_Resource_Exception_ForwardRequest.');
   }
   
+  function testQualifyReturnsTrueByDefault() {
+    $this->assertTrue($this->R->qualify());
+  }
+  
+  private function mockResourceExpectsQualify() {
+    $this->R = $this->getMock('Asar_Resource', array('qualify'));
+    return $this->R->expects($this->once())->method('qualify');
+  }
+  
+  function testRunQualifyWhenHandlingRequest() {
+    $this->mockResourceExpectsQualify()
+      ->will($this->returnValue(TRUE));
+    $this->R->handleRequest(new Asar_Request);
+  }
+  
+  function testReturns404ResponseWhenQualifyReturnsFalse() {
+    $this->mockResourceExpectsQualify()
+      ->will($this->returnValue(FALSE));
+    $response = $this->R->handleRequest(new Asar_Request);
+    $this->assertEquals(404, $response->getStatus());
+  }
+  
+  function testPathComponents() {
+    $cname = get_class($this) . '_Resource_GetPathComponents_One_Two';
+    eval('
+      class '. $cname . ' extends Asar_Resource {
+        function GET() {
+          return $this->getPathComponents();
+        }
+      }
+    ');
+    $R = new $cname;
+    $this->assertEquals(
+      array(
+        'get-path-components' => true,
+        'one' => true,
+        'two' => true
+      ),
+      $R->handleRequest(new Asar_Request())->getContent()
+    );
+  }
+  
 }
