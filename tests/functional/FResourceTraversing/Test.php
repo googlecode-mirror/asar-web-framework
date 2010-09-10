@@ -11,26 +11,30 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
   }
   
   /**
-   * @dataProvider dataTraversingSuccess
+   * @dataProvider dataTraversing
    */
-  function testTraversingSuccess($path, $expected_content) {
+  function testTraversing($path, $expected_content, $xpctdstatus = 200) {
     $response = $this->app->handleRequest(new Asar_Request(
       array('path' => $path)
     ));
-    if ($response->getStatus() !== 200) {
-      $this->fail($response->getContent());
+    $this->assertEquals(
+      $xpctdstatus, $response->getStatus(), $response->getContent()
+    );
+    if ($response->getStatus() === 200 && $expected_content) {
+      $this->assertEquals($expected_content, $response->getContent());
     }
-    $this->assertEquals($expected_content, $response->getContent());
   }
   
-  function dataTraversingSuccess() {
+  function dataTraversing() {
     return array(
       array('/', '/ GET.'),
       array('/blog', '/blog GET.'),
       array('/parent', '/parent GET.'),
       array('/parent/child', '/parent/child GET.'),
       array('/parent/child/grand-child', '/parent/child/grand-child GET.'),
-      array('/forward-to-child', '/parent/child GET.')
+      array('/forward-to-child', '/parent/child GET.'),
+      array('/blog/2010', '/blog/2010 GET.'),
+      array('/blog/Churvaluvalu', null, 404),
     );
   }
   

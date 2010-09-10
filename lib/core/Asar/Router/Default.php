@@ -37,11 +37,16 @@ class Asar_Router_Default implements Asar_Router_Interface {
     return $rname;
   }
   
+  /**
+   * TODO: Refactor this!
+   */
   private function getNameFromPath($app_name, $path) {
     $levels = explode('/', ltrim($path, '/'));
     $rname = $this->getResourceNamePrefix($app_name);
     $class_starts_with = $this->resource_lister->getResourceListFor($app_name);
+    $i = substr_count($this->getResourceNamePrefix($app_name), '_');
     foreach($levels as $level) {
+      $i++;
       $old_rname = $rname;
       $rname = $rname . '_' . Asar_Utility_String::camelCase($level);
       if (class_exists($rname)) {
@@ -51,10 +56,14 @@ class Asar_Router_Default implements Asar_Router_Interface {
         $old_rname . '_Rt', $class_starts_with
       );
       if (!empty($class_starts_with)) {
-        $rname = $class_starts_with[0];
+        foreach ($class_starts_with as $class) {
+          if ($i === substr_count($class, '_')) {
+            $rname = $class;
+          }
+        }
       }
       if (!class_exists($rname)) {
-         throw new Asar_Router_Exception_ResourceNotFound;
+        throw new Asar_Router_Exception_ResourceNotFound;
       }
     }
     return $rname;
@@ -65,7 +74,7 @@ class Asar_Router_Default implements Asar_Router_Interface {
   }
   
   
-  private function getClassesWithPrefix($prefix, $available_classes) {
+  private function getClassesWithPrefix($prefix, $available_classes, $limit = 0) {
     $classes = array();
     foreach ($available_classes as $class) {
       if (strpos($class, $prefix) === 0) {

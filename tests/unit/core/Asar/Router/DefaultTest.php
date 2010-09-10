@@ -84,22 +84,32 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     }
     return $classes_used;
   }
-
-  function testReturnsRoutedResource2() {
-    $path = '/blogs/This-is-a-blog-title';
+  
+  /**
+   * @dataProvider dataReturnsRoutedResource2
+   */
+  function testReturnsRoutedResource2(
+    $path, $resource_names, $expected, $reverse = false
+  ) {
     $app_name = $this->generateRandomClassName(get_class($this));
     $resource_name1 = 'Blogs_RtTitle';
     $resource_name2 = 'Blogs_Foo';
-    $classes1 = $this->createClassesBasedOnResourceName(
-      $app_name, $resource_name1
+    $class_collection = array();
+    foreach ($resource_names as $resource_name) {
+      $class_collection[] = $this->createClassesBasedOnResourceName(
+        $app_name, $resource_name
+      );
+    }
+    $classes = array_unique(
+      call_user_func_array('array_merge', $class_collection)
     );
-    $classes2 = $this->createClassesBasedOnResourceName(
-      $app_name, $resource_name2
-    );
+    if ($reverse) {
+      $classes = array_reverse($classes);
+    }
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
-      ->will($this->returnValue(array_unique(array_merge($classes1, $classes2))));
-    $expected_resource = $app_name . '_Resource_' . $resource_name1;
+      ->will($this->returnValue($classes));
+    $expected_resource = $app_name . '_Resource_' . $expected;
     $this->resource_factory->expects($this->once())
       ->method('getResource')
       ->with($expected_resource);
@@ -110,29 +120,29 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     }
   }
   
-  function testReturnsRoutedResource3() {
-    $path = '/vlogs/Foo';
-    $app_name = $this->generateRandomClassName(get_class($this));
-    $resource_name1 = 'Vlogs_RtTitle';
-    $resource_name2 = 'Vlogs_Foo';
-    $classes1 = $this->createClassesBasedOnResourceName(
-      $app_name, $resource_name1
+  function dataReturnsRoutedResource2() {
+    return array(
+      array(
+        '/blogs/This-is-a-blog-title',
+        array('Blogs_RtTitle', 'Blogs_Foo'),
+        'Blogs_RtTitle'
+      ),
+      array(
+        '/blogs/This-is-a-blog-title/edit',
+        array('Blogs_RtTitle', 'Blogs_Foo', 'Blogs_RtTitle_Edit'),
+        'Blogs_RtTitle_Edit'
+      ),
+      array(
+        '/blogs/This-is-a-blog-title/edit',
+        array('Blogs_RtTitle', 'Blogs_Foo', 'Blogs_RtTitle_Edit'),
+        'Blogs_RtTitle_Edit', true
+      ),
+      array(
+        '/vlogs/Foo',
+        array( 'Vlogs_RtTitle', 'Vlogs_Foo'),
+        'Vlogs_Foo'
+      ),
     );
-    $classes2 = $this->createClassesBasedOnResourceName(
-      $app_name, $resource_name2
-    );
-    $this->resource_lister->expects($this->any())
-      ->method('getResourceListFor')
-      ->will($this->returnValue(array_unique(array_merge($classes1, $classes2))));
-    $expected_resource = $app_name . '_Resource_' . $resource_name2;
-    $this->resource_factory->expects($this->once())
-      ->method('getResource')
-      ->with($expected_resource);
-    try {
-      $this->router->route($app_name, $path, array());
-    } catch (Asar_Router_Exception $e) {
-      $this->fail();
-    }
   }
   
   function testRouterReturnsObjFromResourceFactory() {

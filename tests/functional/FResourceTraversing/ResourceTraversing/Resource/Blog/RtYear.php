@@ -6,8 +6,9 @@ class ResourceTraversing_Resource_Blog_RtYear extends Asar_Resource {
     return $this->request->getPath() . ' GET.';
   }
   
-  function qualify($path) {
-    return preg_match('/^[1-9][0-9]{3}$/' , $path['year']);
+  function qualify() {
+    $path = $this->getPathComponents();
+    return preg_match('/^[1-9][0-9]{3}$/' , $this->path['year']);
   }
 }
 
