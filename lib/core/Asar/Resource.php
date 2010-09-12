@@ -119,7 +119,6 @@ class Asar_Resource
       }
       $i++;
     }
-    var_dump($components2);
     return $components2;
   }
   

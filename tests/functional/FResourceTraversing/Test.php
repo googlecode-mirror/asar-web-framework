@@ -36,6 +36,7 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
       array('/blog/2010', '/blog/2010 GET.'),
       array('/blog/Churvaluvalu', null, 404),
       array('/blog/2010/09', '/blog/2010/09 GET.'),
+      array('/blog/2010/09/an-amazing-title', 'an-amazing-title'),
     );
   }
   
