@@ -268,6 +268,17 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('/baz/bar/foo', $R->getPermaPath());
   }
   
+  function testGetPermaPath2() {
+    $cname = get_class($this) . '_GetPermaPath_Resource_RtBaz_RtBar_Foo';
+    eval('
+      class '. $cname . ' extends Asar_Resource {}
+    ');
+    $R = new $cname;
+    $this->assertEquals(
+      '/2009/yo/foo', $R->getPermaPath(array('baz' => 2009, 'bar' => 'yo'))
+    );
+  }
+  
   function testForwardTo() {
     $cname = get_class($this) . '_Forwarding';
     eval('

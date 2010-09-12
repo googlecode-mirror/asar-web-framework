@@ -244,7 +244,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $e->setPayload(array('request' => $this->request));
     $this->resource->expects($this->once())
       ->method('handleRequest')
-      ->will($this->throwException($e));    
+      ->will($this->throwException($e));   
     $this->routerReturnsResource();
     $this->routerExpects(1)
       ->with('Some_Name', 'Foo', $this->map);
@@ -270,6 +270,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testForwardingPassesRequestFromExceptionPayload() {
     $request = new Asar_Request(array('content' => "bar"));
+    $received_request = clone($request);
+    $received_request->setHeader(
+      'Asar-Internal', array('isForwarded'   => true)
+    );
     $e = new Asar_Resource_Exception_ForwardRequest('Foo');
     $e->setPayload(array('request' => $request));
     $this->resource->expects($this->once())
@@ -278,7 +282,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $final_resource = $this->getMock('Asar_Resource_Interface');
     $final_resource->expects($this->once())
       ->method('handleRequest')
-      ->with($request);
+      ->with($received_request);
     $this->routerReturnsResource();
     $this->routerReturnsResource(1, $final_resource);
     $this->app->handleRequest($this->request);

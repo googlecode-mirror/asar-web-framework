@@ -3,12 +3,11 @@
 class Asar_Resource 
   implements Asar_Resource_Interface, Asar_Config_Interface
 {
-  
-  protected $config_bag = null;
-  
-  protected $config = array();
-  
-  protected $request = null;
+  protected
+    $request,
+    $config_bag,
+    $path_template,
+    $config = array();
   
   function __construct() {
     $this->config_bag = new Asar_Config();
@@ -91,30 +90,55 @@ class Asar_Resource
     return $this->request->getPath();
   }
   
-  function getPermaPath() {
-    $relevant = $this->getResourceNameAsArray();
+  function getPermaPath($path_params = array()) {
+    $touse = array();
+    $path_template = $this->getPathTemplate();
+    foreach ($path_template as $key => $value) {
+      if (is_null($value)) {
+        $touse[] = $path_params[$key];
+      } else {
+        $touse[] = $value;
+      }
+    }
     return '/' . implode('/', array_map(
-      array('Asar_Utility_String', 'dashLowerCase'), $relevant
+      array('Asar_Utility_String', 'dashLowerCase'), $touse
     ));
   }
   
   protected function getPathComponents() {
-    $relevant = $this->getResourceNameAsArray();
-    $keys = array_map(
-      array('Asar_Utility_String', 'dashLowerCase'), $relevant
-    );
+    $path_template = $this->getPathTemplate();
     $path = explode('/', $this->getPath());
     array_shift($path);
-    for (
-      $i = 0, $components = array(), $size = count($keys); $i < $size; $i++
-    ) {
-      if ($this->strStartsWith($keys[$i], 'rt-')) {
-        $components[substr($keys[$i], 3)] = $path[$i];
+    $components2 = array();
+    $i = 0;
+    foreach ($path_template as $key => $value) {
+      if (is_null($value)) {
+        $components2[$key] = $path[$i];
       } else {
-        $components[$keys[$i]] = $path[$i];
+        $components2[$key] = $value;
+      }
+      $i++;
+    }
+    var_dump($components2);
+    return $components2;
+  }
+  
+  private function getPathTemplate() {
+    if (!$this->path_template) {
+      $this->path_template = array();
+      $relevant = $this->getResourceNameAsArray();
+      $keys = array_map(
+        array('Asar_Utility_String', 'dashLowerCase'), $relevant
+      );
+      for ($i = 0, $size = count($keys); $i < $size; $i++) {
+        if ($this->strStartsWith($keys[$i], 'rt-')) {
+          $this->path_template[substr($keys[$i], 3)] = null;
+        } else {
+          $this->path_template[$keys[$i]] = $keys[$i];
+        }
       }
     }
-    return $components;
+    return $this->path_template;
   }
   
   private function strStartsWith($str, $prefix) {

@@ -95,6 +95,8 @@ class Asar_Application implements Asar_Resource_Interface {
       $response->setStatus(404);
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
       $payload = $e->getPayload();
+      $req = $payload['request'];
+      $req->setHeader('Asar-Internal', array('isForwarded'   => true));
       $response = $this->passRequest(
         $payload['request'], $response, $e->getMessage()
       );
