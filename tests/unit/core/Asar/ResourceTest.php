@@ -290,12 +290,59 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->fail('Did not throw Asar_Resource_Exception_ForwardRequest.');
   }
   
-  function testQualifyReturnsTrueByDefault() {
-    $this->assertTrue($this->R->qualify());
+  /**
+   * @dataProvider dataPathComponents
+   */
+  function testPathComponents($rname, $expected, $path) {
+    $cname = get_class($this) . '_Resource_' . $rname;
+    eval('
+      class '. $cname . ' extends Asar_Resource {
+        function GET() {
+          return $this->getPathComponents();
+        }
+      }
+    ');
+    $R = new $cname;
+    $this->assertSame(
+      $expected,
+      $R->handleRequest(
+        new Asar_Request(array('path' => $path))
+      )->getContent()
+    );
   }
   
-  private function mockResourceExpectsQualify() {
-    $this->R = $this->getMock('Asar_Resource', array('qualify'));
+  function dataPathComponents() {
+    return array(
+      array(
+        'PathComponents_One_Two',
+        array(
+          'path-components' => 'path-components',
+          'one' => 'one',
+          'two' => 'two'
+        ),
+        '/path-components/one/two'
+      ),
+      array(
+        'PathComponents_RtYear_RtMonth_Edit',
+        array(
+          'path-components' => 'path-components',
+          'year' => '2010',
+          'month' => '08',
+          'edit'  => 'edit'
+        ),
+        '/path-components/2010/08/edit'
+      ),
+    );
+  }
+  
+  function testQualifyReturnsTrueByDefault() {
+    $this->assertTrue($this->R->qualify(array()));
+  }
+  
+  private function mockResourceExpectsQualify($cname = '') {
+    $this->R = $this->getMock(
+      'Asar_Resource', array('qualify'), array(), $cname
+    );
     return $this->R->expects($this->once())->method('qualify');
   }
   
@@ -312,24 +359,19 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(404, $response->getStatus());
   }
   
-  function testPathComponents() {
-    $cname = get_class($this) . '_Resource_GetPathComponents_One_Two';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function GET() {
-          return $this->getPathComponents();
-        }
-      }
-    ');
-    $R = new $cname;
-    $this->assertEquals(
-      array(
-        'get-path-components' => true,
-        'one' => true,
-        'two' => true
-      ),
-      $R->handleRequest(new Asar_Request())->getContent()
+  function testPassesQualifyWithValueFromPathComponents() {
+    $rname = 'QualifyTest_RtTitle_Subpath';
+    $path = '/qualify-test/foo-bar-yeah/subpath';
+    $path_components = array(
+      'qualify-test' => 'qualify-test',
+      'title'        => 'foo-bar-yeah',
+      'subpath'      => 'subpath'
     );
+    $this->mockResourceExpectsQualify(get_class($this) . '_Resource_' . $rname)
+      ->with($path_components);
+    $this->R->handleRequest(
+      new Asar_Request(array('path' => $path))
+    )->getContent();
   }
   
 }

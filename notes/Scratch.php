@@ -1,5 +1,11 @@
 <?php
 
+// INTERNAL HEADERS
+'Asar-Internal' => array(
+  'original_path' => '/some/where',
+  'isForwarded'   => true,
+);
+
 // CONFIG DEFAULTS:
 
 array(

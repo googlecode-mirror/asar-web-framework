@@ -3,18 +3,26 @@
 class Asar_Application implements Asar_Resource_Interface {
   
   private
-    $router, $status_messages, $map,
-    $forward_level_max = 20, $forward_recursion = 0;
+    $map,
+    $router,
+    $status_messages,
+    $filters,
+    $forward_level_max = 20,
+    $forward_recursion = 0;
   
   function __construct(
     $name, Asar_Router_Interface $router,
     Asar_Response_StatusMessages_Interface $status_messages,
-    $map = array()
+    $map = array(),
+    $filters = array()
   ) {
     $this->name = $name;
     $this->router = $router;
     $this->status_messages = $status_messages;
     $this->map = $map;
+    foreach ($filters as $filter) {
+      $this->addFilter($filter);
+    }
     $this->setUp();
   }
   
@@ -28,6 +36,10 @@ class Asar_Application implements Asar_Resource_Interface {
     $this->map[$path] = $resource_name;
   }
   
+  protected function addFilter(Asar_MessageFilter_Interface $filter) {
+    $this->filters[] = $filter;
+  }
+  
   function getMap() {
     return $this->map;
   }
@@ -36,12 +48,33 @@ class Asar_Application implements Asar_Resource_Interface {
     $response = new Asar_Response;
     $this->forward_recursion = 0;
     try {
-      $response = $this->passRequest($request, $response, $request->getPath());
+      $request = $this->filterRequest($request);
+      $response = $this->filterResponse(
+        $this->passRequest($request, $response, $request->getPath())
+      );
     } catch (Exception $e) {
       $response->setStatus(500);
       $response->setContent($this->set500Message($e));
     }
     $this->setResponseDefaults($response, $request);
+    return $response;
+  }
+  
+  private function filterRequest($request) {
+    if (!empty($this->filters)) {
+      foreach ($this->filters as $filter) {
+        $request = $filter->filterRequest($request);
+      }
+    }
+    return $request;
+  }
+  
+  private function filterResponse($response) {
+    if (!empty($this->filters)) {
+      foreach ($this->filters as $filter) {
+        $response = $filter->filterResponse($response);
+      }
+    }
     return $response;
   }
   

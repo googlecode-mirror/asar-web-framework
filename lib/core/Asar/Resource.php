@@ -42,7 +42,7 @@ class Asar_Resource
     ));
     
     try {
-      if (!$this->qualify()) {
+      if (!$this->qualify($this->getPathComponents())) {
         throw new Asar_Resource_Exception_NotFound;
       }
       $response->setContent(
@@ -78,24 +78,47 @@ class Asar_Resource
     throw $e;
   }
   
+  function qualify($path) {
+    return TRUE;
+  }
+  
+  private function getResourceNameAsArray() {
+    $cname = get_class($this);
+    return explode('_', substr($cname, strpos($cname, '_Resource_') + 10));
+  }
+  
   function getPath() {
     return $this->request->getPath();
   }
   
   function getPermaPath() {
-    $cname = get_class($this);
-    $relevant = explode('_', substr($cname, strpos($cname, '_Resource_') + 9));
-    return implode('/', array_map(
+    $relevant = $this->getResourceNameAsArray();
+    return '/' . implode('/', array_map(
       array('Asar_Utility_String', 'dashLowerCase'), $relevant
     ));
   }
   
-  function qualify() {
-    return TRUE;
+  protected function getPathComponents() {
+    $relevant = $this->getResourceNameAsArray();
+    $keys = array_map(
+      array('Asar_Utility_String', 'dashLowerCase'), $relevant
+    );
+    $path = explode('/', $this->getPath());
+    array_shift($path);
+    for (
+      $i = 0, $components = array(), $size = count($keys); $i < $size; $i++
+    ) {
+      if ($this->strStartsWith($keys[$i], 'rt-')) {
+        $components[substr($keys[$i], 3)] = $path[$i];
+      } else {
+        $components[$keys[$i]] = $path[$i];
+      }
+    }
+    return $components;
   }
   
-  function getPathComponents() {
-    return array();
+  private function strStartsWith($str, $prefix) {
+    return strpos($str, $prefix) === 0;
   }
   
 }

@@ -30,6 +30,7 @@ class Asar_Router_Default implements Asar_Router_Interface {
   }
   
   private function getNameFromClassSuffix($app_name, $name) {
+    echo $app_name, ' - ', $name;
     $rname = $this->getResourceNamePrefix($app_name) . '_' . $name;
     if (!class_exists($rname)) {
       throw new Asar_Router_Exception_ResourceNotFound;
