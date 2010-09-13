@@ -4,6 +4,8 @@ require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   
+  private static $inc = 0;
+  
   function setUp() {
     $this->old_post_data = $_POST;
     $this->R = new Asar_Resource;
@@ -135,41 +137,27 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testResourceRunsSetupMethod() {
-    $cname = get_class($this) . '_ResourceRunSetup';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function setUp() {
-          $_POST["foo"] = "bar";
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'ResourceRunSetup', '', '$_POST["foo"] = "bar";'
+    );
     $R = new $cname;
     $this->assertTrue(array_key_exists('foo', $_POST));
     $this->assertEquals('bar', $_POST['foo']);
   }
   
   function testModifyConfigUseTemplates() {
-    $cname = get_class($this) . '_DefaultUseTemplatesConfiguration';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function setUp() {
-          $this->config["use_templates"] = false;
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'DefaultUseTemplatesConfiguration', '',
+      '$this->config["use_templates"] = false;'
+    );
     $R = new $cname;
     $this->assertFalse($R->getConfig('use_templates'));
   }
   
   function testModifyConfigValue() {
-    $cname = get_class($this) . '_ChangeConfigValues';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function GET() {
-          $this->setConfig("foo", "bar");
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'ChangeConfigValues', '$this->setConfig("foo", "bar");'
+    );
     $R = new $cname;
     $R->GET();
     $this->assertEquals( "bar", $R->getConfig('foo'));
@@ -180,27 +168,19 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testDefineOwnDefaultContentType() {
-    $cname = get_class($this) . '_DefaultCTypeConfiguration';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function setUp() {
-          $this->config["default_content_type"] = "text/plain";
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'DefaultCTypeConfiguration', '',
+      '$this->config["default_content_type"] = "text/plain";'
+    );
     $R = new $cname;
     $this->assertEquals('text/plain', $R->getConfig('default_content_type'));
   }
   
   function testReturnResponsetContentTypeFromConfig() {
-    $cname = get_class($this) . '_DefaultCTypeConfiguration2';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function setUp() {
-          $this->config["default_content_type"] = "application/xml";
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'DefaultCTypeConfiguration2', '',
+      '$this->config["default_content_type"] = "application/xml";'
+    );
     $R = new $cname;
     $this->assertEquals(
       'application/xml', 
@@ -211,27 +191,19 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testDefineOwnDefaultLanguage() {
-    $cname = get_class($this) . '_DefaultLangConfiguration';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function setUp() {
-          $this->config["default_language"] = "tl";
-        }
-      }
-    ');
+    $cname = $cname = $this->createResourceClassDefinition(
+      'DefaultLangConfiguration', '',
+      '$this->config["default_language"] = "tl";'
+    );
     $R = new $cname;
     $this->assertEquals('tl', $R->getConfig('default_language'));
   }
   
   function testReturnResponsetContentLanguageFromConfig() {
-    $cname = get_class($this) . '_DefaultLangConfiguration2';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function setUp() {
-          $this->config["default_language"] = "de";
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'DefaultLangConfiguration2', '', 
+      '$this->config["default_language"] = "de";'
+    );
     $R = new $cname;
     $this->assertEquals(
       'de', 
@@ -242,14 +214,9 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGetPath() {
-    $cname = get_class($this) . '_GetPath';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
-        function GET() {
-          return $this->getPath();
-        }
-      }
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'GetPath', 'return $this->getPath();'
+    );
     $R = new $cname;
     $this->assertEquals(
       '/foo/bar/baz',
@@ -260,34 +227,45 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGetPermaPath() {
-    $cname = get_class($this) . '_GetPermaPath_Resource_Baz_Bar_Foo';
-    eval('
-      class '. $cname . ' extends Asar_Resource {}
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'GetPermaPath_Resource_Baz_Bar_Foo'
+    );
     $R = new $cname;
     $this->assertEquals('/baz/bar/foo', $R->getPermaPath());
   }
   
   function testGetPermaPath2() {
-    $cname = get_class($this) . '_GetPermaPath_Resource_RtBaz_RtBar_Foo';
-    eval('
-      class '. $cname . ' extends Asar_Resource {}
-    ');
+    $cname = $this->createResourceClassDefinition(
+      'GetPermaPath_Resource_RtBaz_RtBar_Foo'
+    );
     $R = new $cname;
     $this->assertEquals(
       '/2009/yo/foo', $R->getPermaPath(array('baz' => 2009, 'bar' => 'yo'))
     );
   }
   
-  function testForwardTo() {
-    $cname = get_class($this) . '_Forwarding';
-    eval('
-      class '. $cname . ' extends Asar_Resource {
+  private function createResourceClassDefinition(
+    $rname, $get_body = '', $setup_body = ''
+  ) {
+    $cname = get_class($this) . '_' . $rname;
+    eval("
+      class $cname extends Asar_Resource {
+        function setUp() {
+          $setup_body
+        }
+        
         function GET() {
-          return $this->forwardTo("Some_Resource");
+          $get_body
         }
       }
-    ');
+    ");
+    return $cname;
+  }
+  
+  function testForwardTo() {
+    $cname = $this->createResourceClassDefinition(
+      'Forwarding', 'return $this->forwardTo("Some_Resource");'
+    );
     $R = new $cname;
     $request = new Asar_Request(array('path'=>'/foo/bar'));
     try {
@@ -383,6 +361,54 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->R->handleRequest(
       new Asar_Request(array('path' => $path))
     )->getContent();
+  }
+  
+  /**
+   * @dataProvider dataRedirection
+   */
+  public function testRedirection(
+    $location, $type, $expected_status_code, $expected_location
+  ) {
+    self::$inc++;
+    $cname = $this->createResourceClassDefinition(
+      'Redirecting' . self::$inc++,
+      "return \$this->redirectTo('$location', '$type');"
+    );
+    $R = new $cname;
+    $response = $R->handleRequest(new Asar_Request);
+    $this->assertEquals($expected_status_code, $response->getStatus());
+    $this->assertEquals(
+      $expected_location, $response->getHeader('Location')
+    );
+  }
+  
+  function dataRedirection() {
+    return array(
+      array('http://www.foo.com/', 'basic', 302, 'http://www.foo.com/'),
+      array('/a/relative/path', 'temporary', 307, '/a/relative/path'),
+      array('/another/path', 'permanent', 301, '/another/path'),
+    );
+  }
+  
+  function testRedirectMultipleChoices() {
+    self::$inc++;
+    $location = "array('/preferred/path', '/another/path', '/yet/again')";
+    $cname = $this->createResourceClassDefinition(
+      'Redirecting' . self::$inc++,
+      "return \$this->redirectTo($location, 'multiple');"
+    );
+    $R = new $cname;
+    $response = $R->handleRequest(new Asar_Request);
+    $this->assertEquals(300, $response->getStatus());
+    $headers = $response->getHeaders();
+    $this->assertEquals(
+      '/preferred/path', $headers['Location']
+    );
+    $this->assertTrue(isset($headers['Asar-Internal']['locations_list']));
+    $this->assertEquals(
+      array('/preferred/path', '/another/path', '/yet/again'),
+      $headers['Asar-Internal']['locations_list']
+    );
   }
   
 }

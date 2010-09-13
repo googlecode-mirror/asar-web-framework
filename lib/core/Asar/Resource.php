@@ -9,6 +9,14 @@ class Asar_Resource
     $path_template,
     $config = array();
   
+  protected static
+    $redirect_codes = array(
+      'multiple'  => 300,
+      'permanent' => 301,
+      'basic'     => 302,
+      'temporary' => 307,
+    );
+  
   function __construct() {
     $this->config_bag = new Asar_Config();
     $this->setUp();
@@ -51,6 +59,15 @@ class Asar_Resource
       $response->setStatus(404);
     } catch (Asar_Resource_Exception_MethodUndefined $e) {
       $response->setStatus(405);
+    } catch (Asar_Resource_Exception_Redirect $e) {
+      $payload = $e->getPayload();
+      $response->setStatus($payload['status_code']);
+      $response->setHeader('Location', $payload['location']);
+      if (isset($payload['locations_list'])) {
+        $response->setHeader(
+          'Asar-Internal', array('locations_list' => $payload['locations_list'])
+        );
+      }
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
       throw $e;
     } catch (Exception $e) {
@@ -74,6 +91,21 @@ class Asar_Resource
   function forwardTo($resource_name) {
     $e = new Asar_Resource_Exception_ForwardRequest($resource_name);
     $e->setPayload(array('request' => $this->request));
+    throw $e;
+  }
+  
+  function redirectTo($location, $type = 'basic') {
+    if (is_array($location)) {
+      $location_list = $location;
+      $location = $location[0];
+    }
+    $e = new Asar_Resource_Exception_Redirect($location);
+    $code = isset(self::$redirect_codes[$type]) ? 
+      self::$redirect_codes[$type] : 'basic';
+    $e->setPayload(array('location' => $location, 'status_code' => $code));
+    if (isset($location_list)) {
+      $e->setPayload(array('locations_list' => $location_list));
+    }
     throw $e;
   }
   
