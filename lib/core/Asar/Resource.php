@@ -101,7 +101,7 @@ class Asar_Resource
     }
     $e = new Asar_Resource_Exception_Redirect($location);
     $code = isset(self::$redirect_codes[$type]) ? 
-      self::$redirect_codes[$type] : 'basic';
+      self::$redirect_codes[$type] : self::$redirect_codes['basic'];
     $e->setPayload(array('location' => $location, 'status_code' => $code));
     if (isset($location_list)) {
       $e->setPayload(array('locations_list' => $location_list));

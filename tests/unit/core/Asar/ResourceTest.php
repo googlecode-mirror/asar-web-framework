@@ -387,6 +387,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
       array('http://www.foo.com/', 'basic', 302, 'http://www.foo.com/'),
       array('/a/relative/path', 'temporary', 307, '/a/relative/path'),
       array('/another/path', 'permanent', 301, '/another/path'),
+      array('A_Resource_Name', '', 302, 'A_Resource_Name'),
     );
   }
   

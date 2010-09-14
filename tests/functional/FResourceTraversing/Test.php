@@ -41,7 +41,14 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testRedirection() {
-    $this->markTestIncomplete();
+    $response = $this->app->handleRequest(new Asar_Request(
+      array('path' => '/redirect-one')
+    ));
+    $this->assertEquals(302, $response->getStatus(), $response->getContent());
+    $this->assertEquals(
+      'http://asar-test.local/parent/child/grand-child',
+      $response->getHeader('Location')
+    );
   }
 
 }
