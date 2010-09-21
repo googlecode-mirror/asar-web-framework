@@ -6,7 +6,8 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->resource = $this->getMock(
-      'Asar_Resource', array('handleRequest', 'getConfig', 'importConfig')
+      'Asar_Resource',
+      array('handleRequest', 'getConfig', 'importConfig', 'getPermaPath')
     );
     $this->renderer  = $this->getMock(
       'Asar_TemplateRenderer', array('renderFor'), array(), '', false
@@ -117,6 +118,19 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
     $this->resourceReturnsResponse($response);
     $response2 = $this->templater->handleRequest(new Asar_Request);
     $this->assertEquals($response, $response2);
+  }
+  
+  function testTemplaterImplementsPathDiscoverInterface() {
+    $this->assertType('Asar_PathDiscover_Interface', $this->templater);
+  }
+  
+  function testPassesGetPermaPathCallToResource() {
+    $options = array('var' => 'val');
+    $this->resource->expects($this->once())
+      ->method('getPermaPath')
+      ->with($options)
+      ->will($this->returnValue('/bar/foo'));
+    $this->assertEquals('/bar/foo', $this->templater->getPermaPath($options));
   }
   
 }

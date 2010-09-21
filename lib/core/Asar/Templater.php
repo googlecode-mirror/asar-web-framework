@@ -1,7 +1,9 @@
 <?php
 // TODO: This object seems to have too much responsibility. Refactor.
 class Asar_Templater
-  implements Asar_Resource_Interface, Asar_Config_Interface {
+  implements Asar_Resource_Interface, Asar_Config_Interface,
+    Asar_PathDiscover_Interface
+{
   
   private $resource, $renderer, $config;
   
@@ -40,6 +42,10 @@ class Asar_Templater
   
   function importConfig(Asar_Config_Interface $config) {
     return $this->config->importConfig($config);
+  }
+  
+  function getPermaPath($path_params = array()) {
+    return $this->resource->getPermaPath($path_params);
   }
   
 }

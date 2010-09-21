@@ -49,4 +49,10 @@ class Asar_Utility_StringTest extends PHPUnit_Framework_TestCase {
     );
     $this->_testFunction('camelCase', $tests);
   }
+  
+  function testStartsWith() {
+    $this->assertSame(true, Asar_Utility_String::startsWith('Rararara', 'R'));
+    $this->assertSame(true, Asar_Utility_String::startsWith('Wararara', 'War'));
+    $this->assertSame(false, Asar_Utility_String::startsWith('Rararara', 'ar'));
+  }
 }

@@ -288,6 +288,45 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->app->handleRequest($this->request);
   }
   
+  function testRedirectionPassesPathToRouterWhenLocationIsNotPath() {
+    $this->response->setStatus(302);
+    $this->response->setHeader('Location', 'A_Resource_Name');
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($this->response));
+    $this->routerExpects(1)->with('Some_Name', 'A_Resource_Name', $this->map);
+    $this->app->handleRequest($this->request);
+  }
+  
+  function testRedirectionDoesNotPassPathToRouterWhenLocationIsAPath() {
+    $this->response->setStatus(301);
+    $this->response->setHeader('Location', '/a/proper/path');
+    $this->resourceExpects()->will($this->returnValue($this->response));
+    $this->router->expects($this->once())
+      ->method('route')
+      ->will($this->returnValue($this->resource));
+    $app_response = $this->app->handleRequest($this->request);
+    echo $app_response->getContent();
+    $this->assertEquals(301, $app_response->getStatus());
+    $this->assertEquals('/a/proper/path', $app_response->getHeader('Location'));
+  }
+  
+  function testRedirectUsesPermaPathFromReturnedResponseAsNewLocation() {
+    $this->response->setStatus(307);
+    $this->response->setHeader('Location', 'A_Resource_Name');
+    $this->routerReturnsResource();
+    $this->resourceExpects()->will($this->returnValue($this->response));
+    $destination_resource = $this->getMock('Asar_Resource');
+    $destination_resource->expects($this->once())
+      ->method('getPermaPath')
+      ->will($this->returnValue('/foo/bar'));
+    $this->routerExpects(1)->will($this->returnValue($destination_resource));
+    $app_response = $this->app->handleRequest($this->request);
+    $this->assertEquals(
+      307, $app_response->getStatus(), $app_response->getContent()
+    );
+    $this->assertEquals('/foo/bar', $app_response->getHeader('Location'));
+  }
+  
   function testFiltersFilteringRequest() {
     $request = new Asar_Request(array('content' => 0));
     for ($i = 0, $filters = array(); $i < 3; $i++) {

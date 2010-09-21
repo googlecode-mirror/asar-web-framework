@@ -101,6 +101,18 @@ class Asar_Application implements Asar_Resource_Interface {
         $payload['request'], $response, $e->getMessage()
       );
     }
+    if (
+        $response->getStatus() >= 300 && 
+        $response->getStatus() < 400 &&
+        !Asar_Utility_String::startsWith($response->getHeader('Location'), '/')
+      ) {
+      $resource = $this->router->route(
+        $this->name, $response->getHeader('Location'), $this->getMap()
+      );
+      if ($resource instanceof Asar_PathDiscover_Interface) {
+        $response->setHeader('Location', $resource->getPermaPath());
+      }
+    }
     return $response;
   }
   

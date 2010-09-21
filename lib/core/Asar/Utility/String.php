@@ -24,4 +24,8 @@ class Asar_Utility_String {
     );
   }
   
+  static function startsWith($string, $prefix) {
+    return strpos($string, $prefix) === 0;
+  }
+  
 }

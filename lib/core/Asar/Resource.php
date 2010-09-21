@@ -1,7 +1,8 @@
 <?php
 
 class Asar_Resource 
-  implements Asar_Resource_Interface, Asar_Config_Interface
+  implements Asar_Resource_Interface, Asar_Config_Interface,
+    Asar_PathDiscover_Interface
 {
   protected
     $request,
