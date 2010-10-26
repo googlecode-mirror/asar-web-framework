@@ -13,21 +13,20 @@ class RemoveSvnEntries implements Asar_Utility_CLI_Interface {
   }
   
   function removeSvnDirs($path) {
-      
-      foreach (scandir($path) as $file) {
-          if (preg_match('/^.{1,2}$/', $file)) {
-              continue;
-          }
-          
-          if (preg_match('/\.svn$/', $file)) {
-              $fullFilePath = $path . '/' . $file;
-              $this->recursiveDelete($fullFilePath);
-          }
-          
-          if (is_dir($path . '/' . $file)) {
-              $this->removeSvnDirs($path . '/' . $file);
-          }
+    foreach (scandir($path) as $file) {
+      if (preg_match('/^.{1,2}$/', $file)) {
+        continue;
       }
+      
+      if (preg_match('/\.svn$/', $file)) {
+        $fullFilePath = $path . '/' . $file;
+        $this->recursiveDelete($fullFilePath);
+      }
+        
+      if (is_dir($path . '/' . $file)) {
+        $this->removeSvnDirs($path . '/' . $file);
+      }
+    }
   }
   
   function recursiveDelete($path) {
