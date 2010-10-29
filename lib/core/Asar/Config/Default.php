@@ -12,6 +12,9 @@ class Asar_Config_Default extends Asar_Config {
   		'status_messages' => 'Asar_Response_StatusMessages',
   		'router'          => 'Asar_Router_Default',
     ),
+    'filters'          => array(
+      'standard' => 'Asar_MessageFilter_Standard'
+    ),
   );
   
 }

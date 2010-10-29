@@ -18,6 +18,8 @@ class Asar_ApplicationFactory {
     $template_factory = new Asar_TemplateFactory;
     $template_factory->registerTemplateEngine('php', 'Asar_Template');
     $router_class = $app_config->getConfig('default_classes.router');
+    // Instantiate Filters
+    $filters = $this->getFilters($app_config);
     $app = new $app_full_name(
       $app_name,
       new $router_class(
@@ -35,7 +37,8 @@ class Asar_ApplicationFactory {
         new Asar_ResourceLister($this->getFileSearcher())
       ),
       new $sm,
-      $app_config->getConfig('map')
+      $app_config->getConfig('map'),
+      $filters
     );
     return $app;
   }
@@ -45,6 +48,14 @@ class Asar_ApplicationFactory {
       $this->file_searcher = new Asar_FileSearcher;
     }
     return $this->file_searcher;
+  }
+  
+  private function getFilters(Asar_Config_Interface $config) {
+    $filters = array();
+    foreach ($config->getConfig('filters') as $filter) {
+      $filters[] = new $filter($config);
+    }
+    return $filters;
   }
   
   private function getAppPath($app_name) {
