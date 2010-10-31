@@ -13,10 +13,12 @@ class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
   }
   
   function filterResponse(Asar_Response_Interface $response) {
-    if ($response->getStatus() === 302) {
+    $location = $response->getHeader('Location');
+    if ($location && !preg_match('/^http[s]?:\/\//', $location)) {
       $response->setHeader(
         'Location', 
-        $this->config->getConfig('site_protocol') . '://' . $this->config->getConfig('site_domain') . $response->getHeader('Location')
+        $this->config->getConfig('site_protocol') . '://' . 
+          $this->config->getConfig('site_domain') . $location
       );
     }
     return $response;

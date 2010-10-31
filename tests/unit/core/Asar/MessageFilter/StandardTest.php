@@ -11,10 +11,20 @@ class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
     $this->filter = new Asar_MessageFilter_Standard($this->config);
   }
   
-  function testFilteringRedirectResponseToProperlyFormattingTheLocationHeaderValue() {
-    $response = new Asar_Response(array('status' => 302, 'headers' => array('Location' => '/foo/bar')));
+  function testFormattingTheLocationHeaderValue() {
+    $response = new Asar_Response(array('headers' => array('Location' => '/foo/bar')));
     $this->assertEquals(
       'http://example.domain.com/foo/bar',
+      $this->filter->filterResponse($response)->getHeader('Location')
+    );
+  }
+  
+  function testSkipFormattingTheLocationHeaderValueWhenItIsCorrect() {
+    $response = new Asar_Response(array('headers' => array(
+      'Location' => 'http://somewhere.com/foo/bar'
+    )));
+    $this->assertEquals(
+      'http://somewhere.com/foo/bar',
       $this->filter->filterResponse($response)->getHeader('Location')
     );
   }
