@@ -1,5 +1,5 @@
 NEXT:
-- Create Default Filter for main application to cleanup internal headers
+- Create methods for Default Filter to cleanup internal headers
 - More test cases for request forwarding
 ALL:
 - Cascading Configurations: 

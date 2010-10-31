@@ -99,6 +99,18 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
     }
   }
   
+  function testSettingHeaderToNullWillUnsetIt() {
+    $this->M->setHeader('Foo', 'bar');
+    $this->M->setHeader('Foo', null);
+    $this->assertFalse(array_key_exists('Foo', $this->M->getHeaders()));
+  }
+  
+  function testMethodForUnsettingHeader() {
+    $this->M->setHeader('Foo', 'bar');
+    $this->M->unsetHeader('Foo');
+    $this->assertFalse(array_key_exists('Foo', $this->M->getHeaders()));
+  }
+  
   function testRequestSettingContentOnCreation() {
     $M = new Asar_Message(array('content' => 'foo bar'));
     $this->assertEquals('foo bar', $M->getContent());

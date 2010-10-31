@@ -16,7 +16,17 @@ class Asar_Message implements Asar_Message_Interface {
   }
   
   function setHeader($name, $value) {
-    $this->headers[$this->dashCamelCase($name)] = $value;
+    if ($value != null) {
+      $this->headers[$this->dashCamelCase($name)] = $value;
+    } else {
+      if (array_key_exists($this->dashCamelCase($name), $this->headers)) {
+        $this->unsetHeader($name);
+      }
+    }
+  }
+  
+  function unsetHeader($name) {
+    unset($this->headers[$this->dashCamelCase($name)]);
   }
   
   function getHeader($name) {
@@ -28,7 +38,7 @@ class Asar_Message implements Asar_Message_Interface {
   
   function setHeaders(array $headers) {
     foreach ($headers as $name => $value) {
-      $this->headers[$this->dashCamelCase($name)] = $value;
+      $this->setHeader($name, $value);
     }
   }
   

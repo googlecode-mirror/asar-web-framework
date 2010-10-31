@@ -29,4 +29,27 @@ class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testFilterRequestReturnsRequest() {
+    $request = new Asar_Request;
+    $this->assertType('Asar_Request', $this->filter->filterRequest($request));
+  }
+  
+  function testFilteringInternalHeadersFromRequest() {
+    $request = new Asar_Request(array('headers' => array(
+      'Asar-Internal' => 'foo'
+    )));
+    $this->assertEquals(
+      null, $this->filter->filterRequest($request)->getHeader('Asar-Internal')
+    );
+  }
+  
+  function testRemoveInternalHeadersFromResponse() {
+    $response = new Asar_Response(array('headers' => array(
+      'Asar-Internal' => 'foo'
+    )));
+    $this->assertEquals(
+      null, $this->filter->filterResponse($response)->getHeader('Asar-Internal')
+    );
+  }
+  
 }

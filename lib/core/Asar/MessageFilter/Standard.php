@@ -9,10 +9,17 @@ class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
   }
   
   function filterRequest(Asar_Request_Interface $request) {
+    $this->removeInternalHeaders($request);
     return $request;
   }
   
   function filterResponse(Asar_Response_Interface $response) {
+    $this->reformatLocationHeader($response);
+    $this->removeInternalHeaders($response);
+    return $response;
+  }
+  
+  private function reformatLocationHeader(Asar_Response $response) {
     $location = $response->getHeader('Location');
     if ($location && !preg_match('/^http[s]?:\/\//', $location)) {
       $response->setHeader(
@@ -21,7 +28,12 @@ class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
           $this->config->getConfig('site_domain') . $location
       );
     }
-    return $response;
+  }
+  
+  private function removeInternalHeaders(Asar_Message $message) {
+    if ($message->getHeader('Asar-Internal')) {
+      $message->unsetHeader('Asar-Internal');
+    }
   }
   
 }
