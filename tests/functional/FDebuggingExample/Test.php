@@ -5,45 +5,67 @@ set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__
 class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->markTestIncomplete();
-    if (!Asar_Test_Server::isCanConnectToTestServer()) {
-      $this->markTestSkipped(
-        'Unable to connect to test server. Check server setup.'
-      );
-    }
     $this->client = new Asar_Client;
-    Asar_Test_Server::setUp(array(
-      'path' =>  Asar::constructRealPath(dirname(__FILE__), 'web')
-    ));
-    $this->client->setServer('http://asar-test.local/');
+    $f = new Asar_ApplicationFactory(new Asar_Config_Default);
+    $this->app = $f->getApplication('DebuggingExample');
   }
   
   function tearDown() {
     #Asar::setMode(Asar::MODE_DEVELOPMENT);
   }
   
-  function testDebugInformationForHtmlRequest() {
-    $content = $this->client->GET('/')->getContent();
-    //var_dump($content);
-    // Test if the setup is okay...
-    $this->assertContains('Debugging Tests', $content);
-    $this->assertContains('<title', $content);
-    
-    $html = new Asar_Utility_XML($content);
-    $debug = $html->getElementById('asarwf_debug_info');
-    $this->assertNotNull(
-      $debug, 'Debug info table element in html output not found.'
+  function testDebugInformationIsPresent() {
+    $this->assertTag(
+      array(
+        'tag' => 'div', 'id' => 'asarwf_debug_info'
+      ),
+      $this->client->GET($this->app)->getContent()
     );
-    // Execution Time
-    $this->assertEquals(
-      'Execution Time', $debug->tbody->tr[0]->th->stringValue(),
-      'Unable to find execution time label in debug info table.'
+  }
+  
+  function testDebugInformationTableIsPresent() {
+    $this->assertTag(
+      array(
+        'tag' => 'table', 'parent' => array(
+          'tag' => 'div', 'id' => 'asarwf_debug_info'
+        )
+      ),
+      $this->client->GET($this->app)->getContent()
+    );
+  }
+  
+  function testDebugInformationContainsDebuggingInformation() {
+    $content = $this->client->GET($this->app)->getContent();
+    
+    $this->assertTag(
+      array(
+        'tag' => 'th',
+        'content' => 'Execution Time',
+        'parent' => array(
+          'tag' => 'tr', 
+          'child' => array(
+            'tag' => 'td',
+            'content' => '/[0-9]+.[0-9]{2}ms/'
+          ),
+          'parent' => array(
+            'tag' => 'tbody', 'parent' => array(
+              'tag' => 'table', 'parent' => array(
+                'tag' => 'div', 'id' => 'asarwf_debug_info'
+              )
+            )
+          )
+        )
+      ),
+      $content
     );
     $this->assertRegExp(
       '/[0-9]+.[0-9]{2}ms/', $debug->tbody->tr[0]->td->stringValue(),
       'Unable to find execution time value in debug info table.'
     );
-    
+  }
+  
+  function testDebugInformationForHtmlRequest() {
+    $this->markTestIncomplete();
     // Memory Used
     /*
     function echo_memory_usage() {

@@ -14,9 +14,12 @@ class Asar_ApplicationFactory {
     $app_full_name = $classes['app'];
     $app_config = new $classes['config'];
     $app_config->importConfig(new Asar_Config_Default);
+    // Set the status code messages
     $sm = $app_config->getConfig('default_classes.status_messages');
+    // Set the templating Engine
     $template_factory = new Asar_TemplateFactory;
     $template_factory->registerTemplateEngine('php', 'Asar_Template');
+    // Get Router
     $router_class = $app_config->getConfig('default_classes.router');
     // Instantiate Filters
     $filters = $this->getFilters($app_config);
@@ -54,6 +57,9 @@ class Asar_ApplicationFactory {
     $filters = array();
     foreach ($config->getConfig('filters') as $filter) {
       $filters[] = new $filter($config);
+    }
+    if ($config->getConfig('mode') == 'development') {
+      $filters[] = new Asar_MessageFilter_Standard($config);
     }
     return $filters;
   }
