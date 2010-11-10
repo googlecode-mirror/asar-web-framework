@@ -1,18 +1,25 @@
 #!/usr/bin/env php
 <?php
-set_include_path(
-  realpath(dirname(__FILE__) . '/../core' ) . PATH_SEPARATOR . 
-  get_include_path()
+ini_set('error_reporting', E_ALL | E_STRICT);
+
+require_once realpath(dirname(__FILE__) . '/../lib/core/Asar.php');
+
+$__asar = Asar::getInstance();
+$__asar->getToolSet()->getIncludePathManager()->add(
+  $__asar->getFrameworkCorePath(),
+  $__asar->getFrameworkExtensionsPath()
 );
 
-require_once 'Asar.php';
-$cli = Asar_Utility_CLI::instance();
-$cli->register(new Asar_Utility_CLI_BaseTasks);
+require_once 'Asar/EnvironmentScope.php';
+require_once 'Asar/Injector.php';
 
-// Load other tasks
-if (file_exists('tasks.php')) {
-  include_once 'tasks.php';
+if (!isset($_SESSION)) {
+  $_SESSION = array();
 }
-$cli->execute($argv);
+$scope = new Asar_EnvironmentScope(
+  $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd(), $argv
+);
+Asar_Injector::injectEnvironmentHelperBootstrap($scope)->run();
+Asar_Injector::injectEnvironmentHelperCli($scope)->run();
 ?>
 
