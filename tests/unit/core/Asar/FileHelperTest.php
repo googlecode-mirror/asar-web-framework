@@ -74,4 +74,14 @@ class Asar_FileHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($this->helper->createDir($dir));
 	}
 	
+	function testCreatingMultipleDirectories() {
+    $dir1 = $this->createDirPath($this->tempdir, 'foo');
+    $dir2 = $this->createDirPath($this->tempdir, 'bar');
+    $dir3 = $this->createDirPath($this->tempdir, 'baz');
+    $this->helper->createDir($dir1, $dir2, $dir3);
+    foreach (array($dir1, $dir2, $dir3) as $dir) {
+      $this->assertFileExists($dir);
+    }
+	}
+	
 }

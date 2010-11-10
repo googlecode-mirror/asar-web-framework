@@ -34,6 +34,24 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     }
   }
   
+  function taskCreateHtaccessFile($path) {
+    $this->taskCreateFile(
+      $this->constructPath($path, 'web', '.htaccess'),
+      "<IfModule mod_rewrite.c>\n" .
+      "RewriteEngine On\n".
+      "RewriteBase /\n".
+      "RewriteCond %{REQUEST_FILENAME} !-f\n".
+      "RewriteCond %{REQUEST_FILENAME} !-d\n".
+      "RewriteRule . /index.php [L]\n".
+      "</IfModule>\n"
+    );
+  }
+  
+  private function constructPath() {
+    $subpaths = func_get_args();
+    return implode(DIRECTORY_SEPARATOR, $subpaths);
+  }
+  
   function taskCreateDirectory($dir) {
     try {
       $this->file_helper->createDir($this->getFullPath($dir));
@@ -48,9 +66,14 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     $this->taskCreateFile($filepath, $contents);
   }
   
-  function taskCreateProjectDirectories($path) {
+  function taskCreateProjectDirectories($path, $app = '') {
     $this->taskCreateDirectory($path);
     $subpaths = array('apps', 'lib', 'lib/vendor', 'web', 'tests', 'logs');
+    if ($app) {
+      $subpaths = array_merge($subpaths, array(
+        "apps/$app", "apps/$app/Resource", "apps/$app/Representation")
+      );
+    }
     foreach ($subpaths as $subpath) {
       $this->taskCreateDirectory($path . DIRECTORY_SEPARATOR . $subpath);
     }

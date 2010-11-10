@@ -11,7 +11,16 @@ class Asar_FileHelper {
     }
   }
   
-  function createDir($directory) {
+  function createDir() {
+    $args = func_get_args();
+    $truth = true;
+    foreach ($args as $arg) {
+      $truth = $truth && $this->_createDir($arg);
+    }
+    return $truth;
+  }
+  
+  function _createDir($directory) {
     if (file_exists($directory)) {
       throw new Asar_FileHelper_Exception_DirectoryAlreadyExists(
         "The directory '" . $directory . "' already exists."

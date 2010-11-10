@@ -24,6 +24,17 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       "</IfModule>\n";
   }
   
+  private function mockTask() {
+    $methods = func_get_args();
+    if (count($methods) === 0) {
+      $methods = array('taskCreateDirectory');
+    }
+    return $this->getMock(
+      'Asar_Utility_Cli_FrameworkTasks', $methods, array(),
+      '', false
+    );
+  }
+  
   private function controllerOutsAt($i, $output) {
     return $this->controller->expects($this->at($i))
       ->method('out')
@@ -127,71 +138,64 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     $this->tasks->taskCreateProjectDirectories('xdir');
   }
   
-  function testCreatingProjectDirectoriesCreatesAppDirectoryWhenSpecified() {
-    $this->markTestIncomplete();
-    $app_path = Asar::constructPath(
-      self::getTempDir() . 'adir', 'apps', 'TheApp'
-    );
+  function testCreatingProjectDirectoriesCallsCreateDirectory() {
+    $tasks = $this->mockTask();
+    $project_path = 'xdir';
     $directories = array(
-      '', 'Resource', 'Representation'
+      '', // $project_path
+      'apps', 'lib', 'lib/vendor', 'web', 'tests', 'logs'
     );
-    ob_start();
-    $this->tasks->taskCreateProjectDirectories('adir', 'TheApp');
-    ob_end_clean();
-    foreach ($directories as $directory) {
-      $this->assertFileExists(Asar::constructPath($app_path, $directory));
+    $i = 0;
+    foreach ($directories as $dir) {
+      $path = rtrim(
+          $project_path . DIRECTORY_SEPARATOR . $dir,
+          DIRECTORY_SEPARATOR
+      );
+      $tasks->expects($this->at($i))
+        ->method('taskCreateDirectory')
+        ->with($path);
+      $i++;
     }
+    $tasks->taskCreateProjectDirectories('xdir');
   }
   
-  private function _testHtAccess($project_dir) {
-    // Create Project Directory
-    mkdir(Asar::constructPath(
-      self::getTempDir(), $project_dir
-    ));
-    mkdir(Asar::constructPath(
-      self::getTempDir(), $project_dir, 'web'
-    ));
-    ob_start(); // Suppress output
-    // The task to test
-    $this->tasks->taskCreateHtaccessFile($project_dir);
-    ob_end_clean();
-    // The expected file
-    return Asar::constructPath(
-      self::getTempDir(), $project_dir, 'web', '.htaccess'
+  function testCreatingProjectDirectoriesCreatesAppDirectoryWhenSpecified() {
+    $tasks = $this->mockTask();
+    $project_path = 'adir';
+    $app_path = 'TheApp';
+    $directories = array(
+      '', // $app_path
+      'Resource', 'Representation'
     );
+    $i = 7;
+    foreach ($directories as $dir) {
+      $path = rtrim(
+          $project_path . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . 
+            $app_path . DIRECTORY_SEPARATOR . $dir,
+          DIRECTORY_SEPARATOR
+      );
+      $tasks->expects($this->at($i))
+        ->method('taskCreateDirectory')
+        ->with($path);
+      $i++;
+    }
+    $tasks->taskCreateProjectDirectories('adir', 'TheApp');
   }
   
   function testCreatingHtaccessFileForProject() {
-    $this->markTestIncomplete();
-    $this->assertFileExists(
-      $this->_testHtAccess('directory')
-    );
-  }
-  
-  function testCreatingHtaccessFileForProjectWithProperContents() {
-    $this->markTestIncomplete();
-    $this->assertEquals(
-      $this->htaccess_contents,
-      file_get_contents($this->_testHtAccess('another-directory'))
-    );
-  }
-  
-  function testCreatingHtaccessUsesCreateFileTask() {
-    $this->markTestIncomplete();
-    $cli = $this->mock(array('taskCreateFile'));
-    $cli->expects($this->once())
+    $tasks = $tasks = $this->mockTask('taskCreateFile');
+    $project_path = 'directory';
+    $htaccess_path = $project_path . DIRECTORY_SEPARATOR . 'web' . 
+      DIRECTORY_SEPARATOR . '.htaccess';
+    $tasks->expects($this->once())
       ->method('taskCreateFile')
-      ->with(
-        Asar::constructPath(
-          self::getTempDir(), 'thedirectory', 'web', '.htaccess'
-        ), $this->htaccess_contents
-      );
-    $cli->taskCreateHtaccessFile('thedirectory');
+      ->with($htaccess_path, $this->htaccess_contents);
+    $tasks->taskCreateHtaccessFile($project_path);
   }
   
   function testCreatingTestConfigFile() {
     $this->markTestIncomplete();
-    $cli = $this->mock(array('taskCreateFile'));
+    $cli = $this->mock('taskCreateFile');
     $cli->expects($this->once())
       ->method('taskCreateFile')
       ->with(
@@ -210,36 +214,36 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   
   function testCreatingProject() {
     $this->markTestIncomplete();
-    $cli = $this->mock(array(
+    $tasks = $this->mock(
       'taskCreateProjectDirectories', 'taskCreateApplication',
       'taskCreateResource', 'taskCreateFrontController',
       'taskCreateHtaccessFile', 'taskCreateTasksFile',
       'taskCreateTestConfigFile'
-    ));
-    $cli->expects($this->at(0))
+    );
+    $tasks->expects($this->at(0))
       ->method('taskCreateProjectDirectories')
       ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
-    $cli->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateApplication')
       ->with( $this->equalTo('AnApp'), $this->equalTo('mydir') );
-    $cli->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateFrontController')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
-    $cli->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateHtaccessFile')
       ->with( $this->equalTo('mydir') );
-    $cli->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateTestConfigFile')
       ->with( $this->equalTo('mydir') );
-    $cli->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateTasksFile')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
-    $cli->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateResource')
       ->with(
         $this->equalTo('/'), $this->equalTo('AnApp'), $this->equalTo('mydir')
       );
-    $cli->taskCreateProject('mydir', 'AnApp');
+    $tasks->taskCreateProject('mydir', 'AnApp');
   }
   
   function _testCreatingAFile($file, $contents ) {
