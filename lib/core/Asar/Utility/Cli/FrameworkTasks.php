@@ -47,6 +47,32 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     );
   }
   
+  function taskCreateTestConfigFile($path) {
+    $this->taskCreateFile(
+      $this->constructPath($path, 'tests', 'config.php'),
+      "<?php\n" .
+      "ini_set('error_reporting', E_ALL | E_STRICT);\n" .
+      "require_once realpath(dirname(__FILE__) . '/../lib/core/Asar.php');\n" .
+      "\$__asar = Asar::getInstance();\n" .
+      "\$__asar->getToolSet()->getIncludePathManager()->add(\n" .
+      "  \$__asar->getFrameworkCorePath(),\n" .
+      "  \$__asar->getFrameworkDevTestingPath(),\n" .
+      "  \$__asar->getFrameworkExtensionsPath()\n" .
+      ");\n" .
+      "require_once 'Asar/EnvironmentScope.php';\n" .
+      "require_once 'Asar/Injector.php';\n" .
+      "if (!isset(\$_SESSION)) {\n" .
+      "  \$_SESSION = array();\n" .
+      "}\n" .
+      "\$scope = new Asar_EnvironmentScope(\n" .
+      "  \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
+      ");\n" .
+      "Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
+      "Asar_Injector::injectEnvironmentHelper(\$scope)->runTestEnvironment();\n" .
+      "\n"
+    );
+  }
+  
   private function constructPath() {
     $subpaths = func_get_args();
     return implode(DIRECTORY_SEPARATOR, $subpaths);
@@ -75,9 +101,14 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
       );
     }
     foreach ($subpaths as $subpath) {
-      $this->taskCreateDirectory($path . DIRECTORY_SEPARATOR . $subpath);
+      $this->taskCreateDirectory($this->constructPath($path, $subpath));
     }
   }
   
+  function taskCreateProject($path, $app = '') {
+    $this->taskCreateProjectDirectories($path, $app);
+    $this->taskCreateHtaccessFile($path);
+    $this->taskCreateTestConfigFile($path);
+  }
   
 }

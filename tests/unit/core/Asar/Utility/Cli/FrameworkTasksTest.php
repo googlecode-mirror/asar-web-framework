@@ -59,8 +59,17 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       ->with($string);
   }
   
-  private function getFullPath($path) {
-    return $this->dir . DIRECTORY_SEPARATOR . $path;
+  private function getFullPath() {
+    $subpaths = func_get_args();
+    return call_user_func_array(
+      array($this, 'constructPath'),
+      array_merge(array($this->dir), $subpaths)
+    );
+  }
+  
+  private function constructPath() {
+    $subpaths = func_get_args();
+    return rtrim(implode(DIRECTORY_SEPARATOR, $subpaths), DIRECTORY_SEPARATOR);
   }
   
   function testCreateFile() {
@@ -106,7 +115,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   }
   
   function testCreateFileAndDirectory() {
-    $path = 'folder' . DIRECTORY_SEPARATOR . 'thefile.txt';
+    $path = $this->constructPath('folder', 'thefile.txt');
     $contents = 'Foo Bar.';
     $this->file_helper->expects($this->at(0))
       ->method('createDir')
@@ -125,11 +134,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     );
     $i = 0;
     foreach ($directories as $dir) {
-      $path = rtrim(
-        $this->getFullPath(
-          $project_path . DIRECTORY_SEPARATOR . $dir
-        ), DIRECTORY_SEPARATOR
-      );
+      $path = $this->getFullPath($project_path, $dir);
       $this->file_helper->expects($this->at($i))
         ->method('createDir')
         ->with($path);
@@ -147,10 +152,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     );
     $i = 0;
     foreach ($directories as $dir) {
-      $path = rtrim(
-          $project_path . DIRECTORY_SEPARATOR . $dir,
-          DIRECTORY_SEPARATOR
-      );
+      $path = $this->constructPath($project_path, $dir);
       $tasks->expects($this->at($i))
         ->method('taskCreateDirectory')
         ->with($path);
@@ -169,11 +171,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     );
     $i = 7;
     foreach ($directories as $dir) {
-      $path = rtrim(
-          $project_path . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . 
-            $app_path . DIRECTORY_SEPARATOR . $dir,
-          DIRECTORY_SEPARATOR
-      );
+      $path = $this->constructPath($project_path, 'apps', $app_path, $dir);
       $tasks->expects($this->at($i))
         ->method('taskCreateDirectory')
         ->with($path);
@@ -183,39 +181,46 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   }
   
   function testCreatingHtaccessFileForProject() {
-    $tasks = $tasks = $this->mockTask('taskCreateFile');
     $project_path = 'directory';
-    $htaccess_path = $project_path . DIRECTORY_SEPARATOR . 'web' . 
-      DIRECTORY_SEPARATOR . '.htaccess';
-    $tasks->expects($this->once())
-      ->method('taskCreateFile')
-      ->with($htaccess_path, $this->htaccess_contents);
+    $htaccess_path = $this->constructPath($project_path,'web', '.htaccess');
+    $tasks = $this->_testCreatingAFile(
+      $htaccess_path, $this->htaccess_contents
+    );
     $tasks->taskCreateHtaccessFile($project_path);
   }
   
   function testCreatingTestConfigFile() {
-    $this->markTestIncomplete();
-    $cli = $this->mock('taskCreateFile');
-    $cli->expects($this->once())
-      ->method('taskCreateFile')
-      ->with(
-        Asar::constructPath(
-          self::getTempDir(), 'thedirectory', 'tests', 'config.php'
-        ),
-        "<?php\n".
-        "set_include_path(\n".
-        "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n".
-        "  realpath(dirname(__FILE__) . '/../lib/vendor') . PATH_SEPARATOR .\n".
-        "  get_include_path()\n".
-        ");\n"
-      );
-    $cli->taskCreateTestConfigFile('thedirectory');
+    $tasks = $this->_testCreatingAFile(
+      $this->constructPath(
+        'thedirectory', 'tests', 'config.php'
+      ),
+      "<?php\n" .
+      "ini_set('error_reporting', E_ALL | E_STRICT);\n" .
+      "require_once realpath(dirname(__FILE__) . '/../lib/core/Asar.php');\n" .
+      "\$__asar = Asar::getInstance();\n" .
+      "\$__asar->getToolSet()->getIncludePathManager()->add(\n" .
+      "  \$__asar->getFrameworkCorePath(),\n" .
+      "  \$__asar->getFrameworkDevTestingPath(),\n" .
+      "  \$__asar->getFrameworkExtensionsPath()\n" .
+      ");\n" .
+      "require_once 'Asar/EnvironmentScope.php';\n" .
+      "require_once 'Asar/Injector.php';\n" .
+      "if (!isset(\$_SESSION)) {\n" .
+      "  \$_SESSION = array();\n" .
+      "}\n" .
+      "\$scope = new Asar_EnvironmentScope(\n" .
+      "  \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
+      ");\n" .
+      "Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
+      "Asar_Injector::injectEnvironmentHelper(\$scope)->runTestEnvironment();\n" .
+      "\n"
+    );
+    $tasks->taskCreateTestConfigFile('thedirectory');
   }
   
   function testCreatingProject() {
-    $this->markTestIncomplete();
-    $tasks = $this->mock(
-      'taskCreateProjectDirectories', 'taskCreateApplication',
+    $tasks = $this->mockTask(
+      'taskCreateProjectDirectories', 'taskCreateApplicationConfig',
       'taskCreateResource', 'taskCreateFrontController',
       'taskCreateHtaccessFile', 'taskCreateTasksFile',
       'taskCreateTestConfigFile'
@@ -223,48 +228,39 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     $tasks->expects($this->at(0))
       ->method('taskCreateProjectDirectories')
       ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
-    $tasks->expects($this->once())
+    /*$tasks->expects($this->once())
       ->method('taskCreateApplication')
       ->with( $this->equalTo('AnApp'), $this->equalTo('mydir') );
     $tasks->expects($this->once())
       ->method('taskCreateFrontController')
-      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
+      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );*/
     $tasks->expects($this->once())
       ->method('taskCreateHtaccessFile')
       ->with( $this->equalTo('mydir') );
     $tasks->expects($this->once())
       ->method('taskCreateTestConfigFile')
       ->with( $this->equalTo('mydir') );
-    $tasks->expects($this->once())
+    /*$tasks->expects($this->once())
       ->method('taskCreateTasksFile')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
     $tasks->expects($this->once())
       ->method('taskCreateResource')
       ->with(
         $this->equalTo('/'), $this->equalTo('AnApp'), $this->equalTo('mydir')
-      );
+      );*/
     $tasks->taskCreateProject('mydir', 'AnApp');
   }
   
+  
   function _testCreatingAFile($file, $contents ) {
-    return $this->_testCreatingMultipleFiles(array($file => $contents));
+    $tasks = $this->mockTask('taskCreateFile');
+    $tasks->expects($this->once())
+      ->method('taskCreateFile')
+      ->with($file, $contents);
+    return $tasks;
   }
   
-  function _testCreatingMultipleFiles(array $files, $use_alternative = false ) {
-    $create_method = $use_alternative ? 
-      'taskCreateFileAndDirectory' : 'taskCreateFile';
-    $cli = $this->mock(array($create_method));
-    $i = 0;
-    foreach ($files as $file => $contents) {
-      $cli->expects($this->at($i))
-        ->method($create_method)
-        ->with( $this->equalTo($file), $this->equalTo($contents) );
-      $i++;
-    }
-    return $cli;
-  }
-  
-  function testCreateApplicationFile() {
+  function testCreateApplicationConfigFile() {
     $this->markTestIncomplete();
     $cli = $this->_testCreatingAFile(
       Asar::constructPath(
@@ -393,6 +389,20 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       '$main_app = \'FooApp\';' . "\n"
     );
     $cli->taskCreateTasksFile('project', 'FooApp');
+  }
+  
+  function _testCreatingMultipleFiles(array $files, $use_alternative = false ) {
+    $create_method = $use_alternative ? 
+      'taskCreateFileAndDirectory' : 'taskCreateFile';
+    $cli = $this->mock(array($create_method));
+    $i = 0;
+    foreach ($files as $file => $contents) {
+      $cli->expects($this->at($i))
+        ->method($create_method)
+        ->with( $this->equalTo($file), $this->equalTo($contents) );
+      $i++;
+    }
+    return $cli;
   }
   
 }
