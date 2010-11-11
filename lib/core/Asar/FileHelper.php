@@ -1,6 +1,7 @@
 <?php
 
 class Asar_FileHelper {
+  
   function create($filename, $contents) {
     try {
       return Asar_File::create($filename)->write($contents)->save();

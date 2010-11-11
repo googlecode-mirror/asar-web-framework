@@ -227,138 +227,182 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     );
     $tasks->expects($this->at(0))
       ->method('taskCreateProjectDirectories')
-      ->with($this->equalTo('mydir'), $this->equalTo('AnApp'));
-    /*$tasks->expects($this->once())
-      ->method('taskCreateApplication')
-      ->with( $this->equalTo('AnApp'), $this->equalTo('mydir') );
+      ->with('mydir', 'AnApp');
     $tasks->expects($this->once())
+      ->method('taskCreateApplicationConfig')
+      ->with('mydir', 'AnApp');
+    /*$tasks->expects($this->once())
       ->method('taskCreateFrontController')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );*/
     $tasks->expects($this->once())
       ->method('taskCreateHtaccessFile')
-      ->with( $this->equalTo('mydir') );
+      ->with('mydir');
     $tasks->expects($this->once())
       ->method('taskCreateTestConfigFile')
-      ->with( $this->equalTo('mydir') );
+      ->with('mydir');
+    $tasks->expects($this->once())
+      ->method('taskCreateResource')
+      ->with('mydir', 'AnApp', '/');
     /*$tasks->expects($this->once())
       ->method('taskCreateTasksFile')
       ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
-    $tasks->expects($this->once())
-      ->method('taskCreateResource')
-      ->with(
-        $this->equalTo('/'), $this->equalTo('AnApp'), $this->equalTo('mydir')
-      );*/
+    */
     $tasks->taskCreateProject('mydir', 'AnApp');
   }
   
   
-  function _testCreatingAFile($file, $contents ) {
-    $tasks = $this->mockTask('taskCreateFile');
+  function _testCreatingAFile($file, $contents, $creator = 'taskCreateFile') {
+    $tasks = $this->mockTask($creator, 'taskCreateDirectory');
     $tasks->expects($this->once())
-      ->method('taskCreateFile')
+      ->method($creator)
       ->with($file, $contents);
     return $tasks;
   }
   
   function testCreateApplicationConfigFile() {
-    $this->markTestIncomplete();
-    $cli = $this->_testCreatingAFile(
-      Asar::constructPath(
-        self::getTempDir(), 'thedir', 'apps', 'TheApp', 'Application.php'
-      ),
+    $tasks = $this->_testCreatingAFile(
+      $this->constructPath('thedir', 'apps', 'TheApp', 'Config.php'),
       "<?php\n" .
-      "class TheApp_Application extends Asar_Application {\n" .
-      "  \n".
+      "class TheApp_Config extends Asar_Config {\n" .
+      "\n" .
+      "  // Add configuration directives here...\n" .
+      "  protected \$config = array(\n" .
+      "    // e.g.:\n" .
+      "    // 'use_templates' => false,\n" .
+      "  );\n".
       "}\n"
     );
-    $cli->taskCreateApplication('TheApp', 'thedir');
+    $tasks->taskCreateApplicationConfig('thedir', 'TheApp');
   }
   
-  function testCreateResource(array $data = array()) {
-    $this->markTestIncomplete();
-    if (empty($data)) {
-      $data = array(
-        'project' => 'project',
-        'app' => 'MyApp',
-        'url' => '/foo',
-        'expected_resource_name' => 'Foo',
-        'expected_resource_path' => 'Foo'
+  /**
+   * @dataProvider dataCreateResource
+   */
+  function testCreateResource(
+    $project, $app, $url, $resource_name, $filepath, $contents = false
+  ) {
+    $full_resource_name = $app . '_Resource_' . $resource_name;
+    if (!$contents) {
+      $contents = 
+        "  function GET() {\n".
+        '    return "Hello from \'' . $url . '\'.";' . "\n" .
+        "  }\n";
+    }
+    
+    if ($project == '.') {
+      $full_filepath = $this->constructPath(
+        'apps', $app, 'Resource', $filepath . '.php'
+      );
+    } else {
+      $full_filepath = $this->constructPath(
+        $project, 'apps', $app, 'Resource', $filepath . '.php'
       );
     }
-    $names  = explode('_', str_replace('__', '_|', $data['expected_resource_name']));
-    $levels = explode('/', $data['expected_resource_path']);
-    $files = array();
-    $current_path = Asar::constructPath(
-      self::getTempDir(), $data['project'], 'apps', $data['app'], 'Resource'
+    $tasks = $this->_testCreatingAFile(
+      $full_filepath,
+      "<?php\n" .
+      "class $full_resource_name extends Asar_Resource {\n" .
+      "  \n" .
+      $contents .
+      "  \n" .
+      "}\n"
     );
-    $current_name = $data['app'] . "_Resource";
-    for ($i = 0; $i < count($names); $i++) {
-      $current_path .= DIRECTORY_SEPARATOR . $levels[$i];
-      $current_name .= '_' . str_replace('|', '_', $names[$i]);
-      $files[$current_path . '.php'] = 
-        "<?php\n" .
-        "class " . $current_name . " extends Asar_Resource {\n" .
-        "  \n" .
-        "  function GET() {\n".
-        "    \n" .
-        "  }\n" .
-        "  \n" .
-        "}\n";
+    $folders = explode('/', dirname($filepath));
+    if (count($folders) > 0 && $folders[0] != '.') {
+      $subpath = $this->constructPath($project, 'apps', $app, 'Resource');
+      $i = 0;
+      foreach ($folders as $folder) {
+        $subpath .= DIRECTORY_SEPARATOR . $folder;
+        $tasks->expects($this->at($i))
+          ->method('taskCreateDirectory')
+          ->with($subpath);
+        $i++;
+      }
     }
-    $cli = $this->_testCreatingMultipleFiles($files, true);
-    if (array_key_exists('project_context', $data) && $data['project_context']) {
-      $cli->taskCreateResource($data['url']);
-    } else {
-      $cli->taskCreateResource($data['url'], $data['app'], $data['project']);
-    }
+    $tasks->taskCreateResource($project, $app, $url);
   }
   
-  function testCreateResourceIndex() {
-    $this->markTestIncomplete();
-    $this->testCreateResource(array(
-      'project' => 'aproject',
-      'app' => 'AnApp',
-      'url' => '/',
-      'expected_resource_name' => 'Index',
-      'expected_resource_path' => 'Index'
-    ));
-  }
-  
-  function testCreateResourceMultiLevelPath() {
-    $this->markTestIncomplete();
-    $this->testCreateResource(array(
-      'project' => 'foo',
-      'app' => 'BarApp',
-      'url' => '/foo/bar/baz',
-      'expected_resource_name' => 'Foo_Bar_Baz',
-      'expected_resource_path' => 'Foo/Bar/Baz'
-    ));
-  }
-  
-  function testCreateResourceMultiLevelPathWithWildCard() {
-    $this->markTestIncomplete();
-    $this->testCreateResource(array(
-      'project' => 'foo',
-      'app' => 'BarApp',
-      'url' => '/foo/*/baz',
-      'expected_resource_name' => 'Foo__Item_Baz',
-      'expected_resource_path' => 'Foo/_Item/Baz'
-    ));
+  function dataCreateResource() {
+    return array(
+      array(
+        'project'       => 'project',
+        'app'           => 'MyApp',
+        'url'           => '/foo',
+        'resource_name' => 'Foo',
+        'filepath'      => 'Foo'
+      ),
+      array(
+        'project'       => 'aproject',
+        'app'           => 'AnApp',
+        'url'           => '/',
+        'resource_name' => 'Index',
+        'filepath'      => 'Index'
+      ),
+      array(
+        'project'       => 'foo',
+        'app'           => 'BarApp',
+        'url'           => '/foo/bar',
+        'resource_name' => 'Foo_Bar',
+        'filepath'      => 'Foo/Bar'
+      ),
+      array(
+        'project'       => 'foo',
+        'app'           => 'BarApp',
+        'url'           => '/foo/bar/baz',
+        'resource_name' => 'Foo_Bar_Baz',
+        'filepath'      => 'Foo/Bar/Baz'
+      ),
+      array(
+        'project'       => 'foo',
+        'app'           => 'BarApp',
+        'url'           => '/foo/{title}/baz',
+        'resource_name' => 'Foo_RtTitle_Baz',
+        'filepath'      => 'Foo/RtTitle/Baz',
+        'contents'      => 
+          "  function GET() {\n" .
+          "    \$path = \$this->getPathComponents();\n" .
+          "    return \"Hello from '/foo/{\$path['title']}/baz'.\";\n" .
+          "  }\n" .
+          "  \n" .
+          "  function qualify(\$path) {\n" .
+          "    // run your path validation here...\n" .
+          "    return \n" .
+          "      preg_match('/.+/', \$path['title']);\n" .
+          "  }\n"
+      ),
+      array(
+        'project'       => 'foo',
+        'app'           => 'BarApp',
+        'url'           => '/{foo}/{title}/baz',
+        'resource_name' => 'RtFoo_RtTitle_Baz',
+        'filepath'      => 'RtFoo/RtTitle/Baz',
+        'contents'      => 
+          "  function GET() {\n" .
+          "    \$path = \$this->getPathComponents();\n" .
+          "    return \"Hello from '/{\$path['foo']}/{\$path['title']}/baz'.\";\n" .
+          "  }\n" .
+          "  \n" .
+          "  function qualify(\$path) {\n" .
+          "    // run your path validation here...\n" .
+          "    return \n" .
+          "      preg_match('/.+/', \$path['foo']) &&\n" .
+          "      preg_match('/.+/', \$path['title']);\n" .
+          "  }\n"
+      )
+    );
   }
   
   function testCreatingResourceInProjectContext() {
-    $this->markTestIncomplete();
-    Asar_File::create('tasks.php')
-      ->write('<?php $main_app = "TestApp";')
-      ->save();
-    $this->testCreateResource(array(
-      'project' => '',
-      'app' => 'TestApp',
-      'url' => '/foo/bar',
-      'expected_resource_name' => 'Foo_Bar',
-      'expected_resource_path' => 'Foo/Bar',
-      'project_context' => true
-    ));
+    call_user_func_array(
+      array($this, 'testCreateResource'),
+      array(
+        'project'       => '.',
+        'app'           => 'TestApp',
+        'url'           => '/foo/bar',
+        'resource_name' => 'Foo_Bar',
+        'filepath'      => 'Foo/Bar'
+      )
+    );
   }
   
   function testCreatingProjectCreatesFrontController() {
