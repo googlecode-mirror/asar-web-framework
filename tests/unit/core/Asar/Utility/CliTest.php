@@ -22,7 +22,7 @@ class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
   function mockTaskList($methods = array()) {
     return $this->getMock(
       'Asar_Utility_Cli_Interface',
-      array_merge($methods, array('setController'))
+      array_merge($methods, array('setController', 'getTaskNamespace'))
     );
   }
 
@@ -57,6 +57,17 @@ class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
     $this->executor->expects($this->once())
       ->method('registerTasks')
       ->with($tasks);
+    $this->cli->register($tasks);
+  }
+  
+  function testRegisterPassesNamespaceToExecutorRegisterTasks() {
+    $tasks = $this->getMock('Asar_Utility_Cli_Interface');
+    $tasks->expects($this->once())
+      ->method('getTaskNamespace')
+      ->will($this->returnValue('foo'));
+    $this->executor->expects($this->once())
+      ->method('registerTasks')
+      ->with($tasks, 'foo');
     $this->cli->register($tasks);
   }
   

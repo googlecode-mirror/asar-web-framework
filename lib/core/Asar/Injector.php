@@ -8,6 +8,8 @@ require 'EnvironmentHelper/Bootstrap.php';
 
 class Asar_Injector {
   
+  private static $cli;
+  
   static function injectEnvironmentHelper(Asar_EnvironmentScope $env_scope) {
     //($request_factory, $response_exporter, $app_factory, $server, $params, $post)
     return new Asar_EnvironmentHelper(
@@ -30,7 +32,8 @@ class Asar_Injector {
     return new Asar_EnvironmentHelper_Cli(
       self::injectCli($env_scope),
       self::injectArgv($env_scope),
-      self::injectInitialTaskLists($env_scope)
+      self::injectInitialTaskLists($env_scope),
+      self::injectCliTaskFileLoader($env_scope)
     );
   }
   
@@ -76,11 +79,14 @@ class Asar_Injector {
   }
   
   static function injectCli(Asar_EnvironmentScope $env_scope) {
-    return new Asar_Utility_Cli(
-      self::injectCliInterpreter($env_scope), 
-      self::injectCliExecutor($env_scope),
-      self::injectCurrentWorkingDirectory($env_scope)
-    );
+    if (!self::$cli) {
+      self::$cli =  new Asar_Utility_Cli(
+        self::injectCliInterpreter($env_scope), 
+        self::injectCliExecutor($env_scope),
+        self::injectCurrentWorkingDirectory($env_scope)
+      );
+    }
+    return self::$cli;
   }
   
   static function injectCliInterpreter(Asar_EnvironmentScope $env_scope) {
@@ -120,5 +126,17 @@ class Asar_Injector {
   
   static function injectConfigDefault(Asar_EnvironmentScope $env_scope) {
     return new Asar_Config_Default;
+  }
+  
+  static function injectCliTaskFileLoader(Asar_EnvironmentScope $env_scope) {
+    return new Asar_Utility_Cli_TaskFileLoader(
+      $env_scope->getCurrentWorkingDirectory(),
+      self::injectUtilityClassFilePeek($env_scope),
+      self::injectCli($env_scope)
+    );
+  }
+  
+  static function injectUtilityClassFilePeek(Asar_EnvironmentScope $env_scope) {
+    return new Asar_Utility_ClassFilePeek;
   }
 }

@@ -29,3 +29,4 @@ ALL:
 - Better Support for Status Codes
   - 405 MUST include an Allow header containing a list of
     valid methods for the requested resource.
+- Make bootstrap code use functional programming

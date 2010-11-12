@@ -47,6 +47,47 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     );
   }
   
+  function taskCreateBootstrap($project) {
+    $asar_arc_class_path = $this->constructPath(
+      Asar::getInstance()->getFrameworkCorePath(), 'Asar.php'
+    );
+    $this->taskCreateFile(
+      $this->constructPath($project, 'bootstrap.php'),
+      "<?php\n" .
+      "// Change the path when appropriate\n" .
+      "require_once realpath('$asar_arc_class_path');\n" .
+      "\n" .
+      "// This runs the whole bootsrap process inside a function\n" .
+      "// so we don't pollute the global scope.\n" .
+      "function _bootstrap() {\n" .
+      "  // Prepares the include paths\n" .
+      "  \$__asar = Asar::getInstance();\n" .
+      "  \$__asar->getToolSet()->getIncludePathManager()->add(\n" .
+      "    \$__asar->getFrameworkCorePath(),\n" .
+      "    realpath(dirname(__FILE__) . '/apps')\n" .
+      "  );\n" .
+      "  require_once 'Asar/EnvironmentScope.php';\n" .
+      "  require_once 'Asar/Injector.php';\n" .
+      "  if (!isset(\$_SESSION)) {\n" .
+      "    \$_SESSION = array();\n" .
+      "  }\n" .
+      "  if (!isset(\$argv)) {\n" .
+      "    \$argv = array();\n" .
+      "  }\n" .
+      "  // Load the environment variables\n" .
+      "  \$scope = new Asar_EnvironmentScope(\n" .
+      "    \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
+      "  );\n" .
+      "  // Run initial bootstrap \n" .
+      "  // We load the class loader here\n" .
+      "  Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
+      "  return Asar_Injector::injectEnvironmentHelper(\$scope);\n" .
+      "}\n" .
+      "\n" .
+      "return _bootstrap();\n"
+    );
+  }
+  
   function taskCreateApplicationConfig($project, $app = '') {
     $this->taskCreateFile(
       $this->constructPath($project, 'apps', $app, 'Config.php'),
@@ -59,6 +100,15 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
       "    // 'use_templates' => false,\n" .
       "  );\n".
       "}\n"
+    );
+  }
+  
+  function taskCreateFrontController($project, $app) {
+    $this->taskCreateFile(
+      $this->constructPath($project, 'web', 'index.php'),
+      "<?php\n" .
+      "\$env_helper = require realpath(dirname(__FILE__) . '/../bootstrap.php');\n" .
+      "\$env_helper->runAppInProductionEnvironment('$app');\n"
     );
   }
   
@@ -95,6 +145,35 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     }
     $this->taskCreateFile(
       $this->constructPath($project, $file), $contents
+    );
+  }
+  
+  function taskCreateTasksFile($project) {
+    $this->taskCreateFile(
+      $this->constructPath($project, 'tasks.php'),
+      "<?php\n" .
+      "\n" .
+      "// This is a sample task\n" .
+      "class MySampleTaskList implements Asar_Utility_Cli_Interface {\n" .
+      "\n" .
+      "  private \$controller;\n" .
+      "\n" .
+      "  function setController(Asar_Utility_Cli \$controller) {\n" .
+      "    \$this->controller = \$controller;\n" .
+      "  }\n" .
+      "\n" .
+      "  // You can call this task on the command line e.g.:\n" .
+      "  // asarwf mysample:say-hello\n" .
+      "  function taskSayHello() {\n" .
+      "    //echo \"Hello World!\";\n" .
+      "    \$this->controller->out(\"Hello World!\");\n" .
+      "  }\n" .
+      "\n" .
+      "  function getTaskNamespace() {\n" .
+      "    return 'mysample';\n" .
+      "  }\n" .
+      "\n" .
+      "}\n"
     );
   }
   
@@ -228,8 +307,13 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     $this->taskCreateProjectDirectories($path, $app);
     $this->taskCreateApplicationConfig($path, $app);
     $this->taskCreateHtaccessFile($path);
+    $this->taskCreateFrontController($path, $app);
+    $this->taskCreateBootstrap($path);
     $this->taskCreateTestConfigFile($path);
+    $this->taskCreateTasksFile($path);
     $this->taskCreateResource($path, $app, '/');
   }
+  
+  function getTaskNamespace() {}
   
 }

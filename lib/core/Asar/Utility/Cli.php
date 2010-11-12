@@ -19,7 +19,7 @@ class Asar_Utility_Cli {
   }
   
   function register(Asar_Utility_Cli_Interface $tasklist) {
-    $this->executor->registerTasks($tasklist);
+    $this->executor->registerTasks($tasklist, $tasklist->getTaskNamespace());
     $tasklist->setController($this);
   }
   

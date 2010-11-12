@@ -221,7 +221,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   function testCreatingProject() {
     $tasks = $this->mockTask(
       'taskCreateProjectDirectories', 'taskCreateApplicationConfig',
-      'taskCreateResource', 'taskCreateFrontController',
+      'taskCreateResource', 'taskCreateFrontController', 'taskCreateBootstrap',
       'taskCreateHtaccessFile', 'taskCreateTasksFile',
       'taskCreateTestConfigFile'
     );
@@ -231,11 +231,14 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     $tasks->expects($this->once())
       ->method('taskCreateApplicationConfig')
       ->with('mydir', 'AnApp');
-    /*$tasks->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateFrontController')
-      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );*/
+      ->with('mydir', 'AnApp');
     $tasks->expects($this->once())
       ->method('taskCreateHtaccessFile')
+      ->with('mydir');
+    $tasks->expects($this->once())
+      ->method('taskCreateBootstrap')
       ->with('mydir');
     $tasks->expects($this->once())
       ->method('taskCreateTestConfigFile')
@@ -243,10 +246,10 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     $tasks->expects($this->once())
       ->method('taskCreateResource')
       ->with('mydir', 'AnApp', '/');
-    /*$tasks->expects($this->once())
+    $tasks->expects($this->once())
       ->method('taskCreateTasksFile')
-      ->with( $this->equalTo('mydir'), $this->equalTo('AnApp') );
-    */
+      ->with('mydir');
+    
     $tasks->taskCreateProject('mydir', 'AnApp');
   }
   
@@ -405,48 +408,86 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     );
   }
   
-  function testCreatingProjectCreatesFrontController() {
-    $this->markTestIncomplete();
-    $cli = $this->_testCreatingAFile(
-      Asar::constructPath(
-        self::getTempDir(), 'mydir', 'web', 'index.php'
-      ),
-      "<?php\n" .
-      "set_include_path(\n" .
-      "  realpath(dirname(__FILE__) . '/../apps') . PATH_SEPARATOR .\n" .
-      "  realpath(dirname(__FILE__) . '/../lib/vendor') . PATH_SEPARATOR .\n" .
-      "  get_include_path()\n" .
-      ");\n" .
-      "require_once 'Asar.php';\n" .
-      "Asar::start('MyApp');\n"
+  function testCreateProjectBootstrapFile() {
+    $asar_arc_class_path = $this->constructPath(
+      Asar::getInstance()->getFrameworkCorePath(), 'Asar.php'
     );
-    $cli->taskCreateFrontController('mydir', 'MyApp');
+    $tasks = $this->_testCreatingAFile(
+      $this->constructPath('thedir', 'bootstrap.php'),
+      "<?php\n" .
+      "// Change the path when appropriate\n" .
+      "require_once realpath('$asar_arc_class_path');\n" .
+      "\n" .
+      "// This runs the whole bootsrap process inside a function\n" .
+      "// so we don't pollute the global scope.\n" .
+      "function _bootstrap() {\n" .
+      "  // Prepares the include paths\n" .
+      "  \$__asar = Asar::getInstance();\n" .
+      "  \$__asar->getToolSet()->getIncludePathManager()->add(\n" .
+      "    \$__asar->getFrameworkCorePath(),\n" .
+      "    realpath(dirname(__FILE__) . '/apps')\n" .
+      "  );\n" .
+      "  require_once 'Asar/EnvironmentScope.php';\n" .
+      "  require_once 'Asar/Injector.php';\n" .
+      "  if (!isset(\$_SESSION)) {\n" .
+      "    \$_SESSION = array();\n" .
+      "  }\n" .
+      "  if (!isset(\$argv)) {\n" .
+      "    \$argv = array();\n" .
+      "  }\n" .
+      "  // Load the environment variables\n" .
+      "  \$scope = new Asar_EnvironmentScope(\n" .
+      "    \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
+      "  );\n" .
+      "  // Run initial bootstrap \n" .
+      "  // We load the class loader here\n" .
+      "  Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
+      "  return Asar_Injector::injectEnvironmentHelper(\$scope);\n" .
+      "}\n" .
+      "\n" .
+      "return _bootstrap();\n"
+    );
+    $tasks->taskCreateBootstrap('thedir');
+  }
+  
+  function testCreatingProjectCreatesFrontController() {
+    $tasks = $this->_testCreatingAFile(
+      $this->constructPath('thedir', 'web', 'index.php'),
+      "<?php\n" .
+      "\$env_helper = require realpath(dirname(__FILE__) . '/../bootstrap.php');\n" .
+      "\$env_helper->runAppInProductionEnvironment('TheApp');\n"
+    );
+    $tasks->taskCreateFrontController('thedir', 'TheApp');
   }
   
   function testCreatingProjectCreatesTaskFile() {
-    $this->markTestIncomplete();
     $cli = $this->_testCreatingAFile(
-      Asar::constructPath(
-        self::getTempDir(), 'project', 'tasks.php'
-      ),
+      $this->constructPath('project', 'tasks.php'),
       "<?php\n" .
-      '$main_app = \'FooApp\';' . "\n"
+      "\n" .
+      "// This is a sample task\n" .
+      "class MySampleTaskList implements Asar_Utility_Cli_Interface {\n" .
+      "\n" .
+      "  private \$controller;\n" .
+      "\n" .
+      "  function setController(Asar_Utility_Cli \$controller) {\n" .
+      "    \$this->controller = \$controller;\n" .
+      "  }\n" .
+      "\n" .
+      "  // You can call this task on the command line e.g.:\n" .
+      "  // asarwf mysample:say-hello\n" .
+      "  function taskSayHello() {\n" .
+      "    //echo \"Hello World!\";\n" .
+      "    \$this->controller->out(\"Hello World!\");\n" .
+      "  }\n" .
+      "\n" .
+      "  function getTaskNamespace() {\n" .
+      "    return 'mysample';\n" .
+      "  }\n" .
+      "\n" .
+      "}\n" 
     );
-    $cli->taskCreateTasksFile('project', 'FooApp');
-  }
-  
-  function _testCreatingMultipleFiles(array $files, $use_alternative = false ) {
-    $create_method = $use_alternative ? 
-      'taskCreateFileAndDirectory' : 'taskCreateFile';
-    $cli = $this->mock(array($create_method));
-    $i = 0;
-    foreach ($files as $file => $contents) {
-      $cli->expects($this->at($i))
-        ->method($create_method)
-        ->with( $this->equalTo($file), $this->equalTo($contents) );
-      $i++;
-    }
-    return $cli;
+    $cli->taskCreateTasksFile('project');
   }
   
 }

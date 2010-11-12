@@ -10,7 +10,7 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
   function mockTaskList($methods = array()) {
     return $this->getMock(
       'Asar_Utility_Cli_Interface',
-      array_merge($methods, array('setController'))
+      array_merge($methods, array('setController', 'getTaskNamespace'))
     );
   }
   
@@ -102,7 +102,7 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
     $tasks3 = $this->mockTaskList(array('taskDummyTask3'));
     $tasks4 = $this->mockTaskList(array('taskDummyTask4', 'taskDummyTask5'));
     $this->cli->registerTasks($tasks1);
-    $this->cli->registerTasks($tasks2);
+    $this->cli->registerTasks($tasks2, null);
     $this->cli->registerTasks($tasks3, 'foo');
     $this->cli->registerTasks($tasks4, 'bar');
     $this->assertEquals(

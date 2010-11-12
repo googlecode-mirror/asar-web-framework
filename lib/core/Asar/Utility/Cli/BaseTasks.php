@@ -31,4 +31,7 @@ class Asar_Utility_Cli_BaseTasks implements Asar_Utility_Cli_Interface {
   private function out($string) {
     $this->controller->out($string);
   }
+  
+  function getTaskNamespace() {}
+  
 }
