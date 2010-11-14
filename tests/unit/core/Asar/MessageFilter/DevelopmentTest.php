@@ -52,4 +52,12 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testDevFilterAddsDebugToRequestInternalHeader() {
+    $request = new Asar_Request;
+    $a = $this->filter->filterRequest($request)->getHeader('Asar-Internal');
+    $this->assertNotNull($a);
+    $this->assertArrayHasKey('debug', $a);
+    $this->assertInstanceof('Asar_Debug', $a['debug']);
+  }
+  
 }

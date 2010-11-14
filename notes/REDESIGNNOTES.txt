@@ -4,6 +4,7 @@ NEXT:
 - Better and helpful Error messages (500 Status exception messages, line 
   numbers, etc.);
 - Think of a smarter way to add Asar_Debug (debug internal header)
+  - Get Asar_Debug from creeping out of scope - blech
 ALL:
 - Cascading Configurations: 
   / We have default configurations created by the framework
@@ -23,6 +24,9 @@ ALL:
 - Better dependency injection
   - Phemto? http://phemto.sourceforge.net/quick-start.php
   - Pimple? http://github.com/fabpot/Pimple
+- Create different configurations from different execution modes
+  - 'mode' => production for production environment
+  - 'filters' => add Asar_MessageFilter_Development
 - Refactor Configuration system
   - Rethink this:
     $this->config_bag = new Asar_Config();

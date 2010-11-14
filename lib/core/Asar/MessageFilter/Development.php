@@ -18,6 +18,12 @@ class Asar_MessageFilter_Development implements Asar_MessageFilter_Interface {
   }
   
   function filterRequest(Asar_Request_Interface $request) {
+    $a = $request->getHeader('Asar-Internal');
+    if (!is_array($a)) {
+      $a = array();
+    }
+    $a['debug'] = new Asar_Debug;
+    $request->setHeader('Asar-Internal', $a);
     return $request;
   }
   

@@ -15,12 +15,13 @@ class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testDebugInformationIsPresent() {
-    echo $this->client->GET($this->app)->getContent();
+    $resource = $this->client->GET($this->app);
+    $this->assertEquals(200, $resource->getStatus(), $resource->getContent());
     $this->assertTag(
       array(
         'tag' => 'div', 'id' => 'asarwf_debug_info'
       ),
-      $this->client->GET($this->app)->getContent()
+      $resource->getContent()
     );
   }
   
