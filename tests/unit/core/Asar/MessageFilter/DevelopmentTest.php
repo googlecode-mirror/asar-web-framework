@@ -7,15 +7,49 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->config = new Asar_Config(array());
+    $this->debug  = new Asar_Debug;
+    $this->printer = $this->getMock('Asar_DebugPrinter_Interface');
     $this->filter = new Asar_MessageFilter_Development($this->config);
+    $this->filter->setPrinter('html', $this->printer);
+    $this->response = new Asar_Response;
+    $this->response->setContent($this->html);
   }
   
-  function testAddDebugInformation() {
-    $response = new Asar_Response();
-    $response->setContent($this->html);
-    $this->markTestIncomplete();
-    
-    $response->setHeader('Asar-Internal', array('debug' => $debug));
+  function testDevFilterDelegatesPrintingDebugInfoToPrinter() {
+    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->printer->expects($this->once())
+      ->method('printDebug')
+      ->with($this->debug, $this->html);
+    $this->filter->filterResponse($this->response);
+  }
+  
+  function testDevFilterDelegatesToAnotherPrinter() {
+    $this->response->setHeader('Content-Type', 'text/plain');
+    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->printer->expects($this->never())
+      ->method('printDebug');
+    $this->filter->filterResponse($this->response);
+  }
+  
+  function testDevFilterDelegatesToMatchedPrinter() {
+    $this->response->setHeader('Content-Type', 'text/plain');
+    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $text_printer = $this->getMock('Asar_DebugPrinter_Interface');
+    $this->filter->setPrinter('txt', $text_printer);
+    $text_printer->expects($this->once())
+      ->method('printDebug')
+      ->with($this->debug, $this->html);
+    $this->filter->filterResponse($this->response);
+  }
+  
+  function testDevFilterUsesOutputFromPrinter() {
+    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->printer->expects($this->once())
+      ->method('printDebug')
+      ->will($this->returnValue('foo'));
+    $this->assertEquals(
+      'foo', $this->filter->filterResponse($this->response)->getContent()
+    );
   }
   
 }
