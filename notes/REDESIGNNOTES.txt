@@ -1,6 +1,9 @@
 NEXT:
 - Create methods for Default Filter to cleanup internal headers
 - More test cases for request forwarding
+- Better and helpful Error messages (500 Status exception messages, line 
+  numbers, etc.);
+- Think of a smarter way to add Asar_Debug (debug internal header)
 ALL:
 - Cascading Configurations: 
   / We have default configurations created by the framework
@@ -25,7 +28,6 @@ ALL:
     $this->config_bag = new Asar_Config();
     $this->setUp();
     $this->config_bag->importConfig(new Asar_Config($this->config));
-- Better and helpful Error messages (500 Status exception messages, etc.);
 - Better Support for Status Codes
   - 405 MUST include an Allow header containing a list of
     valid methods for the requested resource.

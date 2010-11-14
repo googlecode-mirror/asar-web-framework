@@ -5,11 +5,12 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
   private $block_elements = array('div', 'table', 'tbody', 'tr');
   
   function printDebug(Asar_Debug $debug, $content) {
-    $content = str_replace(
-      '</body>', $this->createDebugContent($debug) . "\n</body>", $content
-    );
-    //echo "\n\n$content";
-    return  $content ;
+    if (strpos($content, '</body>')) {
+      return str_replace(
+        '</body>', $this->createDebugContent($debug) . "\n</body>", $content
+      );
+    }
+    return $content . $this->createDebugContent($debug);
   }
   
   private function createDebugContent($debug) {

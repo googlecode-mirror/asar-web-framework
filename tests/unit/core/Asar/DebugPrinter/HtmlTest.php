@@ -12,12 +12,20 @@ class Asar_DebugPrinter_HtmlTest extends PHPUnit_Framework_TestCase {
   }
   
   function testDebugContent() {
-    //echo $this->printer->printDebug($this->debug, $this->html);
     $this->assertTag(
       array(
         'tag' => 'div', 'id' => 'asarwf_debug_info'
       ),
       $this->printer->printDebug($this->debug, $this->html)
+    );
+  }
+  
+  function testDebugWithEmptyContent() {
+    $this->assertTag(
+      array(
+        'tag' => 'div', 'id' => 'asarwf_debug_info'
+      ),
+      $this->printer->printDebug($this->debug, '')
     );
   }
   
@@ -149,41 +157,5 @@ class Asar_DebugPrinter_HtmlTest extends PHPUnit_Framework_TestCase {
       $this->printer->printDebug($this->debug, $this->html)
     );
   }
-  
-  /*
-  array(
-    'tag'     => 'th',
-    'content' => 'delta',
-    'parent'  => array(
-      'tag'    => 'tr', 
-      'child'  => array( 
-        'tag'   => 'td', 
-        'child' => array(
-          'tag'   => 'table',
-          'child' => array(
-            'tag'      => 'tbody',
-            'children' => array('count' => 3),
-            'child'    => array(
-              'tag'   => 'tr',
-              'child' => array(
-                'tag'        => 'th',
-                'content'    => 'three',
-                'attributes' => array('scope' => 'row'),
-                'parent' => array(
-                  'tag'   => 'tr',
-                  'child' => array(
-                    'tag'     => 'td',
-                    'content' => 'trez'
-                  )
-                )
-              )
-            )
-          )
-          
-        )
-      )
-    )
-  )
-  */
   
 }

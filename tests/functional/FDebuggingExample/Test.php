@@ -15,6 +15,7 @@ class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testDebugInformationIsPresent() {
+    echo $this->client->GET($this->app)->getContent();
     $this->assertTag(
       array(
         'tag' => 'div', 'id' => 'asarwf_debug_info'

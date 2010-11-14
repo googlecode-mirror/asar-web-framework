@@ -59,7 +59,9 @@ class Asar_ApplicationFactory {
       $filters[] = new $filter($config);
     }
     if ($config->getConfig('mode') == 'development') {
-      $filters[] = new Asar_MessageFilter_Standard($config);
+      $dev_filter = new Asar_MessageFilter_Development($config);
+      $dev_filter->setPrinter('html', new Asar_DebugPrinter_Html);
+      array_unshift($filters, $dev_filter);
     }
     return $filters;
   }
