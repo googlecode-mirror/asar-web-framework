@@ -3,7 +3,7 @@
 // TODO: Refactor this!!!
 class Asar_ApplicationFactory {
   
-  private $config, $file_searcher;
+  private $config, $file_searcher, $loaded_message_filters = array();
   
   function __construct(Asar_Config_Interface $config) {
     $this->config = $config;
@@ -13,6 +13,9 @@ class Asar_ApplicationFactory {
     $classes = $this->getClasses($app_name);
     $app_full_name = $classes['app'];
     $app_config = new $classes['config'];
+    if ('development' == $app_config->getConfig('mode')) {
+      $app_config->importConfig(new Asar_Config_Development);
+    }
     $app_config->importConfig(new Asar_Config_Default);
     // Set the status code messages
     $sm = $app_config->getConfig('default_classes.status_messages');
@@ -22,7 +25,8 @@ class Asar_ApplicationFactory {
     // Get Router
     $router_class = $app_config->getConfig('default_classes.router');
     // Instantiate Filters
-    $filters = $this->getFilters($app_config);
+    $request_filters = $this->getRequestFilters($app_config);
+    $response_filters = $this->getResponseFilters($app_config);
     $app = new $app_full_name(
       $app_name,
       new $router_class(
@@ -41,7 +45,8 @@ class Asar_ApplicationFactory {
       ),
       new $sm,
       $app_config->getConfig('map'),
-      $filters
+      $request_filters,
+      $response_filters
     );
     return $app;
   }
@@ -53,15 +58,25 @@ class Asar_ApplicationFactory {
     return $this->file_searcher;
   }
   
-  private function getFilters(Asar_Config_Interface $config) {
+  private function getRequestFilters(Asar_Config_Interface $config) {
+    return $this->filterBuilder($config, 'request_filters');
+  }
+  
+  private function getResponseFilters(Asar_Config_Interface $config) {
+    return $this->filterBuilder($config, 'response_filters');
+  }
+  
+  private function filterBuilder(Asar_Config_Interface $config, $type) {
     $filters = array();
-    foreach ($config->getConfig('filters') as $filter) {
-      $filters[] = new $filter($config);
-    }
-    if ($config->getConfig('mode') == 'development') {
-      $dev_filter = new Asar_MessageFilter_Development($config);
-      $dev_filter->setPrinter('html', new Asar_DebugPrinter_Html);
-      array_unshift($filters, $dev_filter);
+    foreach ($config->getConfig($type) as $key => $filter) {
+      if (!isset($this->loaded_filters[$filter])) {
+        $filterobj = new $filter($config);
+        if ($filter == 'Asar_MessageFilter_Development') {
+          $filterobj->setPrinter('html', new Asar_DebugPrinter_Html);
+        }
+        $this->loaded_filters[$filter] = $filterobj;
+      }
+      $filters[$key] = $this->loaded_filters[$filter];
     }
     return $filters;
   }

@@ -1,6 +1,6 @@
 <?php
 
-class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
+class Asar_MessageFilter_Standard implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface {
   
   private $config;
   
@@ -9,11 +9,13 @@ class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
   }
   
   function filterRequest(Asar_Request_Interface $request) {
+    echo "\nStandard::filterRequest";
     $this->removeInternalHeaders($request);
     return $request;
   }
   
   function filterResponse(Asar_Response_Interface $response) {
+    echo "\nStandard::filterResponse";
     $this->reformatLocationHeader($response);
     $this->removeInternalHeaders($response);
     return $response;

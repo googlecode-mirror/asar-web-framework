@@ -1,4 +1,5 @@
 NEXT:
+- Createa strategy for passing asar_debug from Request to Response
 - Create methods for Default Filter to cleanup internal headers
 - More test cases for request forwarding
 - Better and helpful Error messages (500 Status exception messages, line 

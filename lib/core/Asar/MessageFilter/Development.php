@@ -1,6 +1,6 @@
 <?php
 
-class Asar_MessageFilter_Development implements Asar_MessageFilter_Interface {
+class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface {
   
   private 
     $config,
@@ -18,6 +18,7 @@ class Asar_MessageFilter_Development implements Asar_MessageFilter_Interface {
   }
   
   function filterRequest(Asar_Request_Interface $request) {
+    echo "\nDevelopment::filterRequest";
     $a = $request->getHeader('Asar-Internal');
     if (!is_array($a)) {
       $a = array();
@@ -28,6 +29,7 @@ class Asar_MessageFilter_Development implements Asar_MessageFilter_Interface {
   }
   
   function filterResponse(Asar_Response_Interface $response) {
+    echo "\nDevelopment::filterResponse";
     $printer = $this->getPrinter(
       $this->getOutputType($response->getHeader('Content-Type'))
     );

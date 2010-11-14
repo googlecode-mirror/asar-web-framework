@@ -327,53 +327,62 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('/foo/bar', $app_response->getHeader('Location'));
   }
   
-  function testFiltersFilteringRequest() {
+  function testRequestFiltersFilteringRequestInSequence() {
     $request = new Asar_Request(array('content' => 0));
     for ($i = 0, $filters = array(); $i < 3; $i++) {
-      $filter = $this->getMock(
-        'Asar_MessageFilter_Interface', array('filterRequest', 'filterResponse')
-      );
+      $filter = $this->getMock('Asar_RequestFilter_Interface');
       $filter->expects($this->once())
         ->method('filterRequest')
         ->with(new Asar_Request(array('content' => $i)))
         ->will($this->returnValue(
           new Asar_Request(array('content' => $i + 1))
         ));
-      $filter->expects($this->any())
-        ->method('filterResponse')
-        ->will($this->returnValue(new Asar_Response));
-      $filters[] = $filter;
+      $request_filters[] = $filter;
     }
     $app = new Asar_Application(
-      'Some_Name', $this->router, $this->sm, $this->map, $filters
+      'Some_Name', $this->router, $this->sm, $this->map, $request_filters
     );
     $app->handleRequest($request);
   }
   
-  function testFiltersFilteringResponse() {
+  function testUseRequestFromRequestFilter() {
+    $request = new Asar_Request(array('content' => 0));
+    $request2 = new Asar_Request(array('content' => 2));
+    $filter = $this->getMock('Asar_RequestFilter_Interface');
+    $filter->expects($this->once())
+      ->method('filterRequest')
+      ->with($request)
+      ->will($this->returnValue($request2));
+    $this->routerReturnsResource();
+    $this->resourceExpects()
+      ->with($request2);
+    $app = new Asar_Application(
+      'Some_Name', $this->router, $this->sm, $this->map, array($filter)
+    );
+    $app->handleRequest($request);
+  }
+  
+  function testResponseFiltersFilteringResponse() {
     $request = new Asar_Request;
     $this->routerReturnsResource();
     $this->resourceExpects()
       ->will($this->returnValue(new Asar_Response(array(
-        'content' => 3
+        'content' => 0
       ))));
-    for ($i = 3, $filters = array(); $i > 0; $i--) {
+    for ($i = 0, $filters = array(); $i < 3; $i++) {
       $filter = $this->getMock(
-        'Asar_MessageFilter_Interface', array('filterRequest', 'filterResponse')
+        'Asar_ResponseFilter_Interface'
       );
       $filter->expects($this->once())
         ->method('filterResponse')
         ->with(new Asar_Response(array('content' => $i)))
         ->will($this->returnValue(
-          new Asar_Response(array('content' => $i - 1))
+          new Asar_Response(array('content' => $i + 1))
         ));
-      $filters[] = $filter;
-      $filter->expects($this->any())
-        ->method('filterRequest')
-        ->will($this->returnValue(new Asar_Request));
+      $response_filters[] = $filter;
     }
     $app = new Asar_Application(
-      'Some_Name', $this->router, $this->sm, $this->map, $filters
+      'Some_Name', $this->router, $this->sm, $this->map, array(), $response_filters
     );
     $app->handleRequest($request);
   }
