@@ -272,7 +272,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $request = new Asar_Request(array('content' => "bar"));
     $received_request = clone($request);
     $received_request->setHeader(
-      'Asar-Internal', array('isForwarded'   => true)
+      'Asar-Internal-Isforwarded', true
     );
     $e = new Asar_Resource_Exception_ForwardRequest('Foo');
     $e->setPayload(array('request' => $request));

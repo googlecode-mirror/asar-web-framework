@@ -1,11 +1,14 @@
 NEXT:
 - Createa strategy for passing asar_debug from Request to Response
+  - How about introduce an interface called 'Asar_Debuggable_Interface'
+  - Classes can use the inDebugMode(Asar_Debug $debug)
 - Create methods for Default Filter to cleanup internal headers
 - More test cases for request forwarding
 - Better and helpful Error messages (500 Status exception messages, line 
   numbers, etc.);
 - Think of a smarter way to add Asar_Debug (debug internal header)
   - Get Asar_Debug from creeping out of scope - blech
+- Think of how to pass Internal headers better
 ALL:
 - Cascading Configurations: 
   / We have default configurations created by the framework
@@ -15,6 +18,9 @@ ALL:
   GET, POST, PUT, DELETE as necessary and just a required __construct interface
   where all the dependency needed is passed. The HTTP methods need only return
   something interesting.
+- How to manage scope
+  - How to transition between environment scope and application scope
+  - How to prevent an object of a smaller scope invading the larger scope
 - Make sure we're using the right Content-Language header (See Asar_Application)
   and using 'en';
 - For Router, only one kind of word separator (e.g. '_' in 'the_quick_brown').
@@ -37,3 +43,8 @@ ALL:
   - 405 MUST include an Allow header containing a list of
     valid methods for the requested resource.
 - Make bootstrap code use functional programming
+
+
+- Reimplement removal of internal headers to accommodate new single-level 
+  headers.
+- Make classes that use internal headers use new implementation

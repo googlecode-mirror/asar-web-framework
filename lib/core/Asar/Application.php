@@ -101,7 +101,7 @@ class Asar_Application implements Asar_Resource_Interface {
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
       $payload = $e->getPayload();
       $req = $payload['request'];
-      $req->setHeader('Asar-Internal', array('isForwarded'   => true));
+      $req->setHeader('Asar-Internal-Isforwarded', true);
       $response = $this->passRequest(
         $payload['request'], $response, $e->getMessage()
       );
@@ -122,8 +122,18 @@ class Asar_Application implements Asar_Resource_Interface {
   }
   
   private function set500Message($e) {
+    $trace = "\nTrace:";
+    //var_dump($e->getTrace());
+    foreach ($e->getTrace() as $tracepart) {
+      if (!isset($tracepart['file'])) {
+        continue;
+      }
+      $f = isset($tracepart['file']) ? $tracepart['file'] : '';
+      $l = isset($tracepart['line']) ? $tracepart['line'] : '';
+      $trace .= "\n  File: $f  - Line: $l";
+    }
     return $e->getMessage() . 
-      "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine();
+      "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() . $trace;
   }
   
   private function checkIfResource($resource) {

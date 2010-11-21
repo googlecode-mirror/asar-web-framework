@@ -9,13 +9,11 @@ class Asar_MessageFilter_Standard implements Asar_RequestFilter_Interface, Asar_
   }
   
   function filterRequest(Asar_Request_Interface $request) {
-    echo "\nStandard::filterRequest";
     $this->removeInternalHeaders($request);
     return $request;
   }
   
   function filterResponse(Asar_Response_Interface $response) {
-    echo "\nStandard::filterResponse";
     $this->reformatLocationHeader($response);
     $this->removeInternalHeaders($response);
     return $response;
@@ -33,8 +31,11 @@ class Asar_MessageFilter_Standard implements Asar_RequestFilter_Interface, Asar_
   }
   
   private function removeInternalHeaders(Asar_Message $message) {
-    if ($message->getHeader('Asar-Internal')) {
-      $message->unsetHeader('Asar-Internal');
+    $headers = $message->getHeaders();
+    foreach (array_keys($headers) as $key) {
+      if (Asar_Utility_String::startsWith($key, 'Asar-Internal')) {
+        $message->unsetHeader($key);
+      }
     }
   }
   

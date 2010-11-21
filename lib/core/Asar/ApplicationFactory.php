@@ -3,7 +3,10 @@
 // TODO: Refactor this!!!
 class Asar_ApplicationFactory {
   
-  private $config, $file_searcher, $loaded_message_filters = array();
+  private 
+    $config,
+    $file_searcher,
+    $loaded_message_filters = array();
   
   function __construct(Asar_Config_Interface $config) {
     $this->config = $config;
@@ -25,8 +28,9 @@ class Asar_ApplicationFactory {
     // Get Router
     $router_class = $app_config->getConfig('default_classes.router');
     // Instantiate Filters
-    $request_filters = $this->getRequestFilters($app_config);
-    $response_filters = $this->getResponseFilters($app_config);
+    $filter_factory = new Asar_MessageFilterFactory($app_config, new Asar_Debug);
+    $request_filters = $this->getRequestFilters($app_config, $filter_factory);
+    $response_filters = $this->getResponseFilters($app_config, $filter_factory);
     $app = new $app_full_name(
       $app_name,
       new $router_class(
@@ -58,22 +62,19 @@ class Asar_ApplicationFactory {
     return $this->file_searcher;
   }
   
-  private function getRequestFilters(Asar_Config_Interface $config) {
-    return $this->filterBuilder($config, 'request_filters');
+  private function getRequestFilters(Asar_Config_Interface $config, Asar_MessageFilterFactory $filter_factory) {
+    return $this->filterBuilder($config, $filter_factory, 'request_filters');
   }
   
-  private function getResponseFilters(Asar_Config_Interface $config) {
-    return $this->filterBuilder($config, 'response_filters');
+  private function getResponseFilters(Asar_Config_Interface $config, Asar_MessageFilterFactory $filter_factory) {
+    return $this->filterBuilder($config, $filter_factory, 'response_filters');
   }
   
-  private function filterBuilder(Asar_Config_Interface $config, $type) {
+  private function filterBuilder(Asar_Config_Interface $config, Asar_MessageFilterFactory $filter_factory, $type) {
     $filters = array();
     foreach ($config->getConfig($type) as $key => $filter) {
       if (!isset($this->loaded_filters[$filter])) {
-        $filterobj = new $filter($config);
-        if ($filter == 'Asar_MessageFilter_Development') {
-          $filterobj->setPrinter('html', new Asar_DebugPrinter_Html);
-        }
+        $filterobj = $filter_factory->getFilter($filter);
         $this->loaded_filters[$filter] = $filterobj;
       }
       $filters[$key] = $this->loaded_filters[$filter];

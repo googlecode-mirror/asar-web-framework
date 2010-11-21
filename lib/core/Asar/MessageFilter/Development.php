@@ -4,13 +4,15 @@ class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, As
   
   private 
     $config,
+    $debug,
     $printers = array(),
     $output_types = array(
       'text/plain' => 'txt'
     );
   
-  function __construct(Asar_Config_Interface $config) {
+  function __construct(Asar_Config_Interface $config, Asar_Debug $debug) {
     $this->config = $config;
+    $this->debug  = $debug;
   }
   
   function setPrinter($type, Asar_DebugPrinter_Interface $printer) {
@@ -18,24 +20,18 @@ class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, As
   }
   
   function filterRequest(Asar_Request_Interface $request) {
-    echo "\nDevelopment::filterRequest";
-    $a = $request->getHeader('Asar-Internal');
-    if (!is_array($a)) {
-      $a = array();
-    }
-    $a['debug'] = new Asar_Debug;
-    $request->setHeader('Asar-Internal', $a);
+    $request->setHeader('Asar-Internal-Debug', $this->debug);
     return $request;
   }
   
   function filterResponse(Asar_Response_Interface $response) {
-    echo "\nDevelopment::filterResponse";
     $printer = $this->getPrinter(
       $this->getOutputType($response->getHeader('Content-Type'))
     );
-    $internal_headers = $response->getHeader('Asar-Internal');
     $response->setContent(
-      $printer->printDebug($internal_headers['debug'], $response->getContent())
+      $printer->printDebug(
+        $this->debug, $response->getContent()
+      )
     );
     return $response;
   }
