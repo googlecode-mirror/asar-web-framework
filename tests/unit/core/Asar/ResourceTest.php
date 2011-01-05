@@ -16,11 +16,11 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testResourceImplementsResourceInterface() {
-    $this->assertType('Asar_Resource_Interface', $this->R);
+    $this->assertInstanceOf('Asar_Resource_Interface', $this->R);
   }
   
   function testResourceImplementsConfigInterface() {
-    $this->assertType('Asar_Config_Interface', $this->R);
+    $this->assertInstanceOf('Asar_Config_Interface', $this->R);
     $this->config = $this->getMock('Asar_Config_Interface');
     $this->config->expects($this->once())
       ->method('getConfig')
@@ -30,7 +30,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testResourceReturnsAResponse() {
-    $this->assertType(
+    $this->assertInstanceOf(
       'Asar_Response', $this->R->handleRequest(new Asar_Request)
     );
   }
@@ -104,7 +104,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   
   function testExecutingPOSTMethodSetsContentOfPostGlobalVariableEvenIfEmpty() {
     $this->requestProcessingTests(array(), 'POST');
-    $this->assertType('array', $_POST);
+    $this->assertInternalType('array', $_POST);
   }
   
   function testResourceWithoutDefinedHttpMethodShouldReturn405HttpStatus() {

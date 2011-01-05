@@ -33,7 +33,7 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testTemplaterImplementsAsarConfigInterface() {
-    $this->assertType('Asar_Config_Interface', $this->templater);
+    $this->assertInstanceOf('Asar_Config_Interface', $this->templater);
   }
   
   function testTemplaterDelagatesGetConfigToResource() {
@@ -121,7 +121,7 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testTemplaterImplementsPathDiscoverInterface() {
-    $this->assertType('Asar_PathDiscover_Interface', $this->templater);
+    $this->assertInstanceOf('Asar_PathDiscover_Interface', $this->templater);
   }
   
   function testPassesGetPermaPathCallToResource() {

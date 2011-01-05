@@ -9,7 +9,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRequestShouldImplementAsarRequestInterface() {
-    $this->assertType('Asar_Request_Interface', $this->R);
+    $this->assertInstanceOf('Asar_Request_Interface', $this->R);
   }
   
   function testRequestShouldBeAbleToSetPath() {

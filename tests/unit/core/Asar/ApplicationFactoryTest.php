@@ -22,7 +22,7 @@ class Asar_ApplicationFactoryTest extends PHPUnit_Framework_TestCase {
       ->method('getConfig')
       ->with('default_classes.config')
       ->will($this->returnValue('Asar_Config_Default'));
-    $this->assertType(
+    $this->assertInstanceOf(
       'Asar_ApplicationFactoryTest_Application',
       $this->F->getApplication('Asar_ApplicationFactoryTest')
     );
@@ -37,7 +37,7 @@ class Asar_ApplicationFactoryTest extends PHPUnit_Framework_TestCase {
       false,
       $this->F->getApplication('Asar_ApplicationFactoryTest_Test2')
     );
-    $this->assertType(
+    $this->assertInstanceOf(
       'Asar_ApplicationBasic',
       $this->F->getApplication('Asar_ApplicationFactoryTest_Test2')
     );

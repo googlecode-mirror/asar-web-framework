@@ -9,7 +9,7 @@ class Asar_ResponseTest extends PHPUnit_Framework_TestCase {
   }
   
   function testInstanceOfAsarResponseInterface() {
-    $this->assertType('Asar_Response_Interface', $this->R);
+    $this->assertInstanceOf('Asar_Response_Interface', $this->R);
   }
   
   function testAbleToSetStatus() {

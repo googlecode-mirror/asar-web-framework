@@ -47,7 +47,7 @@ class Asar_TemplateLFactoryTest extends PHPUnit_Framework_TestCase {
       ->method('createTemplate')
       ->will($this->returnValue($tpl));
     $templates = $this->tlf->getTemplatesFor('A_Resource', new Asar_Request);
-    $this->assertType('array', $templates);
+    $this->assertInternalType('array', $templates);
     $this->assertEquals($tpl, $templates['template']);
   }
   

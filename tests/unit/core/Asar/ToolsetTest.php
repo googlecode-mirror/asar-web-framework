@@ -11,7 +11,7 @@ class Asar_ToolsetTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGettingIncludePathManager() {
-    $this->assertType(
+    $this->assertInstanceOf(
       'Asar_IncludePathManager', $this->toolset->getIncludePathManager()
     );
   }

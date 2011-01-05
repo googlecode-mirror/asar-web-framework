@@ -30,7 +30,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRouterInstanceOfRouterInterface() {
-    $this->assertType('Asar_Router_Interface', $this->router);
+    $this->assertInstanceOf('Asar_Router_Interface', $this->router);
   }
   
   /**
