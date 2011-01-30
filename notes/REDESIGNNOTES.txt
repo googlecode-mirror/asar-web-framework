@@ -1,5 +1,5 @@
 NEXT:
-- Createa strategy for passing asar_debug from Request to Response
+- Create a strategy for passing asar_debug from Request to Response
   - How about introduce an interface called 'Asar_Debuggable_Interface'
   - Classes can use the inDebugMode(Asar_Debug $debug)
 - Create methods for Default Filter to cleanup internal headers
