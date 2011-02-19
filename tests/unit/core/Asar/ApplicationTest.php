@@ -21,7 +21,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testApplicationImplementsResourceInterface() {
-    $this->assertType('Asar_Resource_Interface', $this->app);
+    $this->assertInstanceOf('Asar_Resource_Interface', $this->app);
   }
 
   function testAppRunsSetupMethodOnConstruction() {
@@ -166,7 +166,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     ");
     $app = new $cname($app_name, $this->router, $this->sm);
     $map = $app->getMap();
-    $this->assertType('array', $map);
+    $this->assertInternalType('array', $map);
     $this->assertEquals($map['/'], $resource1);
     $this->assertEquals($map['/bar'], $resource2);
   }

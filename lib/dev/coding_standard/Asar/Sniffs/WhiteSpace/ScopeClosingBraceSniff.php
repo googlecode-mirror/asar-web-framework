@@ -60,7 +60,6 @@ class Asar_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_S
         
         $lastContent = $phpcsFile->findPrevious(array(T_WHITESPACE), ($scopeEnd - 1), $scopeStart, true);
         // Check if empty block it should be {}
-        //var_dump($tokens[$lastContent]);var_dump($tokens[$scopeStart]);exit;
         if ($tokens[$lastContent] === $tokens[$scopeStart]) {
           $error = 'Empty blocks must be written as {}';
           $phpcsFile->addError($error, $scopeStart);

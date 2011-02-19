@@ -9,7 +9,7 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
   }
   
   function testMessageShouldImplementAsarMessageInterface() {
-    $this->assertType('Asar_Message_Interface', $this->M);
+    $this->assertInstanceOf('Asar_Message_Interface', $this->M);
   }
   
   function testShouldBeAbleToSetContent() {

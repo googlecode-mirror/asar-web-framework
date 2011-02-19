@@ -66,4 +66,22 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testAddsExecutionTimeToDebug() {
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
+    $this->filter->filterResponse($this->response);
+    $str = $this->debug->get('Execution Time');
+    if (strpos($str, 'E') > 0) {
+      $this->assertRegExp('/[0-9]+(.)?[0-9]*E-[0-9]+ microseconds/', $str);
+    } else {
+      $this->assertRegExp('/[0-9]+(.)?[0-9]* microseconds/', $str);
+    }
+  }
+  
+  function testAddsMemoryUsageToDebug() {
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
+    $this->filter->filterResponse($this->response);
+    $str = $this->debug->get('Memory Used');
+    $this->assertRegExp('/[0-9]+.[0-9]{2}(M|K)B/', $str);
+  }
+  
 }

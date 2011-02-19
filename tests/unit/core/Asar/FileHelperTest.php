@@ -29,7 +29,7 @@ class Asar_FileHelperTest extends PHPUnit_Framework_TestCase {
 	function testBasicCreationReturnsAFileObject() {
 	  $filename = $this->createDirPath($this->tempdir, 'bar.txt');
 	  $file = $this->helper->create($filename, "Bar!");
-	  $this->assertType('Asar_File', $file);
+	  $this->assertInstanceOf('Asar_File', $file);
 	  $this->assertEquals($filename, $file->getFileName());
 	  $this->assertEquals("Bar!", $file->getContents());
 	}

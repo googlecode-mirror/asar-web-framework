@@ -22,7 +22,6 @@ class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testDebugInformationTableIsPresent() {
-    $this->markTestIncomplete();
     $this->assertTag(
       array(
         'tag' => 'table', 'parent' => array(
@@ -33,99 +32,117 @@ class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
     );
   }
   
-  function testDebugInformationContainsDebuggingInformation() {
-    $this->markTestIncomplete();
+  function testDebugInformationContainsExecutionTimeInformation() {
     $content = $this->client->GET($this->app)->getContent();
-    
     $this->assertTag(
       array(
         'tag' => 'th',
-        'content' => 'Execution Time',
-        'parent' => array(
-          'tag' => 'tr', 
-          'child' => array(
-            'tag' => 'td',
-            'content' => '/[0-9]+.[0-9]{2}ms/'
+        'id'  => 'asarwf_dbgl_execution_time',
+        'content' => 'Execution Time'
+      ),
+      $content,
+      "Unale to find execution time in debugging information in \n $content"
+    );
+    
+    $txt_content = $this->findElementContent($content, array(
+        'tag' => 'td', 'id' => 'asarwf_dbgv_execution_time'
+      )
+    );
+    $this->assertContains('microseconds', $txt_content);
+    if (strpos($txt_content, 'E') > 0) {
+      $this->assertRegExp('/[0-9]+(.)?[0-9]*E-[0-9]+ microseconds/', $txt_content);
+    } else {
+      $this->assertRegExp('/[0-9]+(.)?[0-9]* microseconds/', $txt_content);
+    }
+  }
+  
+  private function findElementContent($html, $matcher) {
+    $el = PHPUnit_Util_XML::findNodes(
+      dom_import_simplexml(simplexml_load_string($html))->ownerDocument,
+      $matcher
+    );
+    if ($el === false) {
+      return false;
+    }
+    return $el[0]->textContent;
+  }
+  
+  function testMemoryUsedInDebugInformation() {
+    $content = $this->client->GET($this->app)->getContent();
+    $this->assertContains(
+      'Memory Used', $content,
+      'Unable to find memory usage label in debug info table.'
+    );
+    $txt_content = $this->findElementContent($content, array(
+      'id' => 'asarwf_dbgv_memory_used'
+    ));
+    $this->assertRegExp(
+      '/[0-9]+.[0-9]{2}(M|K)B/', $txt_content,
+      'Unable to find memory usage value in debug info table.'
+    );
+  }
+  
+  function testApplicationNameInDebugInformation() {
+    $content = $this->client->GET($this->app)->getContent();
+    $this->assertContains(
+      'Application', $content,
+      'Unable to find application name label in debug info table.'
+    );
+    $txt_content = $this->findElementContent($content, array(
+      'id' => 'asarwf_dbgv_application'
+    ));
+    $this->assertEquals(
+      'DebuggingExample', $txt_content,
+      'Unable to find application name value in debug info table.'
+    );
+  }
+  
+  function testResourceNameInDebugInformation() {
+    $content = $this->client->GET($this->app)->getContent();
+    $this->assertContains(
+      'Resource', $content,
+      'Unable to find resource label in debug info table.'
+    );
+    $txt_content = $this->findElementContent($content, array(
+      'id' => 'asarwf_dbgv_resource'
+    ));
+    $this->assertEquals(
+      'DebuggingExample_Resource_Index', $txt_content,
+      'Unable to find resource name value in debug info table.'
+    );
+  }
+  
+  function testTempalatesInDebugInformation() {
+    $content = $this->client->GET($this->app)->getContent();
+    $this->assertContains(
+      'Templates', $content,
+      'Unable to find templates label in debug info table.'
+    );
+    $this->assertTag(
+      array(
+        'id' => 'asarwf_dbgv_templates',
+        'child' => array(
+          'tag' => 'ul',
+          'children' => array(
+            'count' => 2,
+            'only'  => array('tag' => 'li')
           ),
-          'parent' => array(
-            'tag' => 'tbody', 'parent' => array(
-              'tag' => 'table', 'parent' => array(
-                'tag' => 'div', 'id' => 'asarwf_debug_info'
+          'child' => array(
+            'tag' => 'li',
+            'content' => realpath(dirname(__FILE__) . '/DebuggingExample/Representation/Index.GET.html.php'),
+            'parent' => array(
+              'child' => array(
+                'tag' => 'li',
+                'content' => realpath(dirname(__FILE__) . '/DebuggingExample/Representation/Layout.html.php'),
               )
             )
+            
           )
         )
       ),
       $content
     );
-    $this->assertRegExp(
-      '/[0-9]+.[0-9]{2}ms/', $debug->tbody->tr[0]->td->stringValue(),
-      'Unable to find execution time value in debug info table.'
-    );
   }
   
-  function testDebugInformationForHtmlRequest() {
-    $this->markTestIncomplete();
-    // Memory Used
-    /*
-    function echo_memory_usage() {
-        $mem_usage = memory_get_usage(true);
-       
-        if ($mem_usage < 1024)
-            echo $mem_usage." bytes";
-        elseif ($mem_usage < 1048576)
-            echo round($mem_usage/1024,2)." kilobytes";
-        else
-            echo round($mem_usage/1048576,2)." megabytes";
-           
-        echo "<br/>";
-    } 
-    */
-    $this->assertEquals(
-      'Memory Used', $debug->tbody->tr[1]->th->stringValue(),
-      'Unable to find memory usage label in debug info table.'
-    );
-    $this->assertRegExp(
-      '/[0-9]+.[0-9]{2}(M|K)B/', $debug->tbody->tr[1]->td->stringValue(),
-      'Unable to find memory usage value in debug info table.'
-    );
-    
-    // Application
-    $this->assertEquals(
-      'Application', $debug->tbody->tr[2]->th->stringValue(),
-      'Unable to find application name label in debug info table.'
-    );
-    $this->assertEquals(
-      'DebuggingExample', $debug->tbody->tr[2]->td->stringValue(),
-      'Unable to find application name value in debug info table.'
-    );
-    
-    // Resource
-    $this->assertEquals(
-      'Resource', $debug->tbody->tr[3]->th->stringValue(),
-      'Unable to find resource name label in debug info table.'
-    );
-    $this->assertEquals(
-      'DebuggingExample_Resource_Index', $debug->tbody->tr[3]->td->stringValue(),
-      'Unable to find resource name value in debug info table.'
-    );
-    
-    // Templates
-    $this->assertEquals(
-      'Templates Used', $debug->tbody->tr[4]->th->stringValue(),
-      'Unable to find templates section label in debug info table.'
-    );
-    $this->assertEquals(
-      new Asar_Utility_XML(
-        '<ul><li>'. 
-        realpath(dirname(__FILE__) . '/DebuggingExample/Representation/Index.GET.html.php') .
-        '</li><li>'.
-        realpath(dirname(__FILE__) . '/DebuggingExample/Representation/Layout.html.php') .
-        '</li></ul>'
-      ),
-      $debug->tbody->tr[4]->td->ul,
-      'Unable to find list of templates used in debug info table.'
-    );
-  }
   
 }

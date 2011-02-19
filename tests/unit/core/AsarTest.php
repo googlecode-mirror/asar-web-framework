@@ -38,7 +38,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
   
   function testGettingAnInstance() {
     $A1 = Asar::getInstance();
-    $this->assertType('Asar', $A1);
+    $this->assertInstanceOf('Asar', $A1);
   }
   
   function testGettingInstanceReturnsTheSameInstance() {
@@ -52,7 +52,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGettingToolSet() {
-    $this->assertType('Asar_Toolset', $this->A->getToolSet());
+    $this->assertInstanceOf('Asar_Toolset', $this->A->getToolSet());
   }
   
   function testGettingToolSetAgainReturnsTheSameInstance() {

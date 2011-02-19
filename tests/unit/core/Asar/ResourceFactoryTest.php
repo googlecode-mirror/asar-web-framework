@@ -26,7 +26,7 @@ class Asar_ResourceFactoryTest extends PHPUnit_Framework_TestCase {
   function testGetResourceReturnsResourceObject() {
     $class = self::generateRandomClassName(get_class($this), 'Resource_Foo');
     eval("class $class extends Asar_Resource {}");
-    $this->assertType('Asar_Templater', $this->F->getResource($class));
+    $this->assertInstanceOf('Asar_Templater', $this->F->getResource($class));
   }
   
   private function buildResourceClass($resource_class) {
@@ -48,8 +48,8 @@ class Asar_ResourceFactoryTest extends PHPUnit_Framework_TestCase {
       }'
     );
     $resource = $this->F->getResource($resource_class);
-    $this->assertType($representation_class, $resource);
-    $this->assertType($resource_class, $resource->getResource());
+    $this->assertInstanceOf($representation_class, $resource);
+    $this->assertInstanceOf($resource_class, $resource->getResource());
   }
   
   function dataGetsResourceDecoratedByRepresentationObject() {

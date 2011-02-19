@@ -13,6 +13,10 @@ class Asar_DebugTest  extends PHPUnit_Framework_TestCase {
     $this->assertEquals('value', $this->debug->get('key'));
   }
   
+  function testDebugReturnsNullForUnknownKeys() {
+    $this->assertSame(null, $this->debug->get('foo'));
+  }
+  
   function testIteration() {
     $this->debug->set('foo', 1);
     $this->debug->set('bar', 'B');

@@ -13,9 +13,12 @@ class Asar_Utility_String {
     return trim(strtolower($string), '-');
   }
   
-  
   static function camelCase($string) {
     return str_replace(array(' ', '-'), '', self::ucwordsLower($string));
+  }
+  
+  static function underScore($string) {
+    return str_replace(array(' ', '-'), '_', strtolower($string));
   }
   
   private static function ucwordsLower($string) {

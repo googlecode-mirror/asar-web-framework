@@ -158,4 +158,40 @@ class Asar_DebugPrinter_HtmlTest extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testPrinterAddsHtmlIdsToTables() {
+    $this->debug->set('alpha test Foo bAr', 1);
+    $this->debug->set('beta', 'two');
+    $this->debug->set('gamma', array('one', 'two', 'three'));
+    $output = $this->printer->printDebug($this->debug, $this->html);
+    $this->assertTag(
+      array(
+        'tag'     => 'th',
+        'id'      => 'asarwf_dbgl_alpha_test_foo_bar',
+        'content' => 'alpha',
+        'parent'  => array(
+          'tag'    => 'tr', 
+          'child'  => array(
+            'id'  => 'asarwf_dbgv_alpha_test_foo_bar',
+            'tag' => 'td', 'content' => '1'
+          )
+        )
+      ),
+      $output, $output
+    );
+    $this->assertTag(
+      array(
+        'id'      => 'asarwf_dbgl_beta',
+        'content' => 'beta',
+        'parent'  => array(
+          'tag'    => 'tr', 
+          'child'  => array(
+            'id'  => 'asarwf_dbgv_beta',
+            'tag' => 'td', 'content' => 'two'
+          )
+        )
+      ),
+      $output, $output
+    );
+  }
+  
 }

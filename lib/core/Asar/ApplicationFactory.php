@@ -19,16 +19,17 @@ class Asar_ApplicationFactory {
     if ('development' == $app_config->getConfig('mode')) {
       $app_config->importConfig(new Asar_Config_Development);
     }
+    $debug = new Asar_Debug;
     $app_config->importConfig(new Asar_Config_Default);
     // Set the status code messages
     $sm = $app_config->getConfig('default_classes.status_messages');
     // Set the templating Engine
-    $template_factory = new Asar_TemplateFactory;
+    $template_factory = new Asar_TemplateFactory($debug);
     $template_factory->registerTemplateEngine('php', 'Asar_Template');
     // Get Router
     $router_class = $app_config->getConfig('default_classes.router');
     // Instantiate Filters
-    $filter_factory = new Asar_MessageFilterFactory($app_config, new Asar_Debug);
+    $filter_factory = new Asar_MessageFilterFactory($app_config, $debug);
     $request_filters = $this->getRequestFilters($app_config, $filter_factory);
     $response_filters = $this->getResponseFilters($app_config, $filter_factory);
     $app = new $app_full_name(
@@ -45,7 +46,8 @@ class Asar_ApplicationFactory {
           new Asar_TemplateSimpleRenderer,
           $app_config
         ),
-        new Asar_ResourceLister($this->getFileSearcher())
+        new Asar_ResourceLister($this->getFileSearcher()),
+        $debug
       ),
       new $sm,
       $app_config->getConfig('map'),

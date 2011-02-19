@@ -148,7 +148,7 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   
   function testRepresentationIsConfig() {
     $R = new Asar_Representation($this->resource);
-    $this->assertType('Asar_Config_Interface', $R);
+    $this->assertInstanceOf('Asar_Config_Interface', $R);
   }
   
   function testImportConfigPassesConfigToResource() {

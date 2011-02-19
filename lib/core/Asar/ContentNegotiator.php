@@ -43,7 +43,6 @@ class Asar_ContentNegotiator implements Asar_ContentNegotiator_Interface {
         $array[] = $value;
       }
     }
-    //var_dump($array);
     return $array;
   }
   

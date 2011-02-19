@@ -35,7 +35,7 @@ class Asar_TemplateFactoryTest extends PHPUnit_Framework_TestCase {
   function testBasicTemplateCreation() {
     $this->F->registerTemplateEngine('php', $this->engine);
     $template = $this->F->createTemplate('foo.php');
-    $this->assertType($this->engine, $template);
+    $this->assertInstanceOf($this->engine, $template);
   }
   
   /**
@@ -67,7 +67,7 @@ class Asar_TemplateFactoryTest extends PHPUnit_Framework_TestCase {
     $this->F->registerTemplateEngine('x', $engine2);
     $this->F->registerTemplateEngine('php', $this->engine);
     $template = $this->F->createTemplate('foo.x');
-    $this->assertType($engine2, $template);
+    $this->assertInstanceOf($engine2, $template);
   }
   
   function testGettingRegisteredEngines() {

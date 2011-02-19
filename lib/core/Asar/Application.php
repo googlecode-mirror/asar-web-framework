@@ -6,6 +6,7 @@ class Asar_Application implements Asar_Resource_Interface {
     $map,
     $router,
     $status_messages,
+    $name,
     $request_filters = array(),
     $response_filters = array(),
     $forward_level_max = 20,
@@ -58,6 +59,10 @@ class Asar_Application implements Asar_Resource_Interface {
     $this->forward_recursion = 0;
     try {
       $request = $this->filterRequest($request);
+      $debug = $request->getHeader('Asar-Internal-Debug');
+      if ($debug) {
+        $this->addDebugInfo($debug);
+      }
       $response = $this->filterResponse(
         $this->passRequest($request, $response, $request->getPath())
       );
@@ -67,6 +72,11 @@ class Asar_Application implements Asar_Resource_Interface {
     }
     $this->setResponseDefaults($response, $request);
     return $response;
+  }
+  
+  private function addDebugInfo($debug) {
+    // TODO: This should be moved outside.
+    $debug->set('Application', $this->name);
   }
   
   private function filterRequest($request) {
@@ -111,6 +121,7 @@ class Asar_Application implements Asar_Resource_Interface {
         $response->getStatus() < 400 &&
         !Asar_Utility_String::startsWith($response->getHeader('Location'), '/')
       ) {
+      "Redirecting Here..\n";
       $resource = $this->router->route(
         $this->name, $response->getHeader('Location'), $this->getMap()
       );
@@ -123,7 +134,6 @@ class Asar_Application implements Asar_Resource_Interface {
   
   private function set500Message($e) {
     $trace = "\nTrace:";
-    //var_dump($e->getTrace());
     foreach ($e->getTrace() as $tracepart) {
       if (!isset($tracepart['file'])) {
         continue;
