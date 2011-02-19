@@ -405,10 +405,10 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(
       '/preferred/path', $headers['Location']
     );
-    $this->assertTrue(isset($headers['Asar-Internal']['locations_list']));
+    $this->assertArrayHasKey('Asar-Internal-Locationslist', $headers);
     $this->assertEquals(
       array('/preferred/path', '/another/path', '/yet/again'),
-      $headers['Asar-Internal']['locations_list']
+      $headers['Asar-Internal-Locationslist']
     );
   }
   

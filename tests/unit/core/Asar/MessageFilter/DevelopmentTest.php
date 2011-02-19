@@ -9,14 +9,14 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
     $this->config = new Asar_Config(array());
     $this->debug  = new Asar_Debug;
     $this->printer = $this->getMock('Asar_DebugPrinter_Interface');
-    $this->filter = new Asar_MessageFilter_Development($this->config);
+    $this->filter = new Asar_MessageFilter_Development($this->config, $this->debug);
     $this->filter->setPrinter('html', $this->printer);
     $this->response = new Asar_Response;
     $this->response->setContent($this->html);
   }
   
   function testDevFilterDelegatesPrintingDebugInfoToPrinter() {
-    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
     $this->printer->expects($this->once())
       ->method('printDebug')
       ->with($this->debug, $this->html);
@@ -25,7 +25,7 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   
   function testDevFilterDelegatesToAnotherPrinter() {
     $this->response->setHeader('Content-Type', 'text/plain');
-    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
     $this->printer->expects($this->never())
       ->method('printDebug');
     $this->filter->filterResponse($this->response);
@@ -33,7 +33,7 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   
   function testDevFilterDelegatesToMatchedPrinter() {
     $this->response->setHeader('Content-Type', 'text/plain');
-    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
     $text_printer = $this->getMock('Asar_DebugPrinter_Interface');
     $this->filter->setPrinter('txt', $text_printer);
     $text_printer->expects($this->once())
@@ -43,7 +43,7 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   }
   
   function testDevFilterUsesOutputFromPrinter() {
-    $this->response->setHeader('Asar-Internal', array('debug' => $this->debug));
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
     $this->printer->expects($this->once())
       ->method('printDebug')
       ->will($this->returnValue('foo'));
@@ -54,10 +54,34 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   
   function testDevFilterAddsDebugToRequestInternalHeader() {
     $request = new Asar_Request;
-    $a = $this->filter->filterRequest($request)->getHeader('Asar-Internal');
-    $this->assertNotNull($a);
-    $this->assertArrayHasKey('debug', $a);
-    $this->assertInstanceof('Asar_Debug', $a['debug']);
+    $debug = $this->filter->filterRequest($request)->getHeader('Asar-Internal-Debug');
+    $this->assertInstanceof('Asar_Debug', $debug);
+  }
+  
+  function testReturnsDebugFromConstruction() {
+    $request = new Asar_Request;
+    $this->assertSame(
+      $this->debug,
+      $this->filter->filterRequest($request)->getHeader('Asar-Internal-Debug')
+    );
+  }
+  
+  function testAddsExecutionTimeToDebug() {
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
+    $this->filter->filterResponse($this->response);
+    $str = $this->debug->get('Execution Time');
+    if (strpos($str, 'E') > 0) {
+      $this->assertRegExp('/[0-9]+(.)?[0-9]*E-[0-9]+ microseconds/', $str);
+    } else {
+      $this->assertRegExp('/[0-9]+(.)?[0-9]* microseconds/', $str);
+    }
+  }
+  
+  function testAddsMemoryUsageToDebug() {
+    $this->response->setHeader('Asar-Internal-Debug', $this->debug);
+    $this->filter->filterResponse($this->response);
+    $str = $this->debug->get('Memory Used');
+    $this->assertRegExp('/[0-9]+.[0-9]{2}(M|K)B/', $str);
   }
   
 }

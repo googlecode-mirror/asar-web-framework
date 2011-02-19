@@ -13,7 +13,10 @@ class Asar_Debug implements Iterator {
   }
   
   function get($key) {
-    return $this->data[$key];
+    if (isset($this->data[$key])) {
+      return $this->data[$key];
+    }
+    return null;
   }
   
   function rewind() {

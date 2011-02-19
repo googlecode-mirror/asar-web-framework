@@ -6,7 +6,9 @@ class Asar_Application implements Asar_Resource_Interface {
     $map,
     $router,
     $status_messages,
-    $filters,
+    $name,
+    $request_filters = array(),
+    $response_filters = array(),
     $forward_level_max = 20,
     $forward_recursion = 0;
   
@@ -14,14 +16,18 @@ class Asar_Application implements Asar_Resource_Interface {
     $name, Asar_Router_Interface $router,
     Asar_Response_StatusMessages_Interface $status_messages,
     $map = array(),
-    $filters = array()
+    $request_filters = array(),
+    $response_filters = array()
   ) {
     $this->name = $name;
     $this->router = $router;
     $this->status_messages = $status_messages;
     $this->map = $map;
-    foreach ($filters as $filter) {
-      $this->addFilter($filter);
+    foreach ($request_filters as $filter) {
+      $this->addRequestFilter($filter);
+    }
+    foreach ($response_filters as $filter) {
+      $this->addResponseFilter($filter);
     }
     $this->setUp();
   }
@@ -36,8 +42,12 @@ class Asar_Application implements Asar_Resource_Interface {
     $this->map[$path] = $resource_name;
   }
   
-  protected function addFilter(Asar_MessageFilter_Interface $filter) {
-    $this->filters[] = $filter;
+  protected function addRequestFilter(Asar_RequestFilter_Interface $filter) {
+    $this->request_filters[] = $filter;
+  }
+  
+  protected function addResponseFilter(Asar_ResponseFilter_Interface $filter) {
+    $this->response_filters[] = $filter;
   }
   
   function getMap() {
@@ -49,6 +59,10 @@ class Asar_Application implements Asar_Resource_Interface {
     $this->forward_recursion = 0;
     try {
       $request = $this->filterRequest($request);
+      $debug = $request->getHeader('Asar-Internal-Debug');
+      if ($debug) {
+        $this->addDebugInfo($debug);
+      }
       $response = $this->filterResponse(
         $this->passRequest($request, $response, $request->getPath())
       );
@@ -60,20 +74,21 @@ class Asar_Application implements Asar_Resource_Interface {
     return $response;
   }
   
+  private function addDebugInfo($debug) {
+    // TODO: This should be moved outside.
+    $debug->set('Application', $this->name);
+  }
+  
   private function filterRequest($request) {
-    if (!empty($this->filters)) {
-      foreach ($this->filters as $filter) {
-        $request = $filter->filterRequest($request);
-      }
+    foreach ($this->request_filters as $filter) {
+      $request = $filter->filterRequest($request);
     }
     return $request;
   }
   
   private function filterResponse($response) {
-    if (!empty($this->filters)) {
-      foreach ($this->filters as $filter) {
-        $response = $filter->filterResponse($response);
-      }
+    foreach ($this->response_filters as $filter) {
+      $response = $filter->filterResponse($response);
     }
     return $response;
   }
@@ -96,7 +111,7 @@ class Asar_Application implements Asar_Resource_Interface {
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
       $payload = $e->getPayload();
       $req = $payload['request'];
-      $req->setHeader('Asar-Internal', array('isForwarded'   => true));
+      $req->setHeader('Asar-Internal-Isforwarded', true);
       $response = $this->passRequest(
         $payload['request'], $response, $e->getMessage()
       );
@@ -106,6 +121,7 @@ class Asar_Application implements Asar_Resource_Interface {
         $response->getStatus() < 400 &&
         !Asar_Utility_String::startsWith($response->getHeader('Location'), '/')
       ) {
+      "Redirecting Here..\n";
       $resource = $this->router->route(
         $this->name, $response->getHeader('Location'), $this->getMap()
       );
@@ -117,8 +133,17 @@ class Asar_Application implements Asar_Resource_Interface {
   }
   
   private function set500Message($e) {
+    $trace = "\nTrace:";
+    foreach ($e->getTrace() as $tracepart) {
+      if (!isset($tracepart['file'])) {
+        continue;
+      }
+      $f = isset($tracepart['file']) ? $tracepart['file'] : '';
+      $l = isset($tracepart['line']) ? $tracepart['line'] : '';
+      $trace .= "\n  File: $f  - Line: $l";
+    }
     return $e->getMessage() . 
-      "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine();
+      "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() . $trace;
   }
   
   private function checkIfResource($resource) {

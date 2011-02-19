@@ -2,7 +2,11 @@
 
 class Asar_TemplateFactory {
   
-  private $engines;
+  private $engines, $debug;
+  
+  function __construct(Asar_Debug $debug = null) {
+    $this->debug = $debug;
+  }
   
   //TODO: This should be moved to constructor
   function registerTemplateEngine($extension, $engine) {
@@ -20,6 +24,14 @@ class Asar_TemplateFactory {
         $engine = $this->engines[$extension];
         $template = new $engine;
         $template->setTemplateFile($filename);
+        if ($this->debug) {
+          if (!$this->debug->get('Templates')) {
+            $this->debug->set('Templates', array());
+          }
+          $list_of_templates = $this->debug->get('Templates');
+          $list_of_templates[] = $filename;
+          $this->debug->set('Templates', $list_of_templates);
+        }
         return $template;
       }
     }

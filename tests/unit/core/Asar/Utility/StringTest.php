@@ -55,4 +55,17 @@ class Asar_Utility_StringTest extends PHPUnit_Framework_TestCase {
     $this->assertSame(true, Asar_Utility_String::startsWith('Wararara', 'War'));
     $this->assertSame(false, Asar_Utility_String::startsWith('Rararara', 'ar'));
   }
+  
+  function testUnderScore() {
+    $tests = array(
+      'wanton-noodles' => 'wanton_noodles',
+      'HOLy-maCaroni'  => 'holy_macaroni',
+      'camel case'     => 'camel_case',
+      'very_GoOd-food' => 'very_good_food',
+      'bAd'            => 'bad',
+      'foo'            => 'foo',
+      'BAR Roo'        => 'bar_roo'
+    );
+    $this->_testFunction('underScore', $tests);
+  }
 }

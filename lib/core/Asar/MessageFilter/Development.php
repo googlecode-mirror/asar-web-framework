@@ -1,16 +1,20 @@
 <?php
 
-class Asar_MessageFilter_Development implements Asar_MessageFilter_Interface {
+class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface {
   
   private 
     $config,
+    $debug,
+    $exec_start,
     $printers = array(),
     $output_types = array(
       'text/plain' => 'txt'
     );
   
-  function __construct(Asar_Config_Interface $config) {
+  function __construct(Asar_Config_Interface $config, Asar_Debug $debug) {
+    $this->exec_start = microtime(true);
     $this->config = $config;
+    $this->debug  = $debug;
   }
   
   function setPrinter($type, Asar_DebugPrinter_Interface $printer) {
@@ -18,22 +22,34 @@ class Asar_MessageFilter_Development implements Asar_MessageFilter_Interface {
   }
   
   function filterRequest(Asar_Request_Interface $request) {
-    $a = $request->getHeader('Asar-Internal');
-    if (!is_array($a)) {
-      $a = array();
-    }
-    $a['debug'] = new Asar_Debug;
-    $request->setHeader('Asar-Internal', $a);
+    $request->setHeader('Asar-Internal-Debug', $this->debug);
     return $request;
+  }
+  
+  private function getMemoryUsage() {
+    $mem_usage = memory_get_usage(true);
+    if ($mem_usage < 1024)
+      return $mem_usage." bytes";
+    elseif ($mem_usage < 1048576)
+      return sprintf("%01.2f", round($mem_usage/1024,2))."KB";
+    else
+      return sprintf("%01.2f", round($mem_usage/1048576,2))."MB";
   }
   
   function filterResponse(Asar_Response_Interface $response) {
     $printer = $this->getPrinter(
       $this->getOutputType($response->getHeader('Content-Type'))
     );
-    $internal_headers = $response->getHeader('Asar-Internal');
+    $this->debug->set(
+      'Execution Time', 
+      round(microtime(true) - $this->exec_start, 8) . ' microseconds'
+    );
+    $this->debug->set('Memory Used', $this->getMemoryUsage());
+    var_dump($response->getHeaders());
     $response->setContent(
-      $printer->printDebug($internal_headers['debug'], $response->getContent())
+      $printer->printDebug(
+        $this->debug, $response->getContent()
+      )
     );
     return $response;
   }

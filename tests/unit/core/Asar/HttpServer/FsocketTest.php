@@ -4,8 +4,11 @@ require_once realpath(dirname(__FILE__). '/../../../../config.php');
 class Asar_HttpServer_FsocketTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
+    global $argv;
+    
     $this->A = new Asar;
     $this->TSM = new Asar_TestServerManager($this->A->getFrameworkTestsDataPath());
+    $this->markTestSkipped();
     if (!$this->TSM->isCanConnectToTestServer()) {
       $this->markTestSkipped(
         'Unable to connect to test server. Check server setup.'

@@ -2,14 +2,16 @@
 
 class Asar_Router_Default implements Asar_Router_Interface {
   
-  private $resource_factory, $resource_lister;
+  private $resource_factory, $resource_lister, $debug;
   
   function __construct(
     Asar_ResourceFactory $resource_factory,
-    Asar_ResourceLister_Interface $resource_lister
+    Asar_ResourceLister_Interface $resource_lister,
+    Asar_Debug $debug = null
   ) {
     $this->resource_factory = $resource_factory;
     $this->resource_lister  = $resource_lister;
+    $this->debug = $debug;
   }
   
   function route($app_name, $path, $map) {
@@ -21,6 +23,9 @@ class Asar_Router_Default implements Asar_Router_Interface {
       } else {
         $rname = $this->getNameFromClassSuffix($app_name, $path);
       }
+    }
+    if ($this->debug) {
+      $this->debug->set('Resource', $rname);
     }
     return $this->resource_factory->getResource($rname);
   }

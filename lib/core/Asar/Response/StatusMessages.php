@@ -33,7 +33,6 @@ class Asar_Response_StatusMessages
   }
   
   private function get405Message($response, $request) {
-    //var_dump($request);
     return sprintf(self::$status_messages[405], $request->getMethod());
   }
   

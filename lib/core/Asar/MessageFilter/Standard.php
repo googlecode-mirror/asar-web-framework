@@ -1,6 +1,6 @@
 <?php
 
-class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
+class Asar_MessageFilter_Standard implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface {
   
   private $config;
   
@@ -31,8 +31,11 @@ class Asar_MessageFilter_Standard implements Asar_MessageFilter_Interface {
   }
   
   private function removeInternalHeaders(Asar_Message $message) {
-    if ($message->getHeader('Asar-Internal')) {
-      $message->unsetHeader('Asar-Internal');
+    $headers = $message->getHeaders();
+    foreach (array_keys($headers) as $key) {
+      if (Asar_Utility_String::startsWith($key, 'Asar-Internal')) {
+        $message->unsetHeader($key);
+      }
     }
   }
   

@@ -3,7 +3,10 @@
 // TODO: Refactor this!!!
 class Asar_ApplicationFactory {
   
-  private $config, $file_searcher;
+  private 
+    $config,
+    $file_searcher,
+    $loaded_message_filters = array();
   
   function __construct(Asar_Config_Interface $config) {
     $this->config = $config;
@@ -13,16 +16,22 @@ class Asar_ApplicationFactory {
     $classes = $this->getClasses($app_name);
     $app_full_name = $classes['app'];
     $app_config = new $classes['config'];
+    if ('development' == $app_config->getConfig('mode')) {
+      $app_config->importConfig(new Asar_Config_Development);
+    }
+    $debug = new Asar_Debug;
     $app_config->importConfig(new Asar_Config_Default);
     // Set the status code messages
     $sm = $app_config->getConfig('default_classes.status_messages');
     // Set the templating Engine
-    $template_factory = new Asar_TemplateFactory;
+    $template_factory = new Asar_TemplateFactory($debug);
     $template_factory->registerTemplateEngine('php', 'Asar_Template');
     // Get Router
     $router_class = $app_config->getConfig('default_classes.router');
     // Instantiate Filters
-    $filters = $this->getFilters($app_config);
+    $filter_factory = new Asar_MessageFilterFactory($app_config, $debug);
+    $request_filters = $this->getRequestFilters($app_config, $filter_factory);
+    $response_filters = $this->getResponseFilters($app_config, $filter_factory);
     $app = new $app_full_name(
       $app_name,
       new $router_class(
@@ -37,11 +46,13 @@ class Asar_ApplicationFactory {
           new Asar_TemplateSimpleRenderer,
           $app_config
         ),
-        new Asar_ResourceLister($this->getFileSearcher())
+        new Asar_ResourceLister($this->getFileSearcher()),
+        $debug
       ),
       new $sm,
       $app_config->getConfig('map'),
-      $filters
+      $request_filters,
+      $response_filters
     );
     return $app;
   }
@@ -53,15 +64,22 @@ class Asar_ApplicationFactory {
     return $this->file_searcher;
   }
   
-  private function getFilters(Asar_Config_Interface $config) {
+  private function getRequestFilters(Asar_Config_Interface $config, Asar_MessageFilterFactory $filter_factory) {
+    return $this->filterBuilder($config, $filter_factory, 'request_filters');
+  }
+  
+  private function getResponseFilters(Asar_Config_Interface $config, Asar_MessageFilterFactory $filter_factory) {
+    return $this->filterBuilder($config, $filter_factory, 'response_filters');
+  }
+  
+  private function filterBuilder(Asar_Config_Interface $config, Asar_MessageFilterFactory $filter_factory, $type) {
     $filters = array();
-    foreach ($config->getConfig('filters') as $filter) {
-      $filters[] = new $filter($config);
-    }
-    if ($config->getConfig('mode') == 'development') {
-      $dev_filter = new Asar_MessageFilter_Development($config);
-      $dev_filter->setPrinter('html', new Asar_DebugPrinter_Html);
-      array_unshift($filters, $dev_filter);
+    foreach ($config->getConfig($type) as $key => $filter) {
+      if (!isset($this->loaded_filters[$filter])) {
+        $filterobj = $filter_factory->getFilter($filter);
+        $this->loaded_filters[$filter] = $filterobj;
+      }
+      $filters[$key] = $this->loaded_filters[$filter];
     }
     return $filters;
   }

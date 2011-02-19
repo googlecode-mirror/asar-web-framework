@@ -66,7 +66,7 @@ class Asar_Resource
       $response->setHeader('Location', $payload['location']);
       if (isset($payload['locations_list'])) {
         $response->setHeader(
-          'Asar-Internal', array('locations_list' => $payload['locations_list'])
+          'Asar-Internal-Locationslist', $payload['locations_list']
         );
       }
     } catch (Asar_Resource_Exception_ForwardRequest $e) {
