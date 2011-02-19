@@ -45,7 +45,6 @@ class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, As
       round(microtime(true) - $this->exec_start, 8) . ' microseconds'
     );
     $this->debug->set('Memory Used', $this->getMemoryUsage());
-    var_dump($response->getHeaders());
     $response->setContent(
       $printer->printDebug(
         $this->debug, $response->getContent()
