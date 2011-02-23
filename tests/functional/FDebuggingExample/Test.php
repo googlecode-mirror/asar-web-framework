@@ -6,8 +6,9 @@ class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->client = new Asar_Client;
-    $f = new Asar_ApplicationFactory(new Asar_Config_Default);
-    $this->app = $f->getApplication('DebuggingExample');
+    $this->app = Asar_ApplicationInjector::injectApplication(
+      new Asar_ApplicationScope('DebuggingExample', new Asar_Config_Default)
+    );
   }
   
   function testDebugInformationIsPresent() {

@@ -6,8 +6,9 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->client = new Asar_Client;
-    $f = new Asar_ApplicationFactory(new Asar_Config_Default);
-    $this->app = $f->getApplication('ResourceTraversing');
+    $this->app = Asar_ApplicationInjector::injectApplication(
+      new Asar_ApplicationScope('ResourceTraversing', new Asar_Config_Default)
+    );
   }
   
   /**
