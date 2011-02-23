@@ -19,11 +19,11 @@ class Asar_EnvironmentHelper {
   
   function runAppInProductionEnvironment($app) {
     $this->response_exporter->exportResponse(
-      $this->app_factory->getApplication($app)->handleRequest(
+      /*$this->app_factory->getApplication($app)->handleRequest(
         $this->request_factory->createRequest(
           $this->server, $this->params, $this->post
         )
-      )
+      )*/
     );
   }
   
