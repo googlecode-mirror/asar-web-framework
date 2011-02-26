@@ -15,8 +15,8 @@ class Asar_EnvironmentScopeTest extends PHPUnit_Framework_TestCase {
     $this->env     = array('var' => 'val');
     $this->dir     = '/foo';
     $this->scope = new Asar_EnvironmentScope(
-      $this->server, $this->get, $this->post, $this->files, $this->session,
-      $this->cookie, $this->env, $this->dir
+      $this->server, $this->get, $this->post, $this->files,
+      $this->session, $this->cookie, $this->env, $this->dir
     );
   }
 

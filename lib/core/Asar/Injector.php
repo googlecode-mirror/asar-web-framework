@@ -10,16 +10,25 @@ class Asar_Injector {
   
   private static $cli;
   
+  static function injectApplicationRunner(Asar_EnvironmentScope $env_scope) {
+    return new ApplicationRunner(
+    );
+  }
+  
   static function injectEnvironmentHelper(Asar_EnvironmentScope $env_scope) {
     //($request_factory, $response_exporter, $app_factory, $server, $params, $post)
     return new Asar_EnvironmentHelper(
+      self::injectConfigDefault($env_scope),
       self::injectRequestFactory($env_scope),
       self::injectResponseExporter($env_scope),
-      self::injectApplicationFactory($env_scope),
       self::injectServerVars($env_scope),
       self::injectGetVars($env_scope),
       self::injectPostVars($env_scope)
     );
+  }
+  
+  static function injectApplicationName(Asar_EnvironmentScope $env_scope) {
+    return $env_scope->getAppName();
   }
   
   static function injectEnvironmentHelperBootstrap(Asar_EnvironmentScope $env_scope) {

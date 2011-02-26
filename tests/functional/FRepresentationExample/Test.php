@@ -6,8 +6,11 @@ class FRepresentationExample_Test extends PHPUnit_Framework_TestCase {
 
   public function setUp() {
     $this->client = new Asar_Client;
-    $f = new Asar_ApplicationFactory(new Asar_Config_Default);
-    $this->app = $f->getApplication('RepresentationExample');
+    $this->app = Asar_ApplicationInjector::injectApplication(
+      new Asar_ApplicationScope(
+        'RepresentationExample', new Asar_Config_Default
+      )
+    );
   }
   
   public function testIndexAndItsDefaultTemplate() {

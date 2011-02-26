@@ -264,9 +264,9 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   
   function testCreateApplicationConfigFile() {
     $tasks = $this->_testCreatingAFile(
-      $this->constructPath('thedir', 'apps', 'TheApp', 'Config.php'),
+      $this->constructPath('thedir', 'apps', 'FooApp', 'Config.php'),
       "<?php\n" .
-      "class TheApp_Config extends Asar_Config {\n" .
+      "class FooApp_Config extends Asar_Config {\n" .
       "\n" .
       "  // Add configuration directives here...\n" .
       "  protected \$config = array(\n" .
@@ -275,7 +275,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       "  );\n".
       "}\n"
     );
-    $tasks->taskCreateApplicationConfig('thedir', 'TheApp');
+    $tasks->taskCreateApplicationConfig('thedir', 'FooApp');
   }
   
   /**

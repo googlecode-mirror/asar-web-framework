@@ -92,7 +92,7 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     $this->taskCreateFile(
       $this->constructPath($project, 'apps', $app, 'Config.php'),
       "<?php\n" .
-      "class TheApp_Config extends Asar_Config {\n" .
+      "class {$app}_Config extends Asar_Config {\n" .
       "\n" .
       "  // Add configuration directives here...\n" .
       "  protected \$config = array(\n" .

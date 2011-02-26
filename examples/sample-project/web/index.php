@@ -24,7 +24,8 @@ if (!isset($argv)) {
   $argv = array();
 }
 $scope = new Asar_EnvironmentScope(
-  $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd(), $argv
+  'Sample', $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV,
+  getcwd(), $argv
 );
 Asar_Injector::injectEnvironmentHelperBootstrap($scope)->run();
-Asar_Injector::injectEnvironmentHelper($scope)->runAppInProductionEnvironment('Sample');
+Asar_Injector::injectEnvironmentHelper($scope)->runAppInProductionEnvironment();

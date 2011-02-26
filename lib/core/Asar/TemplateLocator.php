@@ -45,7 +45,6 @@ class Asar_TemplateLocator {
     } else {
       $res = $this->getTypesAndFiles($rpath, $request->getMethod(), 1);
     }
-    
     $type = $this->getType(
       $this->content_negotiator->negotiateFormat(
         $request->getHeader('Accept'), $res[0]
