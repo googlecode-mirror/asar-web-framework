@@ -17,7 +17,7 @@ class Asar_ApplicationInjector {
   
   static function injectApplication(Asar_ApplicationScope $scope) {
     $app_full_name = self::getApplicationClass($scope);
-    $app = new $app_full_name(
+    return new $app_full_name(
       $scope->getAppName(),
       self::injectRouter($scope),
       self::injectStatusCodeMessages($scope),
@@ -25,7 +25,6 @@ class Asar_ApplicationInjector {
       self::injectRequestFilters($scope),
       self::injectResponseFilters($scope)
     );
-    return $app;
   }
   
   static function injectRouter(Asar_ApplicationScope $scope) {

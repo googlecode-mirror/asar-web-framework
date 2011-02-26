@@ -23,6 +23,10 @@ class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, As
   
   function filterRequest(Asar_Request_Interface $request) {
     $request->setHeader('Asar-Internal-Debug', $this->debug);
+    $app_name = $request->getHeader('Asar-Internal-Application-Name');
+    if ($app_name) {
+      $this->debug->set('Application', $app_name);
+    }
     return $request;
   }
   

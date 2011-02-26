@@ -133,4 +133,15 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('/bar/foo', $this->templater->getPermaPath($options));
   }
   
+  function testThrowExceptionWhenResourceReturnsSomethingOtherThanResponse() {
+    $this->setExpectedException(
+      'Asar_Templater_Exception',
+      'Unable to create template. The Resource did not return a response object.'
+    );
+    $this->resource->expects($this->any())
+      ->method('handleRequest')
+      ->will($this->returnValue(false));
+    $this->templater->handleRequest(new Asar_Request);
+  }
+  
 }

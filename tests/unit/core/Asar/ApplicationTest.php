@@ -386,5 +386,24 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     );
     $app->handleRequest($request);
   }
+  
+  function testSettingApplicationNameInInternalHeader() {
+    $request = new Asar_Request;
+    $debug = new Asar_Debug;
+    $filter = $this->getMock(
+      'Asar_RequestFilter_Interface'
+    );
+    $request->setHeader('Asar-Internal-Debug', $debug);
+    $filter->expects($this->once())
+      ->method('filterRequest')
+      ->with($request)
+      ->will($this->returnValue($request));
+    $this->routerReturnsResource();
+    $app = new Asar_Application(
+      'Some_Name', $this->router, $this->sm, $this->map, array($filter)
+    );
+    $app->handleRequest($request);
+    $this->assertEquals('Some_Name', $debug->get('Application'));
+  }
 
 }

@@ -53,8 +53,7 @@ class FStatusCodesExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testStatus405() {
-    // TODO: Test sending allowed methods
-    $response = $this->client->POST($this->app, array('path' => '/'));
+    $response = $this->client->DELETE($this->app, array('path' => '/405'));
     $this->assertEquals(
       405, $response->getStatus(),
       'Application did not return a 405 Response Status when '.
@@ -65,9 +64,12 @@ class FStatusCodesExample_Test extends PHPUnit_Framework_TestCase {
       'Application response did not say what type of error it was for 405'
     );
     $this->assertContains(
-      'The HTTP Method \'POST\' is not allowed for this resource.',
+      'The HTTP Method \'DELETE\' is not allowed for this resource.',
       $response->getContent(),
       'Application did not return a proper 405 message'
+    );
+    $this->assertEquals(
+      'GET, POST', $response->getHeader('Allow')
     );
   }
   

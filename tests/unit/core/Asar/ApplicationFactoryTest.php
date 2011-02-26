@@ -8,7 +8,6 @@ class Asar_ApplicationFactoryTest_Test2_Config extends Asar_Config_Default {
     
 }
 
-// TODO: How do we test factories?
 class Asar_ApplicationFactoryTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {

@@ -84,4 +84,11 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
     $this->assertRegExp('/[0-9]+.[0-9]{2}(M|K)B/', $str);
   }
   
+  function testAddsApplicationNameIfApplicationInternalHeaderIsSet() {
+    $request = new Asar_Request;
+    $request->setHeader('Asar-Internal-Application-Name', 'FooApp');
+    $filtered_request = $this->filter->filterRequest($request);
+    $this->assertEquals('FooApp', $this->debug->get('Application'));
+  }
+  
 }

@@ -59,9 +59,9 @@ class Asar_Application implements Asar_Resource_Interface {
     $this->forward_recursion = 0;
     try {
       $request = $this->filterRequest($request);
-      $debug = $request->getHeader('Asar-Internal-Debug');
-      if ($debug) {
-        $this->addDebugInfo($debug);
+      // TODO: Application shouldn't know about debug
+      if ($request->getHeader('Asar-Internal-Debug')) {
+        $request->getHeader('Asar-Internal-Debug')->set('Application', $this->name);
       }
       $response = $this->filterResponse(
         $this->passRequest($request, $response, $request->getPath())
@@ -72,11 +72,6 @@ class Asar_Application implements Asar_Resource_Interface {
     }
     $this->setResponseDefaults($response, $request);
     return $response;
-  }
-  
-  private function addDebugInfo($debug) {
-    // TODO: This should be moved outside.
-    $debug->set('Application', $this->name);
   }
   
   private function filterRequest($request) {
@@ -121,7 +116,6 @@ class Asar_Application implements Asar_Resource_Interface {
         $response->getStatus() < 400 &&
         !Asar_Utility_String::startsWith($response->getHeader('Location'), '/')
       ) {
-      "Redirecting Here..\n";
       $resource = $this->router->route(
         $this->name, $response->getHeader('Location'), $this->getMap()
       );

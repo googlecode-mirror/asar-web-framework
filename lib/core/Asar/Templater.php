@@ -20,9 +20,13 @@ class Asar_Templater
     $this->renderer = $renderer;
   }
   
-  //TODO: What to do when handleRequest returns void/null
   function handleRequest(Asar_Request_Interface $request) {
     $response = $this->resource->handleRequest($request);
+    if (!$response instanceof Asar_Response_Interface) {
+      throw new Asar_Templater_Exception(
+        "Unable to create template. The Resource did not return a response object."
+      );
+    }
     if ($this->responseTemplatable($response)) {
       $response = $this->renderer->renderFor(
         get_class($this->resource), $response, $request

@@ -60,6 +60,7 @@ class Asar_Resource
       $response->setStatus(404);
     } catch (Asar_Resource_Exception_MethodUndefined $e) {
       $response->setStatus(405);
+      $response->setHeader('Allow', $this->getDefinedMethods());
     } catch (Asar_Resource_Exception_Redirect $e) {
       $payload = $e->getPayload();
       $response->setStatus($payload['status_code']);
@@ -87,6 +88,17 @@ class Asar_Resource
       return $this->$method();
     }
     throw new Asar_Resource_Exception_MethodUndefined;
+  }
+  
+  private function getDefinedMethods() {
+    $methods = array('GET', 'POST', 'PUT', 'DELETE');
+    $allowed = array();
+    foreach ($methods as $method) {
+      if (method_exists($this, $method)) {
+        $allowed[] = $method;
+      }
+    }
+    return implode(', ', $allowed);
   }
   
   function forwardTo($resource_name) {

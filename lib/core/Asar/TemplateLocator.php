@@ -94,7 +94,6 @@ class Asar_TemplateLocator {
     $available_types = array();
     $available_files = array();
     foreach ($template_files as $file) {
-      // TODO: make this more efficient by using startswith
       if ($file == '.' || $file == '..') {
         continue;
       }
@@ -125,8 +124,6 @@ class Asar_TemplateLocator {
   }
   
   private function constructFileName() {
-    // Weird <5.3 behavior... implode('.' func_get_args()) doesn't work
-    // TODO: revise to not use temporary variables for PHP 5.3
     $args = func_get_args();
     return implode('.', $args);
   }
