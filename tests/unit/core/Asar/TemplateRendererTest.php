@@ -5,24 +5,24 @@ require_once realpath(dirname(__FILE__). '/../../../config.php');
 class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->tlf = $this->getMock(
-      'Asar_TemplateLFactory', array(), array(), '', false
+    $this->tpp = $this->getMock(
+      'Asar_TemplatePackageProvider', array(), array(), '', false
     );
     $this->tsr = $this->getMock(
       'Asar_TemplateSimpleRenderer', array(), array(), '', false
     );
     $this->tpl = $this->getMock('Asar_Template_Interface');
-    $this->renderer = new Asar_TemplateRenderer($this->tlf, $this->tsr);
+    $this->renderer = new Asar_TemplateRenderer($this->tpp, $this->tsr);
   }
   
-  private function tlfRetursTemplates($arg = null) {
+  private function tppRetursTemplates($arg = null) {
     if (!$arg) {
       $arg = array(
         'template' => $this->getMock('Asar_Template_Interface'),
         'layout' => 'bar'
       );
     }
-    $this->tlf->expects($this->any())
+    $this->tpp->expects($this->any())
       ->method('getTemplatesFor')
       ->will($this->returnValue($arg));
   }
@@ -30,10 +30,10 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
   function testHandleRequestPassesResourceNameAndRequestToLFactory() {
     $request = new Asar_Request;
     $response = new Asar_Response;
-    $this->tlf->expects($this->once())
+    $this->tpp->expects($this->once())
       ->method('getTemplatesFor')
       ->with('A_Resource', $request);
-    $this->tlfRetursTemplates();
+    $this->tppRetursTemplates();
     $this->renderer->renderFor('A_Resource', $response, $request);
   }
   
@@ -41,7 +41,7 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $arg = array(
       'template' => 'foo', 'layout' => 'bar'
     );
-    $this->tlfRetursTemplates($arg);
+    $this->tppRetursTemplates($arg);
     $response = $this->renderer->renderFor(
       'Bar', new Asar_Response, new Asar_Request
     );
@@ -54,7 +54,7 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $arg = array(
       'template' => $tpl, 'layout' => $tpl, 'mime-type' => 'text/html'
     );
-    $this->tlfRetursTemplates($arg);
+    $this->tppRetursTemplates($arg);
     $this->tsr->expects($this->once())
       ->method('renderTemplate')
       ->with($tpl, $response->getContent(), $tpl);
@@ -66,7 +66,7 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $arg = array(
       'template' => 'foo', 'layout' => 'bar', 'mime-type' => 'text/html'
     );
-    $this->tlfRetursTemplates($arg);
+    $this->tppRetursTemplates($arg);
     $this->tsr->expects($this->never())
       ->method('renderTemplate');
     $this->renderer->renderFor('A_Resource', $response, new Asar_Request);
@@ -77,7 +77,7 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $arg = array(
       'template' => $tpl, 'layout' => $tpl, 'mime-type' => 'text/html'
     );
-    $this->tlfRetursTemplates($arg);
+    $this->tppRetursTemplates($arg);
     $content = "Hello World!";
     $this->tsr->expects($this->once())
       ->method('renderTemplate')
@@ -94,7 +94,7 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $arg = array(
       'template' => $tpl, 'layout' => 'foo', 'mime-type' => 'text/plain'
     );
-    $this->tlfRetursTemplates($arg);
+    $this->tppRetursTemplates($arg);
     $content = "Hello World!";
     $this->tsr->expects($this->once())
       ->method('renderTemplate')

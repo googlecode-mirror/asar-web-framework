@@ -7,7 +7,7 @@ class Asar_ResourceFactoryTest extends PHPUnit_Framework_TestCase {
   function setUp() {
     $conf = new Asar_Config(array('foo' => 'bar'));
     $this->F = new Asar_ResourceFactory(
-      $this->getMock('Asar_TemplateLFactory', array(), array(), '', false),
+      $this->getMock('Asar_TemplatePackageProvider', array(), array(), '', false),
       $this->getMock('Asar_TemplateSimpleRenderer', array(), array(), '', false),
       $conf
     );

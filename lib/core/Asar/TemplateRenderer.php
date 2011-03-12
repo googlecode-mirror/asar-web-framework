@@ -5,7 +5,7 @@ class Asar_TemplateRenderer {
   private $factory, $renderer;
   
   function __construct(
-    Asar_TemplateLFactory $factory,
+    Asar_TemplatePackageProvider $factory,
     Asar_TemplateSimpleRenderer $renderer
   ) {
     $this->factory = $factory;

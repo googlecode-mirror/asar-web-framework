@@ -2,7 +2,7 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
-class Asar_TemplateLFactoryTest extends PHPUnit_Framework_TestCase {
+class Asar_TemplatePackageProviderTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->locator  = $this->getMock(
@@ -13,7 +13,7 @@ class Asar_TemplateLFactoryTest extends PHPUnit_Framework_TestCase {
       'Asar_TemplateFactory', array(), //array('createTemplate'),
       array(), '', false
     );
-    $this->tlf = new Asar_TemplateLFactory(
+    $this->tlf = new Asar_TemplatePackageProvider(
       $this->locator, $this->factory
     );
   }

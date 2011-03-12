@@ -3,7 +3,7 @@
 class Asar_ResourceFactory {
   
   function __construct(
-    Asar_TemplateLFactory $tl_factory,
+    Asar_TemplatePackageProvider $tl_factory,
     Asar_TemplateSimpleRenderer $ts_renderer,
     Asar_Config_Interface $config
   ) {

@@ -1,6 +1,6 @@
 <?php
 
-class Asar_TemplateLFactory {
+class Asar_TemplatePackageProvider {
   
   private $locator, $factory;
   

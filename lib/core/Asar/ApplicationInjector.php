@@ -47,7 +47,7 @@ class Asar_ApplicationInjector {
   
   static function injectResourceFactory(Asar_ApplicationScope $scope) {
     return new Asar_ResourceFactory(
-      self::injectTemplateLFactory($scope),
+      self::injectTemplatePackageProvider($scope),
       self::injectTemplateSimpleRenderer($scope),
       self::injectAppConfig($scope)
     );
@@ -76,8 +76,8 @@ class Asar_ApplicationInjector {
     return new Asar_Config_Default;
   }
   
-  static function injectTemplateLFactory(Asar_ApplicationScope $scope) {
-    return new Asar_TemplateLFactory(
+  static function injectTemplatePackageProvider(Asar_ApplicationScope $scope) {
+    return new Asar_TemplatePackageProvider(
       self::injectTemplateLocator($scope),
       self::injectTemplateFactory($scope)
     );
