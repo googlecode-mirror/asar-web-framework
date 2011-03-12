@@ -72,7 +72,7 @@ class Asar {
   }
   
   function getVersion() {
-    return '0.4b';
+    return '0.4';
   }
   
   function getToolSet() {

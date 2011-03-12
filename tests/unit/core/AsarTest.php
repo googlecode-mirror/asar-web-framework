@@ -48,7 +48,7 @@ class AsarTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGettingVersion() {
-    $this->assertEquals('0.4b', $this->A->getVersion());
+    $this->assertEquals('0.4', $this->A->getVersion());
   }
   
   function testGettingToolSet() {

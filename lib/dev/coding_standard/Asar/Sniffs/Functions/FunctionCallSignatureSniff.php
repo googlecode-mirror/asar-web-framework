@@ -1,4 +1,5 @@
 <?php
+require_once 'PHP/CodeSniffer/Standards/PEAR/Sniffs/Functions/FunctionCallSignatureSniff.php';
 /**
  * PEAR_Sniffs_Functions_FunctionCallSignatureSniff.
  *
