@@ -3,7 +3,7 @@
 require 'ClassLoader.php';
 require 'FileSearcher.php';
 require 'FileIncludeManager.php';
-require 'EnvironmentHelper.php';
+require 'EnvironmentHelper/Web.php';
 require 'EnvironmentHelper/Bootstrap.php';
 
 class Asar_Injector {
@@ -17,7 +17,7 @@ class Asar_Injector {
   
   static function injectEnvironmentHelper(Asar_EnvironmentScope $env_scope) {
     //($request_factory, $response_exporter, $app_factory, $server, $params, $post)
-    return new Asar_EnvironmentHelper(
+    return new Asar_EnvironmentHelper_Web(
       self::injectConfigDefault($env_scope),
       self::injectRequestFactory($env_scope),
       self::injectResponseExporter($env_scope),

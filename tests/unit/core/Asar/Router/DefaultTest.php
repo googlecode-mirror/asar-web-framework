@@ -139,7 +139,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
       ),
       array(
         '/vlogs/Foo',
-        array( 'Vlogs_RtTitle', 'Vlogs_Foo'),
+        array('Vlogs_RtTitle', 'Vlogs_Foo'),
         'Vlogs_Foo'
       ),
     );

@@ -3,6 +3,7 @@
 class Asar_Response_StatusMessages 
   implements Asar_Response_StatusMessages_Interface {
   
+  // TODO: These status messages should be moved to the configuration
   static protected $status_messages = array(
     404 => 'Sorry, we were unable to find the resource you were looking for (%s). Please check that you got the address or URL correctly. If that is the case, please email the administrator. Thank you and please forgive the inconvenience.',
     405 => 'The HTTP Method \'%s\' is not allowed for this resource.',
@@ -18,8 +19,7 @@ class Asar_Response_StatusMessages
       return false;
     }
     return $this->getSummary($response) . call_user_func_array(
-      array($this, $methodName),
-      array($response, $request)
+      array($this, $methodName), array($response, $request)
     );
   }
   

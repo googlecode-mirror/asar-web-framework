@@ -11,9 +11,9 @@ class Asar_HttpServer_Fsocket implements Asar_Resource_Interface {
   function handleRequest(Asar_Request_Interface $request) {
     $rstr = $this->createRawHttpRequestString($request);
     if ($rstr) {
-        return $this->exportRawHttpResponse(
-            $this->sendRawHttpRequest($rstr)
-        );
+      return $this->exportRawHttpResponse(
+        $this->sendRawHttpRequest($rstr)
+      );
     }
   }
   

@@ -1,6 +1,6 @@
 <?php
 
-class Asar_EnvironmentHelper {
+class Asar_EnvironmentHelper_Web {
 
   private $config, $request_factory, $response_exporter, $server_vars, $params, $post;
 

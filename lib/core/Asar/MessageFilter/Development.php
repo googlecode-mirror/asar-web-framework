@@ -44,17 +44,25 @@ class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, As
     $printer = $this->getPrinter(
       $this->getOutputType($response->getHeader('Content-Type'))
     );
-    $this->debug->set(
-      'Execution Time', 
-      round(microtime(true) - $this->exec_start, 8) . ' microseconds'
-    );
-    $this->debug->set('Memory Used', $this->getMemoryUsage());
+    $this->addDebugExecutionTime();
+    $this->addDebugMemoryUsage();
     $response->setContent(
       $printer->printDebug(
         $this->debug, $response->getContent()
       )
     );
     return $response;
+  }
+  
+  private function addDebugExecutionTime() {
+    $this->debug->set(
+      'Execution Time', 
+      round(microtime(true) - $this->exec_start, 8) . ' microseconds'
+    );
+  }
+  
+  private function addDebugMemoryUsage() {
+    $this->debug->set('Memory Used', $this->getMemoryUsage());
   }
   
   private function getPrinter($output_type) {

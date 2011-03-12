@@ -46,32 +46,38 @@ class Asar_Router_Default implements Asar_Router_Interface {
    * TODO: Refactor this!
    */
   private function getNameFromPath($app_name, $path) {
-    $levels = explode('/', ltrim($path, '/'));
     $rname = $this->getResourceNamePrefix($app_name);
-    $class_starts_with = $this->resource_lister->getResourceListFor($app_name);
+    $prefixed_with = $this->resource_lister->getResourceListFor($app_name);
     $i = substr_count($this->getResourceNamePrefix($app_name), '_');
-    foreach($levels as $level) {
+    foreach($this->getPathSubspaces($path) as $subspace) {
       $i++;
       $old_rname = $rname;
-      $rname = $rname . '_' . Asar_Utility_String::camelCase($level);
+      $rname = $rname . '_' . Asar_Utility_String::camelCase($subspace);
       if (class_exists($rname)) {
         continue;
       }
-      $class_starts_with = $this->getClassesWithPrefix(
-        $old_rname . '_Rt', $class_starts_with
-      );
-      if (!empty($class_starts_with)) {
-        foreach ($class_starts_with as $class) {
-          if ($i === substr_count($class, '_')) {
-            $rname = $class;
-          }
-        }
-      }
+      $rname = $this->getWildCardTypeRoute($old_rname, $prefixed_with, $rname, $i);
       if (!class_exists($rname)) {
         throw new Asar_Router_Exception_ResourceNotFound;
       }
     }
     return $rname;
+  }
+  
+  private function getWildCardTypeRoute($old_rname, $prefix, $rname, $i) {
+    $prefix = $this->getClassesWithPrefix($old_rname . '_Rt', $prefix);
+    if (!empty($prefix)) {
+      foreach ($prefix as $class) {
+        if ($i === substr_count($class, '_')) {
+          $rname = $class;
+        }
+      }
+    }
+    return $rname;
+  }
+  
+  private function getPathSubspaces($path) {
+    return explode('/', ltrim($path, '/'));
   }
   
   private function getStraightClassName($path) {

@@ -10,20 +10,14 @@ class Asar_Utility_Cli_Command {
     $arguments = array();
 
   function __construct(array $options = array()) {
-    if (array_key_exists('caller', $options)) {
-      $this->caller    = $options['caller'];
+    foreach (array('caller', 'command', 'namespace', 'flags', 'arguments') as $type) {
+      $this->setOption($type, $options);
     }
-    if (array_key_exists('command', $options)) {
-      $this->command   = $options['command'];
-    }
-    if (array_key_exists('namespace', $options)) {
-      $this->namespace = $options['namespace'];
-    }
-    if (array_key_exists('flags', $options)) {
-      $this->flags     = $options['flags'];
-    }
-    if (array_key_exists('arguments', $options)) {
-      $this->arguments = $options['arguments'];
+  }
+  
+  function setOption($type, $options) {
+    if (isset($options[$type])) {
+      $this->$type = $options[$type];
     }
   }
   
