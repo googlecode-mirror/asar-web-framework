@@ -1,10 +1,14 @@
 <?php
 
 if (class_exists('PHP_CodeSniffer_Standards_CodingStandard', true) === false) {
-  throw new PHP_CodeSniffer_Exception('Class PHP_CodeSniffer_Standards_CodingStandard not found');
+  throw new PHP_CodeSniffer_Exception(
+    'Class PHP_CodeSniffer_Standards_CodingStandard not found'
+  );
 }
 
-class PHP_CodeSniffer_Standards_Asar_AsarCodingStandard extends PHP_CodeSniffer_Standards_CodingStandard {
+class PHP_CodeSniffer_Standards_Asar_AsarCodingStandard
+  extends PHP_CodeSniffer_Standards_CodingStandard 
+{
   function getIncludedSniffs() {
     return array(
       'Generic/Sniffs/Functions/OpeningFunctionBraceKernighanRitchieSniff.php',

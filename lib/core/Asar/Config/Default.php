@@ -8,9 +8,9 @@ class Asar_Config_Default extends Asar_Config {
     'use_templates'    => true,
     'default_classes'  => array(
       'application'     => 'Asar_ApplicationBasic',
-  		'config'          => 'Asar_Config_Default',
-  		'status_messages' => 'Asar_Response_StatusMessages',
-  		'router'          => 'Asar_Router_Default',
+      'config'          => 'Asar_Config_Default',
+      'status_messages' => 'Asar_Response_StatusMessages',
+      'router'          => 'Asar_Router_Default',
     ),
     'response_filters'          => array(
       'standard' => 'Asar_MessageFilter_Standard'

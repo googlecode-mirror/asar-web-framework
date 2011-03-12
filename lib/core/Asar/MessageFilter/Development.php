@@ -1,6 +1,8 @@
 <?php
 
-class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface {
+class Asar_MessageFilter_Development
+  implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface
+{
   
   private 
     $config,
@@ -35,9 +37,9 @@ class Asar_MessageFilter_Development implements Asar_RequestFilter_Interface, As
     if ($mem_usage < 1024)
       return $mem_usage." bytes";
     elseif ($mem_usage < 1048576)
-      return sprintf("%01.2f", round($mem_usage/1024,2))."KB";
+      return sprintf("%01.2f", round($mem_usage/1024, 2))."KB";
     else
-      return sprintf("%01.2f", round($mem_usage/1048576,2))."MB";
+      return sprintf("%01.2f", round($mem_usage/1048576, 2))."MB";
   }
   
   function filterResponse(Asar_Response_Interface $response) {

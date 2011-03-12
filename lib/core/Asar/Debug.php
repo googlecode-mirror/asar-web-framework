@@ -4,10 +4,6 @@ class Asar_Debug implements Iterator {
   
   private $data = array(), $valid = FALSE;
   
-  function __construct() {
-    
-  }
-  
   function set($key, $value) {
     $this->data[$key] = $value;
   }
@@ -23,7 +19,7 @@ class Asar_Debug implements Iterator {
     $this->valid = (FALSE !== reset($this->data));
   }
   
-  function next(){
+  function next() {
     $this->valid = (FALSE !== next($this->data)); 
   }
   

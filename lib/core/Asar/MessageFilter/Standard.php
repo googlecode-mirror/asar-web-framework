@@ -1,6 +1,8 @@
 <?php
 
-class Asar_MessageFilter_Standard implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface {
+class Asar_MessageFilter_Standard
+  implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface
+{
   
   private $config;
   
@@ -25,7 +27,7 @@ class Asar_MessageFilter_Standard implements Asar_RequestFilter_Interface, Asar_
       $response->setHeader(
         'Location', 
         $this->config->getConfig('site_protocol') . '://' . 
-          $this->config->getConfig('site_domain') . $location
+        $this->config->getConfig('site_domain') . $location
       );
     }
   }

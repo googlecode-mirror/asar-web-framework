@@ -10,7 +10,10 @@ class Asar_TemplateSimpleRenderer {
       return null;
     }
     $output = $template->render($vars);
-    if (!$template->getConfig('no_layout') && $layout instanceof Asar_Template_Interface) {
+    if (
+      !$template->getConfig('no_layout') && 
+      $layout instanceof Asar_Template_Interface
+    ) {
       $output = $layout->render($this->extractLayoutVars($output, $template));
     }
     return $output;

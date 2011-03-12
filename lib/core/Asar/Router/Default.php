@@ -49,14 +49,16 @@ class Asar_Router_Default implements Asar_Router_Interface {
     $rname = $this->getResourceNamePrefix($app_name);
     $prefixed_with = $this->resource_lister->getResourceListFor($app_name);
     $i = substr_count($this->getResourceNamePrefix($app_name), '_');
-    foreach($this->getPathSubspaces($path) as $subspace) {
+    foreach ($this->getPathSubspaces($path) as $subspace) {
       $i++;
       $old_rname = $rname;
       $rname = $rname . '_' . Asar_Utility_String::camelCase($subspace);
       if (class_exists($rname)) {
         continue;
       }
-      $rname = $this->getWildCardTypeRoute($old_rname, $prefixed_with, $rname, $i);
+      $rname = $this->getWildCardTypeRoute(
+        $old_rname, $prefixed_with, $rname, $i
+      );
       if (!class_exists($rname)) {
         throw new Asar_Router_Exception_ResourceNotFound;
       }
@@ -85,9 +87,9 @@ class Asar_Router_Default implements Asar_Router_Interface {
   }
   
   
-  private function getClassesWithPrefix($prefix, $available_classes, $limit = 0) {
+  private function getClassesWithPrefix($prefix, $available, $limit = 0) {
     $classes = array();
-    foreach ($available_classes as $class) {
+    foreach ($available as $class) {
       if (strpos($class, $prefix) === 0) {
         $classes[] = $class;
       }

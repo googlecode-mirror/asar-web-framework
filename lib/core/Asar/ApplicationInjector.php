@@ -28,7 +28,9 @@ class Asar_ApplicationInjector {
   }
   
   static function injectRouter(Asar_ApplicationScope $scope) {
-    $router_class = self::injectAppConfig($scope)->getConfig('default_classes.router');
+    $router_class = self::injectAppConfig($scope)->getConfig(
+      'default_classes.router'
+    );
     return new $router_class(
       self::injectResourceFactory($scope),
       self::injectResourceLister($scope),
@@ -38,9 +40,11 @@ class Asar_ApplicationInjector {
   
   static function injectMessageFilterFactory(Asar_ApplicationScope $scope) {
     if (!$scope->isInCache('MessageFilterFactory')) {
-      $scope->addToCache('MessageFilterFactory', new Asar_MessageFilterFactory(
-        self::injectAppConfig($scope), self::injectDebug($scope)
-      ));
+      $scope->addToCache(
+        'MessageFilterFactory', new Asar_MessageFilterFactory(
+          self::injectAppConfig($scope), self::injectDebug($scope)
+        )
+      );
     }
     return $scope->getCache('MessageFilterFactory');
   }
@@ -54,7 +58,9 @@ class Asar_ApplicationInjector {
   }
   
   static function injectStatusCodeMessages(Asar_ApplicationScope $scope) {
-    $sm = self::injectAppConfig($scope)->getConfig('default_classes.status_messages');
+    $sm = self::injectAppConfig($scope)->getConfig(
+      'default_classes.status_messages'
+    );
     return new $sm;
   }
   
@@ -143,7 +149,9 @@ class Asar_ApplicationInjector {
   
   static function filterBuilder(Asar_ApplicationScope $scope, $type) {
     $filter_factory = self::injectMessageFilterFactory($scope);
-    foreach (self::injectAppConfig($scope)->getConfig($type) as $key => $filter) {
+    foreach (
+      self::injectAppConfig($scope)->getConfig($type) as $key => $filter
+    ) {
       if (!$scope->isInCache($filter)) {
         $scope->addToCache($filter, $filter_factory->getFilter($filter));
       }

@@ -36,11 +36,13 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
     $data = '';
     foreach ($debug as $name => $value) {
       $id = Asar_Utility_String::underScore($name);
-      $data .= $this->el('tr', 
-        $this->el('th', $name, 
-          array('scope' => 'row', 'id' => 'asarwf_dbgl_' . $id)
+      $data .= $this->el(
+        'tr', 
+        $this->el(
+          'th', $name, array('scope' => 'row', 'id' => 'asarwf_dbgl_' . $id)
         ) .
-        $this->el('td', $this->createDataValues($value), 
+        $this->el(
+          'td', $this->createDataValues($value), 
           array('id' => 'asarwf_dbgv_' . $id)
         )
       );

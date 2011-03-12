@@ -16,7 +16,6 @@ class Asar_Injector {
   }
   
   static function injectEnvironmentHelper(Asar_EnvironmentScope $env_scope) {
-    //($request_factory, $response_exporter, $app_factory, $server, $params, $post)
     return new Asar_EnvironmentHelper_Web(
       self::injectConfigDefault($env_scope),
       self::injectRequestFactory($env_scope),
@@ -31,7 +30,9 @@ class Asar_Injector {
     return $env_scope->getAppName();
   }
   
-  static function injectEnvironmentHelperBootstrap(Asar_EnvironmentScope $env_scope) {
+  static function injectEnvironmentHelperBootstrap(
+    Asar_EnvironmentScope $env_scope
+  ) {
     return new Asar_EnvironmentHelper_Bootstrap(
       self::injectClassLoader($env_scope)
     );
@@ -110,7 +111,9 @@ class Asar_Injector {
     return $env_scope->getArgv();
   }
   
-  static function injectCurrentWorkingDirectory(Asar_EnvironmentScope $env_scope) {
+  static function injectCurrentWorkingDirectory(
+    Asar_EnvironmentScope $env_scope
+  ) {
     return $env_scope->getCurrentWorkingDirectory();
   }
   
@@ -125,8 +128,12 @@ class Asar_Injector {
     return new Asar_Utility_Cli_BaseTasks;
   }
 
-  static function injectUtilityCliFrameworkTasks(Asar_EnvironmentScope $env_scope) {
-    return new Asar_Utility_Cli_FrameworkTasks(self::injectFileHelper($env_scope));
+  static function injectUtilityCliFrameworkTasks(
+    Asar_EnvironmentScope $env_scope
+  ) {
+    return new Asar_Utility_Cli_FrameworkTasks(
+      self::injectFileHelper($env_scope)
+    );
   }
   
   static function injectFileHelper(Asar_EnvironmentScope $env_scope) {

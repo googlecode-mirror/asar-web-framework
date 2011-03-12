@@ -1,5 +1,6 @@
 <?php
-class Asar_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_Sniff {
+class Asar_Sniffs_WhiteSpace_ScopeClosingBraceSniff 
+  implements PHP_CodeSniffer_Sniff {
 
 
     /**
@@ -16,9 +17,10 @@ class Asar_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_S
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the document.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param PHP_CodeSniffer_File $phpcsFile All the tokens found in the
+     *                                        document.
+     * @param int                  $stackPtr  The position of the current token
+     *                                        in the stack passed in $tokens.
      *
      * @return void
      */
@@ -37,28 +39,38 @@ class Asar_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_S
         // checking from there, rather than the current token.
         $lineStart = ($stackPtr - 1);
         for ($lineStart; $lineStart > 0; $lineStart--) {
-            if (strpos($tokens[$lineStart]['content'], $phpcsFile->eolChar) !== false) {
+            if (
+              strpos($tokens[$lineStart]['content'], $phpcsFile->eolChar) 
+              !== false
+            ) {
                 break;
             }
         }
 
         // We found a new line, now go forward and find the
         // first non-whitespace token.
-        $lineStart = $phpcsFile->findNext(array(T_WHITESPACE), ($lineStart + 1), null, true);
+        $lineStart = $phpcsFile->findNext(
+          array(T_WHITESPACE), ($lineStart + 1), null, true
+        );
 
         $startColumn = $tokens[$lineStart]['column'];
         $scopeStart  = $tokens[$stackPtr]['scope_opener'];
         $scopeEnd    = $tokens[$stackPtr]['scope_closer'];
         
         // Skip empty blocks {}
-        if (($tokens[$scopeStart]['column'] + 1) === $tokens[$scopeEnd]['column']) {
+        if (
+          ($tokens[$scopeStart]['column'] + 1) === 
+          $tokens[$scopeEnd]['column']
+        ) {
           return;
         }
         
         // Check if empty block, 
 
         
-        $lastContent = $phpcsFile->findPrevious(array(T_WHITESPACE), ($scopeEnd - 1), $scopeStart, true);
+        $lastContent = $phpcsFile->findPrevious(
+          array(T_WHITESPACE), ($scopeEnd - 1), $scopeStart, true
+        );
         // Check if empty block it should be {}
         if ($tokens[$lastContent] === $tokens[$scopeStart]) {
           $error = 'Empty blocks must be written as {}';
@@ -73,9 +85,13 @@ class Asar_Sniffs_WhiteSpace_ScopeClosingBraceSniff implements PHP_CodeSniffer_S
 
         // Check now that the closing brace is lined up correctly.
         $braceIndent = $tokens[$scopeEnd]['column'];
-        if (in_array($tokens[$stackPtr]['code'], array(T_CASE, T_DEFAULT)) === false) {
+        if (
+          in_array($tokens[$stackPtr]['code'], array(T_CASE, T_DEFAULT)) ===
+          false
+        ) {
             if ($braceIndent !== $startColumn) {
-                $error = 'Closing brace indented incorrectly; expected '.($startColumn - 1).' spaces, found '.($braceIndent - 1);
+                $error = 'Closing brace indented incorrectly; expected '.
+                  ($startColumn - 1).' spaces, found '.($braceIndent - 1);
                 $phpcsFile->addError($error, $scopeEnd);
             }
         }

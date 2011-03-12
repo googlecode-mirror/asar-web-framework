@@ -50,8 +50,8 @@ class Asar_Request extends Asar_Message implements Asar_Request_Interface {
   }
   
   function export() {
-    $str = sprintf("%s %s HTTP/1.1\r\n", 
-      $this->getMethod(), $this->getPath()
+    $str = sprintf(
+      "%s %s HTTP/1.1\r\n", $this->getMethod(), $this->getPath()
     );
     $headers = $this->getHeaders();
     $msg_body = '';
@@ -70,7 +70,7 @@ class Asar_Request extends Asar_Message implements Asar_Request_Interface {
     if (!is_array($params))
       return '';
     $post_pairs = array();
-    foreach($params as $key => $value) {
+    foreach ($params as $key => $value) {
       $post_pairs[] = rawurlencode($key) . '=' . rawurlencode($value);
     }
     return implode('&', $post_pairs);

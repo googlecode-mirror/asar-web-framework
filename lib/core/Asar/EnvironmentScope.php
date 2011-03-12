@@ -13,7 +13,9 @@ class Asar_EnvironmentScope {
     $cwd,
     $argv    = array();
   
-  function __construct($server, $get, $post, $files, $session, $cookie, $env, $cwd, $argv = array()) {
+  function __construct(
+    $server, $get, $post, $files, $session, $cookie, $env, $cwd, $argv = array()
+  ) {
     $this->server  = $server;
     $this->get     = $get;
     $this->post    = $post;

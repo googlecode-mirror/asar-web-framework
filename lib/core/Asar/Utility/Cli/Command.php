@@ -10,7 +10,9 @@ class Asar_Utility_Cli_Command {
     $arguments = array();
 
   function __construct(array $options = array()) {
-    foreach (array('caller', 'command', 'namespace', 'flags', 'arguments') as $type) {
+    foreach (
+      array('caller', 'command', 'namespace', 'flags', 'arguments') as $type
+    ) {
       $this->setOption($type, $options);
     }
   }

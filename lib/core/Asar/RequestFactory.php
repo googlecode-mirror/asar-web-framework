@@ -7,7 +7,7 @@ class Asar_RequestFactory {
     $options['method'] = $this->getIfExists('REQUEST_METHOD', $server);
     $options['path'] = $this->getIfExists('REQUEST_URI', $server);
     $options['params'] = $params;
-    if ($options['method'] === 'POST')  {
+    if ($options['method'] === 'POST') {
       $options['content'] = $post;
     }
     $options['headers'] = $this->createHeaders($server);

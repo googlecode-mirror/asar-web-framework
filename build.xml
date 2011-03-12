@@ -70,6 +70,7 @@
    <arg line="--report=checkstyle
               --report-file=${basedir}/build/logs/checkstyle.xml
               --standard=${basedir}/lib/dev/coding_standard/Asar
+              --ignore=vendor
               ${source}" />
   </exec>
  </target>

@@ -1,5 +1,3 @@
 <?php
 
-class Asar_ApplicationBasic extends Asar_Application {
-  
-}
+class Asar_ApplicationBasic extends Asar_Application {}

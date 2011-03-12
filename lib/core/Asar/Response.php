@@ -74,7 +74,7 @@ class Asar_Response extends Asar_Message implements Asar_Response_Interface {
     $headers = explode("\r\n", $rawarr[0]);
     $response_line = array_shift($headers);
     $this->setStatus(intval(str_replace('HTTP/1.1 ', '', $response_line)));
-    foreach($headers as $line) {
+    foreach ($headers as $line) {
       $header = explode(':', $line, 2);
       $this->setHeader($header[0], ltrim($header[1]));
     }

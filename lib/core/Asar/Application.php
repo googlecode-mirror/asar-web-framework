@@ -61,7 +61,9 @@ class Asar_Application implements Asar_Resource_Interface {
       $request = $this->filterRequest($request);
       // TODO: Application shouldn't know about debug
       if ($request->getHeader('Asar-Internal-Debug')) {
-        $request->getHeader('Asar-Internal-Debug')->set('Application', $this->name);
+        $request->getHeader('Asar-Internal-Debug')->set(
+          'Application', $this->name
+        );
       }
       $response = $this->filterResponse(
         $this->passRequest($request, $response, $request->getPath())

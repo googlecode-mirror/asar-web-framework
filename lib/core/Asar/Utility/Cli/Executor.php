@@ -4,7 +4,9 @@ class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
   
   private $tasklists = array(), $tasklists_n = array();
   
-  function registerTasks(Asar_Utility_CLI_Interface $tasklist, $namespace = null) {
+  function registerTasks(
+    Asar_Utility_CLI_Interface $tasklist, $namespace = null
+  ) {
     if ($namespace) {
       $this->tasklists_n[$namespace] = $tasklist;
     } else {

@@ -145,9 +145,9 @@ class Asar_Resource
         $touse[] = $value;
       }
     }
-    return '/' . implode('/', array_map(
-      array('Asar_Utility_String', 'dashLowerCase'), $touse
-    ));
+    return '/' . implode(
+      '/', array_map(array('Asar_Utility_String', 'dashLowerCase'), $touse)
+    );
   }
   
   protected function getPathComponents() {

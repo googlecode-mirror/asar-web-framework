@@ -209,10 +209,12 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       "  \$_SESSION = array();\n" .
       "}\n" .
       "\$scope = new Asar_EnvironmentScope(\n" .
-      "  \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
+      "  \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, " .
+        "\$_ENV, getcwd()\n" .
       ");\n" .
       "Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
-      "Asar_Injector::injectEnvironmentHelper(\$scope)->runTestEnvironment();\n" .
+      "Asar_Injector::injectEnvironmentHelper(\$scope)" .
+        "->runTestEnvironment();\n" .
       "\n"
     );
     $tasks->taskCreateTestConfigFile('thedirectory');

@@ -18,8 +18,8 @@ class Asar_TemplatePackageProvider {
       'template'  => $this->factory->createTemplate($tpl_file),
       'mime-type' => $this->locator->getMimeTypeFor($tpl_file),
       'layout'    => $this->factory->createTemplate(
-                        $this->locator->locateLayoutFor($tpl_file)
-                      )
+        $this->locator->locateLayoutFor($tpl_file)
+      )
     );
   }
   

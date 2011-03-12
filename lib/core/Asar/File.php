@@ -57,7 +57,7 @@ class Asar_File {
     if (!file_exists(dirname($filename))) {
       throw new Asar_File_Exception_DirectoryNotFound(
         'Asar_File::create failed. Unable to find the directory to create the '.
-				'file to (' . dirname($filename) . ').'
+        'file to (' . dirname($filename) . ').'
       );
     }
     $f = new self($filename, 'w+b');

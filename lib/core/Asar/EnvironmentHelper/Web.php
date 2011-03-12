@@ -2,7 +2,9 @@
 
 class Asar_EnvironmentHelper_Web {
 
-  private $config, $request_factory, $response_exporter, $server_vars, $params, $post;
+  private 
+    $config, $request_factory, $response_exporter,
+    $server_vars, $params, $post;
 
   function __construct(
     Asar_Config_Interface $config,
@@ -17,9 +19,7 @@ class Asar_EnvironmentHelper_Web {
     $this->post   = $post;
   }
   
-  function runTestEnvironment() {
-    
-  }
+  function runTestEnvironment() {}
   
   function runAppInProductionEnvironment($app_name) {
     $app_scope = new Asar_ApplicationScope(

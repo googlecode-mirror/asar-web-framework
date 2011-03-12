@@ -23,9 +23,8 @@ class Asar_Template implements Asar_Template_Interface {
     return $this->file;
   }
   
-  function setConfig($key, $value) {
-    
-  }
+  // TODO: Is this even necessary?
+  function setConfig($key, $value) {}
   
   function getLayoutVars() {
     return $this->layout;

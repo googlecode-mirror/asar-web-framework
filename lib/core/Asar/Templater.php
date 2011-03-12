@@ -23,7 +23,8 @@ class Asar_Templater
     $response = $this->resource->handleRequest($request);
     if (!$response instanceof Asar_Response_Interface) {
       throw new Asar_Templater_Exception(
-        "Unable to create template. The Resource did not return a response object."
+        'Unable to create template. The Resource did not return a response ' .
+        'object.'
       );
     }
     if ($this->responseTemplatable($response)) {

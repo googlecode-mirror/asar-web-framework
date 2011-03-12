@@ -42,7 +42,7 @@ class Asar_TestServerManager {
     for ($i = 0; $i < count($from_arr) - 1; $i++) {
       $result_path .= '..' . DIRECTORY_SEPARATOR;
     }
-    $result_path .= implode( DIRECTORY_SEPARATOR, $to_arr);
+    $result_path .= implode(DIRECTORY_SEPARATOR, $to_arr);
     return array(
       'base_path' => implode(DIRECTORY_SEPARATOR, $similarity),
       'from' => implode(DIRECTORY_SEPARATOR, $from_arr),
@@ -52,7 +52,7 @@ class Asar_TestServerManager {
   
   function setUp($options) {
     $test_server_path = $this->constructPath(
-      $this->test_data_path , 'test-server' 
+      $this->test_data_path, 'test-server' 
     );
     
     $this->deleteIf($test_server_path);
@@ -91,7 +91,7 @@ class Asar_TestServerManager {
         $out .= "Connection: Close\r\n\r\n";
         fwrite($fp, $out);
         $test = stream_get_contents($fp);
-        if (strpos($test,'<h1>This is the Great HTML</h1>') > 0) {
+        if (strpos($test, '<h1>This is the Great HTML</h1>') > 0) {
           self::$can_connect_to_test_server = true;
         } else {
           self::$can_connect_to_test_server = false;
@@ -110,7 +110,7 @@ class Asar_TestServerManager {
   
   function clearTestServer() {
     $test_server_path = $this->constructPath(
-      $this->test_data_path , 'test-server' 
+      $this->test_data_path, 'test-server' 
     );
     $this->deleteIf($test_server_path);
   }
