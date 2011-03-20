@@ -44,6 +44,10 @@ class Asar_ConfigTest_ConfigSample4 extends Asar_Config {
       'joo3' => 'meh'
     )
   );
+  
+  protected function init() {
+    $this->config['foo'] = 'Foo';
+  }
 }
 
 class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
@@ -112,6 +116,11 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
     $config = new Asar_Config($config_arr);
     $this->assertSame(2, $config->getConfig('bar'));
     $this->assertEquals('Aye', $config->getConfig('jar.a'));
+  }
+  
+  function testConfigRunsInitializationOnConstruction() {
+    $config = new Asar_ConfigTest_ConfigSample4;
+    $this->assertEquals('Foo', $config->getConfig('foo'));
   }
   
 }

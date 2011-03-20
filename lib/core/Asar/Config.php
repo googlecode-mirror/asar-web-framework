@@ -8,7 +8,10 @@ class Asar_Config implements Asar_Config_Interface {
     if ($init_config) {
       $this->config = $this->configMerge($init_config, $this->config);
     }
+    $this->init();
   }
+  
+  protected function init() {}
   
   function getConfig($key = null) {
     if (is_string($key)) {
