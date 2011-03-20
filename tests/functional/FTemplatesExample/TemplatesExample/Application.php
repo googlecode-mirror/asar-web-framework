@@ -8,6 +8,7 @@ class TemplatesExample_Application extends Asar_Application {
     $this->setMap('/set-layout', 'SetLayout');
     $this->setMap('/alternative', 'Alternative');
     $this->setMap('/xml', 'Xml');
+    $this->setMap('/alt-template', 'AltTemplate');
   }
   
 }

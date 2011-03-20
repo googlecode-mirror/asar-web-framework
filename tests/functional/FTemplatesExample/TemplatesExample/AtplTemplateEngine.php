@@ -1,8 +1,14 @@
 <?php
+/**
+ * TemplatesExample_AtplTemplateEngine
+ *
+ * This is a super simple template engine that uses a str_replace. This
+ * is only used for demonstrating how an alternative template engine can
+ * be used in your applications.
+ *
+ */
+class TemplatesExample_AtplTemplateEngine implements Asar_Template_Interface {
 
-class Asar_Template implements Asar_Template_Interface {
-  
-  
   private
     $file,
     $layout = array(),
@@ -23,7 +29,6 @@ class Asar_Template implements Asar_Template_Interface {
     return $this->file;
   }
   
-  // TODO: Is this even necessary?
   function setConfig($key, $value) {}
   
   function getLayoutVars() {
@@ -40,11 +45,15 @@ class Asar_Template implements Asar_Template_Interface {
     if (is_array($vars)) {
       extract($vars);
     } else {
-      $content = $vars;
+      $old_vars = $vars;
+      $vars = array();
+      $vars['content'] = $old_vars;
     }
-    ob_start();
-    include($this->file);
-    return ob_get_clean();
+    $output = file_get_contents($this->file);
+    foreach ($vars as $key => $value) {
+      $output = str_replace("[$key]", $value, $output);
+    }
+    return $output;
   }
-  
+
 }

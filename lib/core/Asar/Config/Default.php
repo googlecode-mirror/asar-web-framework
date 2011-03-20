@@ -4,7 +4,7 @@ class Asar_Config_Default extends Asar_Config {
   
   protected $config = array(
     'map'              => array('/' => 'Index'),
-    'template_engines' => array('php' => 'Asar_Template'),
+    'template_engines' => array('php' => 'Asar_Template_Engines_Php'),
     'use_templates'    => true,
     'default_classes'  => array(
       'application'     => 'Asar_ApplicationBasic',

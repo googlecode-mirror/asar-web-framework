@@ -20,7 +20,7 @@ class RepresentationExample_Representation_Index extends Asar_Representation {
   }
   
   function getXml($data) {
-    $template = new Asar_Template;
+    $template = new Asar_Template_Engines_Php;
     $template->setTemplateFile(
       dirname(__FILE__) . DIRECTORY_SEPARATOR . 'index_xml_template.php'
     );

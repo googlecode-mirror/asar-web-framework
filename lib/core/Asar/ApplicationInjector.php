@@ -58,10 +58,10 @@ class Asar_ApplicationInjector {
   }
   
   static function injectStatusCodeMessages(Asar_ApplicationScope $scope) {
-    $sm = self::injectAppConfig($scope)->getConfig(
+    $status_messages = self::injectAppConfig($scope)->getConfig(
       'default_classes.status_messages'
     );
-    return new $sm;
+    return new $status_messages;
   }
   
   // TODO: Refactor this
@@ -85,16 +85,34 @@ class Asar_ApplicationInjector {
   static function injectTemplatePackageProvider(Asar_ApplicationScope $scope) {
     return new Asar_TemplatePackageProvider(
       self::injectTemplateLocator($scope),
-      self::injectTemplateFactory($scope)
+      self::injectTemplateFactoryWithRegisteredEngines($scope)
     );
   }
   
-  static function injectTemplateFactory(Asar_ApplicationScope $scope) {
-    // Set the templating Engine
-    $template_factory = new Asar_TemplateFactory(self::injectDebug($scope));
-    // TODO: Refactor this
-    $template_factory->registerTemplateEngine('php', 'Asar_Template');
+  static function injectTemplateFactoryWithRegisteredEngines(Asar_ApplicationScope $scope) {
+    $template_factory = self::injectTemplateFactory($scope);
+    foreach (
+      self::injectRegisteredTemplateEngines($scope) as $filetype => $engine_class
+    ) {
+      call_user_func_array(
+        array($template_factory, 'registerTemplateEngine'),
+        array($filetype, $engine_class)
+      );
+    }
     return $template_factory;
+  }
+  
+  static function injectRegisteredTemplateEngines(Asar_ApplicationScope $scope) {
+    return self::injectAppConfig($scope)->getConfig('template_engines');
+  }
+  
+  static function injectTemplateFactory(Asar_ApplicationScope $scope) {
+    if (!$scope->isInCache('TemplateFactory')) {
+      $scope->addToCache(
+        'TemplateFactory', new Asar_TemplateFactory(self::injectDebug($scope))
+      );
+    }
+    return $scope->getCache('TemplateFactory');
   }
   
   static function injectConfigDevelopment(Asar_ApplicationScope $scope) {
@@ -110,7 +128,7 @@ class Asar_ApplicationInjector {
   }
   
   static function injectEngineExtensions(Asar_ApplicationScope $scope) {
-    return array('php');
+    return array_keys(self::injectRegisteredTemplateEngines($scope));
   }
   
   static function injectContentNegotiator(Asar_ApplicationScope $scope) {

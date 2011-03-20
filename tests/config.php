@@ -7,7 +7,8 @@ $__asar = Asar::getInstance();
 $__asar->getToolSet()->getIncludePathManager()->add(
   $__asar->getFrameworkCorePath(),
   $__asar->getFrameworkDevTestingPath(),
-  $__asar->getFrameworkExtensionsPath()
+  $__asar->getFrameworkExtensionsPath(),
+  $__asar->getFrameworkVendorPath()
 );
 
 require_once 'Asar/EnvironmentScope.php';

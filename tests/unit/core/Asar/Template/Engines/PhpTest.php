@@ -1,15 +1,15 @@
 <?php
 
-require_once realpath(dirname(__FILE__). '/../../../config.php');
+require_once realpath(dirname(__FILE__). '/../../../../../config.php');
 
-class Asar_TemplateTest extends PHPUnit_Framework_TestCase {
+class Asar_Template_Engines_PhpTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->TFM = new Asar_TempFilesManager(
       Asar::getInstance()->getFrameworkTestsDataTempPath()
     );
     $this->TFM->clearTempDirectory();
-    $this->T = new Asar_Template;
+    $this->T = new Asar_Template_Engines_Php;
   }
   
   function tearDown() {

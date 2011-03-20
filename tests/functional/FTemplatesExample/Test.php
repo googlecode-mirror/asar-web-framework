@@ -216,4 +216,24 @@ class FTemplatesExample_Test extends PHPUnit_Framework_TestCase {
     );
   }
   
+  function testAlternativeTemplateEngine() {
+    $response = $this->client->GET(
+      $this->app,
+      array(
+        'path'=>'/alt-template'
+      )
+    );
+    $this->assertTag(
+      array(
+        'tag' => 'p',
+        'content' => 'This is an alternative template setup.',
+        'parent' => array(
+          'tag' => 'body'
+        )
+      ),
+      $response->getContent(),
+      $response->getContent()
+    );
+  }
+  
 }
