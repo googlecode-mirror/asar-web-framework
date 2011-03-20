@@ -2,7 +2,7 @@
 
 class Asar_Utility_Cli {
   
-  private $interpreter, $executor, $cwd, $out_first;
+  private $interpreter, $executor, $cwd;
   
   function __construct(
     Asar_Utility_Cli_Interpreter $interpreter,

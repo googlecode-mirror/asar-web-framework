@@ -14,17 +14,16 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
   }
   
   private function createDebugContent($debug) {
-    $v = $this->el(
+    return $this->element(
       'div',
-      $this->el(
-        'table', $this->el('tbody', $this->createDebugTableData($debug))
+      $this->element(
+        'table', $this->element('tbody', $this->createDebugTableData($debug))
       ),
       array('id' => 'asarwf_debug_info')
     );
-    return $v;
   }
   
-  private function el($name, $value = '', array $attributes = array()) {
+  private function element($name, $value = '', array $attributes = array()) {
     $attributes_list = '';
     foreach ($attributes as $attr_name => $attr_value) {
       $attributes_list .= " $attr_name=\"$attr_value\"";
@@ -36,12 +35,12 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
     $data = '';
     foreach ($debug as $name => $value) {
       $id = Asar_Utility_String::underScore($name);
-      $data .= $this->el(
+      $data .= $this->element(
         'tr', 
-        $this->el(
+        $this->element(
           'th', $name, array('scope' => 'row', 'id' => 'asarwf_dbgl_' . $id)
         ) .
-        $this->el(
+        $this->element(
           'td', $this->createDataValues($value), 
           array('id' => 'asarwf_dbgv_' . $id)
         )
@@ -63,21 +62,21 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
   private function createDataListValues($value) {
     $items = '';
     foreach ($value as $data) {
-      $items .= $this->el('li', $this->createDataValues($data));
+      $items .= $this->element('li', $this->createDataValues($data));
     }
-    return $this->el('ul', $items);
+    return $this->element('ul', $items);
   }
   
   private function createDataTableValues($value) {
     $items = '';
     foreach ($value as $key => $data) {
-      $items .= $this->el(
+      $items .= $this->element(
         'tr',
-        $this->el('th', $key, array('scope' => 'row')) .
-        $this->el('td', $this->createDataValues($data))
+        $this->element('th', $key, array('scope' => 'row')) .
+        $this->element('td', $this->createDataValues($data))
       );
     }
-    return $this->el('table', $this->el('tbody', $items));
+    return $this->element('table', $this->element('tbody', $items));
   }
   
   private function isAssociativeArray($array) {

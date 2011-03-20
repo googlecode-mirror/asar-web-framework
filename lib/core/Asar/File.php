@@ -65,8 +65,7 @@ class Asar_File {
         'file to (' . dirname($filename) . ').'
       );
     }
-    $f = new self($filename, 'w+b');
-    return $f; 
+    return new self($filename, 'w+b');
   }
   
   public static function open ($filename) {
@@ -75,8 +74,7 @@ class Asar_File {
         "Asar_File::open failed. The file '$filename' does not exist."
       );
     } else {
-      $f = new self($filename, 'r+b');
-      return $f;
+      return new self($filename, 'r+b');
     }
   }
   
@@ -176,7 +174,7 @@ class Asar_File {
   }
   
   function save() {
-    $test = fwrite($this->getResource(), $this->getContent());
+    fwrite($this->getResource(), $this->getContent());
     if (!$this->forced_append_mode) {
       $this->unsetResource();
     }

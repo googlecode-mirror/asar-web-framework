@@ -2,7 +2,7 @@
 
 class Asar_TestServerManager {
   
-  private static $can_connect_to_test_server;
+  private static $can_connect;
   private $test_data_path;
   
   function __construct($test_data_path) {
@@ -25,9 +25,7 @@ class Asar_TestServerManager {
     $from_arr = explode(DIRECTORY_SEPARATOR, $from);
     $to_arr = explode(DIRECTORY_SEPARATOR, $to);
     $similarity = array();
-    $len = count($from_arr);
     $n = 0;
-    //echo "\n", $from, "\n", $to, "\n";
     while (count($from_arr) !== 0 && $n != 1000) {
       
       if ($from_arr[0] == $to_arr[0]) {
@@ -79,12 +77,12 @@ class Asar_TestServerManager {
   // TODO: create test code for coverage's sake
   // Copied from Asar_Unit_ClientHttpTest
   function isCanConnectToTestServer() {
-    if (is_null(self::$can_connect_to_test_server)) {
-      self::$can_connect_to_test_server = false;
+    if (is_null(self::$can_connect)) {
+      self::$can_connect = false;
       $this->setUp(array('fixture' => 'normal'));
       $fp = @fsockopen('asar-test.local', 80, $errno, $errstr, 30);
       if (!$fp) {
-        self::$can_connect_to_test_server = false;
+        self::$can_connect = false;
       } else {
         $out = "GET / HTTP/1.0\r\n";
         $out .= "Host: asar-test.local\r\n";
@@ -92,14 +90,14 @@ class Asar_TestServerManager {
         fwrite($fp, $out);
         $test = stream_get_contents($fp);
         if (strpos($test, '<h1>This is the Great HTML</h1>') > 0) {
-          self::$can_connect_to_test_server = true;
+          self::$can_connect = true;
         } else {
-          self::$can_connect_to_test_server = false;
+          self::$can_connect = false;
         }
         fclose($fp);
       }
     }
-    return self::$can_connect_to_test_server;
+    return self::$can_connect;
   }
   
   private function deleteIf($path) {

@@ -59,8 +59,4 @@ class Asar_Config implements Asar_Config_Interface {
     return $to;
   }
   
-  private function strHasDot($str) {
-    return strpos($str, '.') > 0;
-  }
-  
 }

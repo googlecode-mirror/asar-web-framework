@@ -128,18 +128,19 @@ class Asar_Application implements Asar_Resource_Interface {
     return $response;
   }
   
-  private function set500Message($e) {
+  private function set500Message($exception) {
     $trace = "\nTrace:";
-    foreach ($e->getTrace() as $tracepart) {
+    foreach ($exception->getTrace() as $tracepart) {
       if (!isset($tracepart['file'])) {
         continue;
       }
-      $f = isset($tracepart['file']) ? $tracepart['file'] : '';
-      $l = isset($tracepart['line']) ? $tracepart['line'] : '';
-      $trace .= "\n  File: $f  - Line: $l";
+      $file = isset($tracepart['file']) ? $tracepart['file'] : '';
+      $line = isset($tracepart['line']) ? $tracepart['line'] : '';
+      $trace .= "\n  File: $file  - Line: $line";
     }
-    return $e->getMessage() . 
-      "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine() . $trace;
+    return $exception->getMessage() . 
+      "\nFile: " . $exception->getFile() . "\nLine: " . $exception->getLine() . 
+      $trace;
   }
   
   private function checkIfResource($resource) {
@@ -153,7 +154,7 @@ class Asar_Application implements Asar_Resource_Interface {
   private function returnIfResponse($response) {
     if (!$response instanceof Asar_Response_Interface) {
       throw new Exception(
-        gettype($a_response) . "is not a valid response object."
+        gettype($response) . "is not a valid response object."
       );
     }
     return $response;

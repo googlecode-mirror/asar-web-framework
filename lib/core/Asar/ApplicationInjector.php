@@ -2,9 +2,6 @@
 
 class Asar_ApplicationInjector {
   
-  private static
-    $loaded_filters = array();
-  
   static function injectApplicationRunner(Asar_ApplicationScope $scope) {
     return new Asar_ApplicationRunner(
       self::injectApplication($scope)

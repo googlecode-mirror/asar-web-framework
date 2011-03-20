@@ -3,9 +3,7 @@
 class Asar_ApplicationFactory {
   
   private 
-    $config,
-    $file_searcher,
-    $loaded_message_filters = array();
+    $config;
   
   function __construct(Asar_Config_Interface $config) {
     $this->config = $config;

@@ -102,9 +102,9 @@ class Asar_Resource
   }
   
   function forwardTo($resource_name) {
-    $e = new Asar_Resource_Exception_ForwardRequest($resource_name);
-    $e->setPayload(array('request' => $this->request));
-    throw $e;
+    $exception = new Asar_Resource_Exception_ForwardRequest($resource_name);
+    $exception->setPayload(array('request' => $this->request));
+    throw $exception;
   }
   
   function redirectTo($location, $type = 'basic') {
@@ -112,14 +112,16 @@ class Asar_Resource
       $location_list = $location;
       $location = $location[0];
     }
-    $e = new Asar_Resource_Exception_Redirect($location);
+    $exception = new Asar_Resource_Exception_Redirect($location);
     $code = isset(self::$redirect_codes[$type]) ? 
       self::$redirect_codes[$type] : self::$redirect_codes['basic'];
-    $e->setPayload(array('location' => $location, 'status_code' => $code));
+    $exception->setPayload(
+      array('location' => $location, 'status_code' => $code)
+    );
     if (isset($location_list)) {
-      $e->setPayload(array('locations_list' => $location_list));
+      $exception->setPayload(array('locations_list' => $location_list));
     }
-    throw $e;
+    throw $exception;
   }
   
   function qualify($path) {
@@ -155,14 +157,14 @@ class Asar_Resource
     $path = explode('/', $this->getPath());
     array_shift($path);
     $components2 = array();
-    $i = 0;
+    $count = 0;
     foreach ($path_template as $key => $value) {
       if (is_null($value)) {
-        $components2[$key] = $path[$i];
+        $components2[$key] = $path[$count];
       } else {
         $components2[$key] = $value;
       }
-      $i++;
+      $count++;
     }
     return $components2;
   }

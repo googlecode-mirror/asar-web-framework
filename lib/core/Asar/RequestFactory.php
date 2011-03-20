@@ -14,7 +14,7 @@ class Asar_RequestFactory {
     return new Asar_Request($options);
   }
   
-  private function getIfExists($key, $array, $default = null) {
+  private function getIfExists($key, $array) {
     return array_key_exists($key, $array) ? $array[$key] : null;
   }
   

@@ -14,7 +14,7 @@ class Asar_ContentNegotiator implements Asar_ContentNegotiator_Interface {
       if (!isset($preferred_format)) {
         $preferred_format = $format;
       }
-      foreach ($accept_list as $q => $accepts) {
+      foreach ($accept_list as $accepts) {
         if (preg_match('/^[\w+-_]+\/[\*]$/', $accepts) ) {
           $exp = str_replace('*', '', $accepts);
             if (strpos($format, $exp) === 0) {
