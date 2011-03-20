@@ -17,6 +17,7 @@ class Asar_ApplicationInjector {
   
   static function injectApplication(Asar_ApplicationScope $scope) {
     $app_full_name = self::getApplicationClass($scope);
+    self::registerLoggers($scope);
     return new $app_full_name(
       $scope->getAppName(),
       self::injectRouter($scope),
@@ -25,6 +26,18 @@ class Asar_ApplicationInjector {
       self::injectRequestFilters($scope),
       self::injectResponseFilters($scope)
     );
+  }
+  
+  static function registerLoggers(Asar_ApplicationScope $scope) {
+    if (self::injectLogFile($scope)) {
+      Asar_Logger_Registry::register(
+        $scope->getAppName(), self::injectLogFile($scope)
+      );
+    }
+  }
+  
+  static function injectLogFile(Asar_ApplicationScope $scope) {
+    return self::injectAppConfig($scope)->getConfig('log_file');
   }
   
   static function injectRouter(Asar_ApplicationScope $scope) {

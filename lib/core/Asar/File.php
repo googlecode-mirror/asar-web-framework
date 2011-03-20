@@ -6,27 +6,35 @@
  * The following code creates a file named 'filename.ext'
  * with the content 'Hello World!' and saves it.
  * 
+ * <code>
  *   Asar_File::create('filename.ext')->write('Hello World!')->save();
+ * </code>
  * 
  * The following code creates a file named 'filename.ext'
  * in the 'path/' directory ('this directory must exist'),
  * writes the content 'Hello Again!' and saves it.
  * 
+ * <code>
  *   Asar_File::create('path/filename.ext')->write('Hello Again!')->save();
+ * </code>
  * 
  * 
  * EXAMPLE - Opening a File
  * 
  * The following gets the contents of a file:
  * 
+ * <code>
  *   $contents = Asar_File::open('thefile.ext')->read(); 
+ * </code>
  * 
  * The following opens a file, writes a content on it, and then saves it:
  * 
+ * <code>
  *   $f = Asar_File::open('tehfile.ext')->write($thecontentstring)->save();
+ * </code>
  * 
  * 
- * The static methods open and create are wrappers for the 
+ * The static methods {@link open()} and {@link create()} are wrappers for the 
  * constructor method
  * 
  * 
@@ -36,9 +44,6 @@
  * @todo       Changing File Mode (chmod?)
  * @todo       Making sure we point to the right file
  */
-
-//require_once 'Base.php';
-
 class Asar_File {
   
   private $filename           = NULL;
@@ -159,6 +164,9 @@ class Asar_File {
     return $this->write($content.$this->getContent());
   }
   
+  /**
+   * TODO: Optimize for append_mode
+   */
   function writeAfter($content) {
     return $this->write($this->getContent().$content);
   }
