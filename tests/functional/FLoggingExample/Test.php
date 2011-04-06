@@ -31,7 +31,7 @@ class FLoggingExample_Test extends PHPUnit_Framework_TestCase {
     // Matches with [Thu, 11 Oct 2007 12:38:29 GMT] Sample Log text.
     $this->assertRegExp(
       '/^\[[MTWFS][ouehra][neduit], [0-3][0-9] [A-Za-z]{3} [0-9]{4} ' .
-      '[0-1][0-9]:[0-6][0-9]:[0-6][0-9] GMT\] This is the first log./', 
+      '[0-2][0-9]:[0-6][0-9]:[0-6][0-9] GMT\] This is the first log./', 
       $contents[0]
     );
   }
