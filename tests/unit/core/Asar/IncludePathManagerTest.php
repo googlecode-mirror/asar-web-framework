@@ -1,8 +1,5 @@
 <?php
 
-require_once realpath(
-  dirname(__FILE__). '/../../../../lib/core/Asar/IncludePathManager.php'
-);
 
 class Asar_IncludePathManagerTest extends PHPUnit_Framework_TestCase {
   

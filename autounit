@@ -13,6 +13,11 @@ watch('tests/.*Test\.php') do |md|
   system("phpunit #{md[0]}")
 end
 
+watch('tests/.*\.php') do |md|
+  puts "\e[H\e[2J"  #clear console
+  system("phpunit tests")
+end
+
 watch('lib/(.*)\.php') do |md|   # runs tests/ClassTest* whenever src/Class.php is changed
   puts "\e[H\e[2J"  #clear console
   testpath = 'tests/unit/' + md[1].sub(/./) { |s| s.upcase } + 'Test.php'

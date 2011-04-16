@@ -5,8 +5,8 @@ set_include_path(
   Asar::getInstance()->getFrameworkDevTestingPath() . PATH_SEPARATOR .
   get_include_path()
 );
-require_once 'Asar/TempFilesManager.php';
-require_once 'Asar/FileSearcher.php';
+/*require_once 'Asar/TempFilesManager.php';
+require_once 'Asar/FileSearcher.php';*/
 
 class Asar_FileSearcherTest extends PHPUnit_Framework_TestCase {
   

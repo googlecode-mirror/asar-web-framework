@@ -1,7 +1,6 @@
 <?php
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
-require_once 'Asar/ClassLoader.php';
 
 class Asar_ClassLoaderTest extends PHPUnit_Framework_TestCase {
   

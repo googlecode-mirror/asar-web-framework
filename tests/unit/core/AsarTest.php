@@ -1,5 +1,4 @@
 <?php
-require_once realpath(dirname(__FILE__). '/../../../lib/core/Asar.php');
 
 class AsarTest extends PHPUnit_Framework_TestCase {
   

@@ -1,9 +1,5 @@
 <?php
 
-require_once realpath(
-  dirname(__FILE__). '/../../../../lib/core/Asar/Toolset.php'
-);
-
 class Asar_ToolsetTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
