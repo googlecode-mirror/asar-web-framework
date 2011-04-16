@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Router_Default implements Asar_Router_Interface {
   
   private $resource_factory, $resource_lister, $debug;

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Utility_Cli_TaskFileLoader {
   
   private $cwd, $file_peek, $tasks_file, $cli;

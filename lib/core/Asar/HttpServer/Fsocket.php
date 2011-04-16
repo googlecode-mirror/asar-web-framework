@@ -1,13 +1,25 @@
 <?php
-
+/**
+ * A wrapper class for making HTTP Requests
+ *
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_HttpServer_Fsocket implements Asar_Resource_Interface {
   
   private $host;
   
+  /**
+   * @param string $host the web address (e.g. www.google.com)
+   */
   function __construct($host) {
     $this->host = $host;
   }
   
+  /**
+   * Converts the Request object to a raw HTTP request and returns a Response
+   * object converted from the raw HTTP response sent by the host
+   */
   function handleRequest(Asar_Request_Interface $request) {
     $rstr = $this->createRawHttpRequestString($request);
     if ($rstr) {

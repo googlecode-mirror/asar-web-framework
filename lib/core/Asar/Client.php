@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Client {
 
   function sendRequest($server, $request) {

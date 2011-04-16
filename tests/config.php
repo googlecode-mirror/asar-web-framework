@@ -18,6 +18,6 @@ if (!isset($_SESSION)) {
   $_SESSION = array();
 }
 $scope = new Asar_EnvironmentScope(
-  'Foo', $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
+  $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
 );
 Asar_Injector::injectEnvironmentHelperBootstrap($scope)->run();

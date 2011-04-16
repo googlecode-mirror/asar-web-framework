@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 require_once 'FileIncludeManager/Interface.php';
 
 class Asar_FileIncludeManager implements Asar_FileIncludeManager_Interface {

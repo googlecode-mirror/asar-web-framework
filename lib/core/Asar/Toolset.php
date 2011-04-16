@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 require_once 'IncludePathManager.php';
 
 class Asar_Toolset {

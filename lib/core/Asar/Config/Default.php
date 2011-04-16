@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Default configuration values
+ *
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Config_Default extends Asar_Config {
   
   protected $config = array(

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Request extends Asar_Message implements Asar_Request_Interface {
   
   private 

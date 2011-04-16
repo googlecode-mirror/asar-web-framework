@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 interface Asar_Template_Interface extends Asar_Configurable_Interface {
   
   function setTemplateFile($file);

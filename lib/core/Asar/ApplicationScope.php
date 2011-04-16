@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_ApplicationScope {
   
   private $app_name, $config, $cache = array();

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Config implements Asar_Config_Interface {
   
   protected $config = array();

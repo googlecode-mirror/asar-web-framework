@@ -12,6 +12,10 @@ class RemoveSvnEntries implements Asar_Utility_CLI_Interface {
     $this->controller = $controller;
   }
   
+  function getTaskNamespace() {
+    return '';
+  }
+  
   function removeSvnDirs($path) {
     foreach (scandir($path) as $file) {
       if (preg_match('/^.{1,2}$/', $file)) {
@@ -50,5 +54,3 @@ class RemoveSvnEntries implements Asar_Utility_CLI_Interface {
   }
 }
 
-$cli->register(new RemoveSvnEntries);
-var_dump($cli);

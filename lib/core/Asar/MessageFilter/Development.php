@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_MessageFilter_Development
   implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface
 {

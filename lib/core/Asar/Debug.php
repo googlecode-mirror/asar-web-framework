@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Debug implements Iterator {
   
   private $data = array(), $valid = FALSE;

@@ -1,9 +1,23 @@
 <?php
-
+/**
+ * Debug printer that outputs the debug information in HTML format
+ *
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
   
   private $block_elements = array('div', 'table', 'tbody', 'tr');
   
+  /**
+   * Inserts the debug information in $debug as html snippet at the end of the
+   * HTML document
+   *
+   * @param Asar_Debug $debug
+   * @param string $content where the debug information will be printed. Assumed
+   *                        as HTML content.
+   * @return string $content with the debug info inserted
+   */
   function printDebug(Asar_Debug $debug, $content) {
     if (strpos($content, '</body>')) {
       return str_replace(

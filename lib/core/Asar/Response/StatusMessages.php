@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Response_StatusMessages 
   implements Asar_Response_StatusMessages_Interface {
   

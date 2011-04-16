@@ -1,6 +1,9 @@
 <?php
 require_once 'FileSearcher/Interface.php';
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_FileSearcher implements Asar_FileSearcher_Interface {
   
   function find($file_path) {

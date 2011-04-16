@@ -1,12 +1,13 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Logger_Default implements Asar_Logger_Interface {
   
   private $file;
   
   /**
-   * The constructor
-   *
    * @param Asar_File $file an Asar_File object to store the log files in
    */
   function __construct(Asar_File $file) {

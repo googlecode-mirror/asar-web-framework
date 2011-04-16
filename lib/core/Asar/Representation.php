@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Representation
   implements Asar_Resource_Interface, Asar_Config_Interface
 {

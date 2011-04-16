@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_MessageFilterFactory {
   
   private $config, $debug, $filters = array();

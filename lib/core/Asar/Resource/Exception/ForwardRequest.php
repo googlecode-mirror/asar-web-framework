@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Resource_Exception_ForwardRequest extends Asar_Resource_Exception {
   
   private $payload = array('request' => null);

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
   
   private $tasklists = array(), $tasklists_n = array();

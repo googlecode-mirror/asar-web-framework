@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_ApplicationInjector {
   
   static function injectApplicationRunner(Asar_ApplicationScope $scope) {

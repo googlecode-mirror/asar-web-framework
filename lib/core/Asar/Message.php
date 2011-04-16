@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Message implements Asar_Message_Interface {
   
   protected $headers = array(), $content = '';

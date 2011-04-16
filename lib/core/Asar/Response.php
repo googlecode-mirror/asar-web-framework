@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Response extends Asar_Message implements Asar_Response_Interface {
   
   private $status = 200;

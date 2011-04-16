@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_ResponseExporter {
   
   function exportResponse(Asar_Response $response) {

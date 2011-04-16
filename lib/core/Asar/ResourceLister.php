@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_ResourceLister implements Asar_ResourceLister_Interface {
   
   private $file_searcher;

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Utility_Cli_BaseTasks implements Asar_Utility_Cli_Interface {
   
   private $controller;

@@ -43,6 +43,8 @@
  * @author     Wayne Duran
  * @todo       Changing File Mode (chmod?)
  * @todo       Making sure we point to the right file
+ * @package    Asar
+ * @subpackage core
  */
 class Asar_File {
   

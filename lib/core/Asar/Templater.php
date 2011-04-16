@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_Templater
   implements Asar_Resource_Interface, Asar_Config_Interface,
     Asar_PathDiscover_Interface

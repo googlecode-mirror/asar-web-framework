@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_ContentNegotiator implements Asar_ContentNegotiator_Interface {
   
   function negotiateFormat($accept_header, array $available_formats) {

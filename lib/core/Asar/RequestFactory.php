@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Asar
+ * @subpackage core
+ */
 class Asar_RequestFactory {
   
   function createRequest($server = array(), $params = array(), $post = null) {
