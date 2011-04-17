@@ -1,9 +1,13 @@
 <?php
 ini_set('error_reporting', E_ALL | E_STRICT);
-$lib_path = realpath(dirname(__FILE__) . '/../lib/') . '/';
+
+$lib_path = realpath(__DIR__ . '/../lib/') . '/';
 require_once $lib_path . 'SplClassLoader.php';
+
+$classLoader = new SplClassLoader('Asar\Tests', __DIR__);
+$classLoader->register();
+
 $classLoader = new SplClassLoader('Asar', $lib_path . 'asar');
-//$classLoader->setNamespaceSeparator('_');
 $classLoader->register();
 
 /*
