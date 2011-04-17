@@ -1,11 +1,16 @@
 <?php
+namespace Asar\DebugPrinter;
+
+use Asar\DebugPrinter\DebugPrinterInterface;
+use Asar\Debug;
+
 /**
  * A Null DebugPrinter that doesn't do anything but return the content
  *
  * @package Asar
  * @subpackage core
  */
-class Asar_DebugPrinter_Null implements Asar_DebugPrinter_Interface {
+class NullDebugPrinter implements DebugPrinterInterface {
   
   /**
    * Simply returns the passed $content. Nothing more.
@@ -14,7 +19,7 @@ class Asar_DebugPrinter_Null implements Asar_DebugPrinter_Interface {
    * @param string $content
    * @return string returns the $content without modifications
    */
-  function printDebug(Asar_Debug $debug, $content) {
+  function printDebug(Debug $debug, $content) {
     return $content;
   }
   

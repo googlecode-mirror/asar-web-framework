@@ -1,14 +1,17 @@
 <?php
+namespace Asar;
+
+use \Asar\ContentNegotiator\ContentNegotiatorInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ContentNegotiator implements Asar_ContentNegotiator_Interface {
+class ContentNegotiator implements ContentNegotiatorInterface {
   
   function negotiateFormat($accept_header, array $available_formats) {
     if (empty($available_formats)) {
-      throw new Asar_ContentNegotiator_Exception(
-         'Asar_ContentNegotiator::negotiateFormat(). 2nd argument '.
+      throw new \Asar\ContentNegotiator\Exception(
+         get_class($this) . '::negotiateFormat(). 2nd argument '.
           'must not be empty. Please specify available formats.'
       );
     }

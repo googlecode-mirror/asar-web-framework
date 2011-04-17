@@ -1,9 +1,13 @@
 <?php
+namespace Asar\Template\Engines;
+
+use \Asar\Template\TemplateInterface;
+use \Asar\Template\Exception\TemplateFileNotFound;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Template_Engines_Php implements Asar_Template_Interface {
+class PhpEngine implements TemplateInterface {
   
   
   private
@@ -15,7 +19,7 @@ class Asar_Template_Engines_Php implements Asar_Template_Interface {
   
   function setTemplateFile($file) {
     if (!file_exists($file)) {
-      throw new Asar_Template_Exception_FileNotFound(
+      throw new TemplateFileNotFound(
         "The file '$file' passed to the template does not exist."
       );
     }

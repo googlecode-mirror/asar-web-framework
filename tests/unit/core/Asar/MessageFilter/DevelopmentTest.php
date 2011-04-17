@@ -1,17 +1,23 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../config.php');
 
+use \Asar\MessageFilter\Development as DevelopmentMessageFilter;
+use \Asar\Config;
+use \Asar\Debug;
+use \Asar\Response;
+use \Asar\Request;
+
 class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   
   private $html = "<html>\n<head>\n</head>\n<body>\n</body>\n</html>";
   
   function setUp() {
-    $this->config = new Asar_Config(array());
-    $this->debug  = new Asar_Debug;
-    $this->printer = $this->getMock('Asar_DebugPrinter_Interface');
-    $this->filter = new Asar_MessageFilter_Development($this->config, $this->debug);
+    $this->config = new Config(array());
+    $this->debug  = new Debug;
+    $this->printer = $this->getMock('Asar\DebugPrinter\DebugPrinterInterface');
+    $this->filter = new DevelopmentMessageFilter($this->config, $this->debug);
     $this->filter->setPrinter('html', $this->printer);
-    $this->response = new Asar_Response;
+    $this->response = new Response;
     $this->response->setContent($this->html);
   }
   
@@ -34,7 +40,7 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   function testDevFilterDelegatesToMatchedPrinter() {
     $this->response->setHeader('Content-Type', 'text/plain');
     $this->response->setHeader('Asar-Internal-Debug', $this->debug);
-    $text_printer = $this->getMock('Asar_DebugPrinter_Interface');
+    $text_printer = $this->getMock('Asar\DebugPrinter\DebugPrinterInterface');
     $this->filter->setPrinter('txt', $text_printer);
     $text_printer->expects($this->once())
       ->method('printDebug')
@@ -53,13 +59,14 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   }
   
   function testDevFilterAddsDebugToRequestInternalHeader() {
-    $request = new Asar_Request;
-    $debug = $this->filter->filterRequest($request)->getHeader('Asar-Internal-Debug');
-    $this->assertInstanceof('Asar_Debug', $debug);
+    $request = new Request;
+    $debug = $this->filter->filterRequest($request)
+      ->getHeader('Asar-Internal-Debug');
+    $this->assertInstanceof('Asar\Debug', $debug);
   }
   
   function testReturnsDebugFromConstruction() {
-    $request = new Asar_Request;
+    $request = new Request;
     $this->assertSame(
       $this->debug,
       $this->filter->filterRequest($request)->getHeader('Asar-Internal-Debug')
@@ -85,7 +92,7 @@ class Asar_MessageFilter_DevelopmentTest extends PHPUnit_Framework_TestCase {
   }
   
   function testAddsApplicationNameIfApplicationInternalHeaderIsSet() {
-    $request = new Asar_Request;
+    $request = new Request;
     $request->setHeader('Asar-Internal-Application-Name', 'FooApp');
     $filtered_request = $this->filter->filterRequest($request);
     $this->assertEquals('FooApp', $this->debug->get('Application'));

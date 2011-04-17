@@ -1,4 +1,7 @@
 <?php
+namespace Asar\Config;
+
+use \Asar\Config;
 /**
  * Development configuration. Sets some request and response filters useful
  * during development. This is set when config 'mode' is set to 'development'.
@@ -7,16 +10,16 @@
  * @package Asar
  * @subpackage core
  */
-class Asar_Config_Development extends Asar_Config {
+class Development extends Config {
   
   protected $config = array(
     'request_filters'          => array(
-      'standard' => 'Asar_MessageFilter_Standard',
-      'development' => 'Asar_MessageFilter_Development'
+      'standard'    => 'Asar\MessageFilter\Standard',
+      'development' => 'Asar\MessageFilter\Development'
     ),
     'response_filters'          => array(
-      'development' => 'Asar_MessageFilter_Development',
-      'standard'    =>    'Asar_MessageFilter_Standard',
+      'development' => 'Asar\MessageFilter\Development',
+      'standard'    => 'Asar\MessageFilter\Standard',
     ),
   );
   

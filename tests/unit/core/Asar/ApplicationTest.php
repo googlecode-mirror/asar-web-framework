@@ -2,33 +2,43 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Application;
+use \Asar\Request;
+use \Asar\Response;
+use \Asar\Router\Exception\ResourceNotFound;
+use \Asar\Resource\Exception\ForwardRequest;
+use \Asar\Debug;
+
 class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->resource = $this->getMock(
-      'Asar_Resource_Interface', array('handleRequest')
+      'Asar\Resource\ResourceInterface', array('handleRequest')
     );
-    $this->router = $this->getMock('Asar_Router_Interface', array('route'));
+    $this->router = $this->getMock(
+      'Asar\Router\RouterInterface', array('route')
+    );
     $this->sm = $this->getMock(
-      'Asar_Response_StatusMessages_Interface', array('getMessage')
+      'Asar\Response\StatusMessages\StatusMessagesInterface',
+      array('getMessage')
     );
     $this->map = array('/foo_ra' => 'BarRa');
-    $this->app = new Asar_Application(
+    $this->app = new Application(
       'Some_Name', $this->router, $this->sm, $this->map
     );
-    $this->request = new Asar_Request;
-    $this->response = new Asar_Response;
+    $this->request = new Request;
+    $this->response = new Response;
   }
   
   function testApplicationImplementsResourceInterface() {
-    $this->assertInstanceOf('Asar_Resource_Interface', $this->app);
+    $this->assertInstanceOf('Asar\Resource\ResourceInterface', $this->app);
   }
 
   function testAppRunsSetupMethodOnConstruction() {
     $old_post = $_POST;
     $cname = get_class($this) . '_SetUpTest_Application';
     eval('
-      class '. $cname . ' extends Asar_Application {
+      class '. $cname . ' extends \Asar\Application {
         function setUp() {
           $_POST["baz"] = 2895;
         }
@@ -78,7 +88,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testSends404ResponseWhenRouterThrowsNotFoundException() {
     $this->routerExpects()
-      ->will($this->throwException(new Asar_Router_Exception_ResourceNotFound));
+      ->will($this->throwException(new ResourceNotFound));
     $response = $this->app->handleRequest($this->request);
     $this->assertEquals(404, $response->getStatus());
   }
@@ -87,7 +97,11 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->routerReturnsResource();
     $this->resourceExpects()
       ->will($this->throwException(new Exception));
-    $response = $this->app->handleRequest($this->request);
+    try {
+      $response = $this->app->handleRequest($this->request);
+    } catch (\Exception $e) {
+      $this->fail('Application was unable to catch exception.');
+    }
     $this->assertEquals(500, $response->getStatus());
   }
   
@@ -157,7 +171,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $resource1 = $app_name . '_Foo_Resource';
     $resource2 = $app_name . '_BarResource';
     eval("
-      class $cname extends Asar_Application {
+      class $cname extends \Asar\Application {
         function setUp() {
           \$this->setIndex('$resource1');
           \$this->setMap('/bar', '$resource2');
@@ -176,7 +190,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $cname = $app_name . '_Application';
     $resource = $app_name . '_Foo_Resource';
     eval("
-      class $cname extends Asar_Application {
+      class $cname extends \Asar\Application {
         function setUp() {
           \$this->setMap('/foo_ra', '$resource');
         }
@@ -207,12 +221,12 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testForwardingRequestToAnotherResource() {
     $this->request->setPath('/bar');
-    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e = new ForwardRequest('Foo');
     $e->setPayload(array('request' => $this->request));
     $this->resource->expects($this->once())
       ->method('handleRequest')
       ->will($this->throwException($e));
-    $final_resource = $this->getMock('Asar_Resource_Interface');
+    $final_resource = $this->getMock('Asar\Resource\ResourceInterface');
     $final_resource->expects($this->once())
       ->method('handleRequest');
     $this->routerReturnsResource();
@@ -222,12 +236,12 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testForwardingUsesResponseFromFinalResource() {
     $this->response->setContent('Foo!');
-    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e = new ForwardRequest('Foo');
     $e->setPayload(array('request' => $this->request));
     $this->resource->expects($this->once())
       ->method('handleRequest')
       ->will($this->throwException($e));
-    $final_resource = $this->getMock('Asar_Resource_Interface');
+    $final_resource = $this->getMock('Asar\Resource\ResourceInterface');
     $final_resource->expects($this->once())
       ->method('handleRequest')
       ->will($this->returnValue($this->response));
@@ -240,7 +254,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testForwardingSetsPathAsFileName() {
     $this->response->setContent('Foo!');
-    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e = new ForwardRequest('Foo');
     $e->setPayload(array('request' => $this->request));
     $this->resource->expects($this->once())
       ->method('handleRequest')
@@ -253,7 +267,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   
   function testForwardingChecksForRecursion() {
     $this->request->setPath('/foo/bar');
-    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e = new ForwardRequest('Foo');
     $e->setPayload(array('request' => $this->request));
     $this->resource->expects($this->any())
       ->method('handleRequest')
@@ -269,17 +283,17 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testForwardingPassesRequestFromExceptionPayload() {
-    $request = new Asar_Request(array('content' => "bar"));
+    $request = new Request(array('content' => "bar"));
     $received_request = clone($request);
     $received_request->setHeader(
       'Asar-Internal-Isforwarded', true
     );
-    $e = new Asar_Resource_Exception_ForwardRequest('Foo');
+    $e = new ForwardRequest('Foo');
     $e->setPayload(array('request' => $request));
     $this->resource->expects($this->once())
       ->method('handleRequest')
       ->will($this->throwException($e));    
-    $final_resource = $this->getMock('Asar_Resource_Interface');
+    $final_resource = $this->getMock('Asar\Resource\ResourceInterface');
     $final_resource->expects($this->once())
       ->method('handleRequest')
       ->with($received_request);
@@ -315,7 +329,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->response->setHeader('Location', 'A_Resource_Name');
     $this->routerReturnsResource();
     $this->resourceExpects()->will($this->returnValue($this->response));
-    $destination_resource = $this->getMock('Asar_Resource');
+    $destination_resource = $this->getMock('Asar\Resource');
     $destination_resource->expects($this->once())
       ->method('getPermaPath')
       ->will($this->returnValue('/foo/bar'));
@@ -328,27 +342,27 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRequestFiltersFilteringRequestInSequence() {
-    $request = new Asar_Request(array('content' => 0));
+    $request = new Request(array('content' => 0));
     for ($i = 0, $filters = array(); $i < 3; $i++) {
-      $filter = $this->getMock('Asar_RequestFilter_Interface');
+      $filter = $this->getMock('Asar\RequestFilter\RequestFilterInterface');
       $filter->expects($this->once())
         ->method('filterRequest')
-        ->with(new Asar_Request(array('content' => $i)))
+        ->with(new Request(array('content' => $i)))
         ->will($this->returnValue(
-          new Asar_Request(array('content' => $i + 1))
+          new Request(array('content' => $i + 1))
         ));
       $request_filters[] = $filter;
     }
-    $app = new Asar_Application(
+    $app = new Application(
       'Some_Name', $this->router, $this->sm, $this->map, $request_filters
     );
     $app->handleRequest($request);
   }
   
   function testUseRequestFromRequestFilter() {
-    $request = new Asar_Request(array('content' => 0));
-    $request2 = new Asar_Request(array('content' => 2));
-    $filter = $this->getMock('Asar_RequestFilter_Interface');
+    $request = new Request(array('content' => 0));
+    $request2 = new Request(array('content' => 2));
+    $filter = $this->getMock('Asar\RequestFilter\RequestFilterInterface');
     $filter->expects($this->once())
       ->method('filterRequest')
       ->with($request)
@@ -356,42 +370,42 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->routerReturnsResource();
     $this->resourceExpects()
       ->with($request2);
-    $app = new Asar_Application(
+    $app = new Application(
       'Some_Name', $this->router, $this->sm, $this->map, array($filter)
     );
     $app->handleRequest($request);
   }
   
   function testResponseFiltersFilteringResponse() {
-    $request = new Asar_Request;
+    $request = new Request;
     $this->routerReturnsResource();
     $this->resourceExpects()
-      ->will($this->returnValue(new Asar_Response(array(
+      ->will($this->returnValue(new Response(array(
         'content' => 0
       ))));
     for ($i = 0, $filters = array(); $i < 3; $i++) {
       $filter = $this->getMock(
-        'Asar_ResponseFilter_Interface'
+        'Asar\ResponseFilter\ResponseFilterInterface'
       );
       $filter->expects($this->once())
         ->method('filterResponse')
-        ->with(new Asar_Response(array('content' => $i)))
+        ->with(new Response(array('content' => $i)))
         ->will($this->returnValue(
-          new Asar_Response(array('content' => $i + 1))
+          new Response(array('content' => $i + 1))
         ));
       $response_filters[] = $filter;
     }
-    $app = new Asar_Application(
+    $app = new Application(
       'Some_Name', $this->router, $this->sm, $this->map, array(), $response_filters
     );
     $app->handleRequest($request);
   }
   
   function testSettingApplicationNameInInternalHeader() {
-    $request = new Asar_Request;
-    $debug = new Asar_Debug;
+    $request = new Request;
+    $debug = new Debug;
     $filter = $this->getMock(
-      'Asar_RequestFilter_Interface'
+      'Asar\RequestFilter\RequestFilterInterface'
     );
     $request->setHeader('Asar-Internal-Debug', $debug);
     $filter->expects($this->once())
@@ -399,7 +413,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
       ->with($request)
       ->will($this->returnValue($request));
     $this->routerReturnsResource();
-    $app = new Asar_Application(
+    $app = new Application(
       'Some_Name', $this->router, $this->sm, $this->map, array($filter)
     );
     $app->handleRequest($request);

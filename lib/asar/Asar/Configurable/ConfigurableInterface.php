@@ -1,11 +1,13 @@
 <?php
+namespace Asar\Configurable;
+
 /**
  * An interface that makes classes configurable
  *
  * @package Asar
  * @subpackage core
  */
-interface Asar_Configurable_Interface {
+interface ConfigurableInterface {
   function setConfig($key, $value);
   function getConfig($key);
 }

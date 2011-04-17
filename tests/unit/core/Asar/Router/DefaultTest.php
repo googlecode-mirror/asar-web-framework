@@ -2,6 +2,8 @@
 
 require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
+use Asar\Router\DefaultRouter;
+
 /**
  * TODO: Make the tests more readable.
  */
@@ -9,12 +11,12 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->resource_lister  = $this->getMock(
-      'Asar_ResourceLister_Interface', array('getResourceListFor')
+      'Asar\ResourceLister\ResourceListerInterface', array('getResourceListFor')
     );
     $this->resource_factory = $this->getMock(
-      'Asar_ResourceFactory', array('getResource'), array(), '', FALSE
+      'Asar\ResourceFactory', array('getResource'), array(), '', FALSE
     );
-    $this->router = new Asar_Router_Default(
+    $this->router = new DefaultRouter(
       $this->resource_factory, $this->resource_lister
     );
   }
@@ -30,7 +32,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRouterInstanceOfRouterInterface() {
-    $this->assertInstanceOf('Asar_Router_Interface', $this->router);
+    $this->assertInstanceOf('Asar\Router\RouterInterface', $this->router);
   }
   
   /**
@@ -184,7 +186,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
       ->will($this->returnValue(array()));
-    $this->setExpectedException('Asar_Router_Exception_ResourceNotFound');
+    $this->setExpectedException('Asar\Router\Exception\ResourceNotFound');
     $this->router->route('A_Name', '/nowhere', array());
   }
   
@@ -192,7 +194,7 @@ class Asar_Router_DefaultTest extends PHPUnit_Framework_TestCase {
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
       ->will($this->returnValue(array()));
-    $this->setExpectedException('Asar_Router_Exception_ResourceNotFound');
+    $this->setExpectedException('Asar\Router\Exception\ResourceNotFound');
     $this->router->route('A_Name', 'Nowhere', array());
   }
   

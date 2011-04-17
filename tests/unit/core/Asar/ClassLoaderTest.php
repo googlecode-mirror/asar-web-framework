@@ -2,16 +2,18 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\ClassLoader;
+
 class Asar_ClassLoaderTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->file_searcher = $this->getMock(
-      'Asar_FileSearcher_Interface', array('find')
+      'Asar\FileSearcher\FileSearcherInterface', array('find')
     );
     $this->include_manager = $this->getMock(
-      'Asar_FileIncludeManager_Interface'
+      'Asar\FileIncludeManager\FileIncludeManagerInterface'
     );
-    $this->CL = new Asar_ClassLoader(
+    $this->CL = new ClassLoader(
       $this->file_searcher, $this->include_manager
     );
   }

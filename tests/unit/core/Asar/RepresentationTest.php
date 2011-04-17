@@ -2,12 +2,17 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Representation;
+use \Asar\Request;
+use \Asar\Response;
+use \Asar\Config;
+
 class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
 
   private $types = array('Txt', 'Html', 'Xml', 'Json');
 
   function setUp() {
-    $this->resource = $this->getMock('Asar_Resource');
+    $this->resource = $this->getMock('Asar\Resource');
   }
   
   private function resourceExpectsOnceHandleRequest() {
@@ -21,37 +26,37 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   
   private function mockRepresentation($methods = array()) {
     return $this->getMock(
-      'Asar_Representation', $methods , array($this->resource)
+      'Asar\Representation', $methods , array($this->resource)
     );
   }
   
   function testRepresentationDecoratesResource() {
-    $request = new Asar_Request(array('path' => '/foo'));
-    $response = new Asar_Response(array('content' => 'bar'));
+    $request = new Request(array('path' => '/foo'));
+    $response = new Response(array('content' => 'bar'));
     $this->resourceWillReturnResponse($response)
       ->with($this->equalTo($request));
-    $R = new Asar_Representation($this->resource);
+    $R = new Representation($this->resource);
     $this->assertSame($response, $R->handleRequest($request));
   }
   
   function testRepresentationUsesContentFromResource() {
-    $response = new Asar_Response(array('content' => 'Hello!'));
+    $response = new Response(array('content' => 'Hello!'));
     $this->resourceWillReturnResponse($response);
     $R = $this->mockRepresentation(array('getHtml'));
     $R->expects($this->once())
       ->method('getHtml')
       ->with($this->equalTo('Hello!'));
-    $R->handleRequest(new Asar_Request);
+    $R->handleRequest(new Request);
   }
   
   function testRepresentationInvokesGetTxtMethodForTxtRequest() {
-    $response = new Asar_Response(array('content' => 'Hi!'));
+    $response = new Response(array('content' => 'Hi!'));
     $this->resourceWillReturnResponse($response);
     $R = $this->mockRepresentation(array('getTxt'));
     $R->expects($this->once())
       ->method('getTxt')
       ->with($this->equalTo('Hi!'));
-    $R->handleRequest(new Asar_Request(
+    $R->handleRequest(new Request(
       array('headers' => array('accept' => 'text/plain'))
     ));
   }
@@ -62,7 +67,7 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   function testOnlyInvokesRespectiveMethodPerRequestType(
     $type, $method, $type_method
   ) {
-    $response = new Asar_Response(array('content' => 'Foo!'));
+    $response = new Response(array('content' => 'Foo!'));
     $this->resourceWillReturnResponse($response);
     $type_methods = $this->getAllPossibleTypeMethods($this->types);
     $R = $this->mockRepresentation($type_methods);
@@ -74,7 +79,7 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
     $R->expects($this->once())
       ->method($type_method)
       ->with($this->equalTo('Foo!'));
-    $R->handleRequest(new Asar_Request(
+    $R->handleRequest(new Request(
       array(
         'headers' => array('accept' => $type),
         'method'  => $method
@@ -109,14 +114,14 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testUseOutputFromTypeMethodAsContentForResponse() {
-    $response = new Asar_Response(array('content' => 'Baz.'));
+    $response = new Response(array('content' => 'Baz.'));
     $this->resourceWillReturnResponse($response);
     $R = $this->mockRepresentation(array('getTxt'));
     $R->expects($this->once())
       ->method('getTxt')
       ->will($this->returnCallback(array($this, 'getTxtDummy')));
     $this->assertEquals(
-      'Bar Baz.', $R->handleRequest(new Asar_Request(
+      'Bar Baz.', $R->handleRequest(new Request(
         array('headers' => array('Accept' => 'text/plain'))
       ))->getContent()
     );
@@ -127,15 +132,15 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testReturn406StatusForUnknownTypes() {
-    $this->resourceWillReturnResponse(new Asar_Response());
+    $this->resourceWillReturnResponse(new Response);
     $R = $this->mockRepresentation(array('getTxt'));
-    $this->assertEquals(406, $R->handleRequest(new Asar_Request)->getStatus());
+    $this->assertEquals(406, $R->handleRequest(new Request)->getStatus());
   }
   
   function testRepresentationRunsSetupCodeOnConstruction() {
     $cname = get_class($this) . '_RunSetup';
     eval('
-      class '. $cname . ' extends Asar_Representation {
+      class '. $cname . ' extends \Asar\Representation {
         protected function setUp() {
           $_POST["foo"] = "bar";
         }
@@ -147,13 +152,13 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRepresentationIsConfig() {
-    $R = new Asar_Representation($this->resource);
-    $this->assertInstanceOf('Asar_Config_Interface', $R);
+    $R = new Representation($this->resource);
+    $this->assertInstanceOf('Asar\Config\ConfigInterface', $R);
   }
   
   function testImportConfigPassesConfigToResource() {
-    $R = new Asar_Representation($this->resource);
-    $config = new Asar_Config( array('yo' => 'ya') );
+    $R = new Representation($this->resource);
+    $config = new Config( array('yo' => 'ya') );
     $this->resource->expects($this->once())
       ->method('importConfig')
       ->with($config);
@@ -161,23 +166,23 @@ class Asar_RepresentationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testImportConfigDoesNotPassConfigToResourceIfNotConfigInterface() {
-    $resource = $this->getMock('Asar_Resource_Interface');
-    $R = new Asar_Representation($resource);
-    $config = new Asar_Config( array('yo' => 'ya') );
+    $resource = $this->getMock('Asar\Resource\ResourceInterface');
+    $R = new Representation($resource);
+    $config = new Config( array('yo' => 'ya') );
     $R->importConfig($config);
   }
   
   function testImportingConfigurationDoesNotOverrideInternalConfig() {
     $classname = get_class($this) . '_Configuration';
     eval('
-      class ' . $classname . ' extends Asar_Representation {
+      class ' . $classname . ' extends \Asar\Representation {
         protected function setUp() {
           $this->config["foo"] = "baz";
         }
       }
     ');
     $R = new $classname($this->resource);
-    $R->importConfig(new Asar_Config(array('foo' => 'bar', 'doo' => 'jar')));
+    $R->importConfig(new Config(array('foo' => 'bar', 'doo' => 'jar')));
     $this->assertEquals('jar', $R->getConfig('doo'));
     $this->assertEquals('baz', $R->getConfig('foo'));
   }

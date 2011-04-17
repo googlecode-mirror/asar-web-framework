@@ -1,14 +1,20 @@
 <?php
+namespace Asar\Utility\Cli;
+
+use \Asar\Utility\Cli;
+use \Asar\Utility\Cli\CliInterface;
+use \Asar\Utility\ClassFilePeek;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli_TaskFileLoader {
+class TaskFileLoader {
   
   private $cwd, $file_peek, $tasks_file, $cli;
   
   function __construct(
-    $cwd, Asar_Utility_ClassFilePeek $file_peek, Asar_Utility_Cli $cli
+    $cwd, ClassFilePeek $file_peek, Cli $cli
   ) {
     $this->cwd = $cwd;
     $this->file_peek = $file_peek;
@@ -28,7 +34,7 @@ class Asar_Utility_Cli_TaskFileLoader {
       if (is_array($classes)) {
         foreach ($classes as $class) {
           $obj = new $class;
-          if ($obj instanceof Asar_Utility_Cli_Interface) {
+          if ($obj instanceof CliInterface) {
             $this->cli->register($obj);
           }
         }

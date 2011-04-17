@@ -1,14 +1,20 @@
 <?php
+namespace Asar;
+
+use \Asar\Config\ConfigInterface;
+use Asar\Templater;
+use Asar\TemplateRenderer;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ResourceFactory {
+class ResourceFactory {
   
   function __construct(
-    Asar_TemplatePackageProvider $tl_factory,
-    Asar_TemplateSimpleRenderer $ts_renderer,
-    Asar_Config_Interface $config
+    TemplatePackageProvider $tl_factory,
+    TemplateSimpleRenderer $ts_renderer,
+    ConfigInterface $config
   ) {
     $this->tl_factory = $tl_factory;
     $this->ts_renderer = $ts_renderer;
@@ -22,14 +28,14 @@ class Asar_ResourceFactory {
     if (class_exists($rep_classname)) {
       $resource = new $rep_classname(new $resource_classname);
     } else {
-      $resource = new Asar_Templater(
+      $resource = new Templater(
         new $resource_classname, 
-        new Asar_TemplateRenderer(
+        new TemplateRenderer(
           $this->tl_factory, $this->ts_renderer
         )
       );
     }
-    if ($resource instanceof Asar_Config_Interface) {
+    if ($resource instanceof ConfigInterface) {
       $resource->importConfig($this->config);
     }
     return $resource;

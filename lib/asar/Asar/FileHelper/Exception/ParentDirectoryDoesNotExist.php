@@ -1,7 +1,10 @@
 <?php
+namespace Asar\FileHelper\Exception;
+
+use \Asar\FileHelper\Exception;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_FileHelper_Exception_ParentDirectoryDoesNotExist
-  extends Asar_FileHelper_Exception {}
+class ParentDirectoryDoesNotExist extends Exception {}

@@ -1,5 +1,5 @@
 <?php
-class TemplatesExample_Resource_AltTemplate extends Asar_Resource {
+class TemplatesExample_Resource_AltTemplate extends \Asar\Resource {
   
   function setUp() {
     // TODO: How do we set a different template engine?

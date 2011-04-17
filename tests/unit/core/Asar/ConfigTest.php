@@ -3,7 +3,7 @@
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 // For testing purposes only...
-class Asar_ConfigTest_ConfigSample extends Asar_Config {
+class Asar_ConfigTest_ConfigSample extends \Asar\Config {
   public $config = array(
     'foo' => 'bar',
     'goo' => 'car',
@@ -18,14 +18,14 @@ class Asar_ConfigTest_ConfigSample extends Asar_Config {
   );
 }
 
-class Asar_ConfigTest_ConfigSample2 extends Asar_Config {
+class Asar_ConfigTest_ConfigSample2 extends \Asar\Config {
   protected $config = array(
     'foo' => 'baz',
     'zoo' => 'zaz'
   );
 }
 
-class Asar_ConfigTest_ConfigSample3 extends Asar_Config {
+class Asar_ConfigTest_ConfigSample3 extends \Asar\Config {
   protected $config = array(
     'joo' => array(
       'joo1' => 'eoo1',
@@ -38,7 +38,7 @@ class Asar_ConfigTest_ConfigSample3 extends Asar_Config {
   );
 }
 
-class Asar_ConfigTest_ConfigSample4 extends Asar_Config {
+class Asar_ConfigTest_ConfigSample4 extends \Asar\Config {
   protected $config = array(
     'joo' => array(
       'joo3' => 'meh'
@@ -96,8 +96,8 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
   
   function testImportingConfigArrayConflict() {
     $this->setExpectedException(
-	    'Asar_Config_Exception',
-	    'Asar_Config::importConfig() failed. Type mismatch. '.
+	    '\Asar\Config\Exception',
+	    'Asar\Config::importConfig() failed. Type mismatch. '.
 	      'Unable to merge \'joo.joo3\' => '.
 	      '\'meh\' with Array.'
     );
@@ -113,7 +113,7 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
         'a' => 'Aye'
       )
     );
-    $config = new Asar_Config($config_arr);
+    $config = new \Asar\Config($config_arr);
     $this->assertSame(2, $config->getConfig('bar'));
     $this->assertEquals('Aye', $config->getConfig('jar.a'));
   }

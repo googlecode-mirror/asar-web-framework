@@ -1,5 +1,11 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+use \Asar\Client;
+use \Asar\ApplicationInjector;
+use \Asar\ApplicationScope;
+use \Asar\Config\DefaultConfig;
+
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
 class FLoggingExample_Test extends PHPUnit_Framework_TestCase {
@@ -9,9 +15,9 @@ class FLoggingExample_Test extends PHPUnit_Framework_TestCase {
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
     $this->TFM->clearTempDirectory();
     $this->log_file = $this->tempdir . DIRECTORY_SEPARATOR . 'example.log';
-    $this->client = new Asar_Client;
-    $this->app = Asar_ApplicationInjector::injectApplication(
-      new Asar_ApplicationScope('LoggingExample', new Asar_Config_Default)
+    $this->client = new Client;
+    $this->app = ApplicationInjector::injectApplication(
+      new ApplicationScope('LoggingExample', new DefaultConfig)
     );
   }
   

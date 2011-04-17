@@ -2,6 +2,8 @@
 
 require_once realpath(dirname(__FILE__). '/../../../../../config.php');
 
+use \Asar\Template\Engines\PhpEngine;
+
 class Asar_Template_Engines_PhpTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
@@ -9,7 +11,7 @@ class Asar_Template_Engines_PhpTest extends PHPUnit_Framework_TestCase {
       Asar::getInstance()->getFrameworkTestsDataTempPath()
     );
     $this->TFM->clearTempDirectory();
-    $this->T = new Asar_Template_Engines_Php;
+    $this->T = new PhpEngine;
   }
   
   function tearDown() {
@@ -47,7 +49,9 @@ class Asar_Template_Engines_PhpTest extends PHPUnit_Framework_TestCase {
   }
   
   function testTemplateThrowsExceptionWhenSettingFileThatDoesNotExist() {
-    $this->setExpectedException('Asar_Template_Exception_FileNotFound');
+    $this->setExpectedException(
+      'Asar\Template\Exception\TemplateFileNotFound'
+    );
     $this->T->setTemplateFile('some-non-existent-file.php');
   }
   

@@ -1,5 +1,8 @@
 <?php
 
+use \Asar\Resource;
+use \Asar\Request;
+
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
@@ -8,7 +11,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->old_post_data = $_POST;
-    $this->R = new Asar_Resource;
+    $this->R = new Resource;
   }
   
   function tearDown() {
@@ -16,12 +19,12 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testResourceImplementsResourceInterface() {
-    $this->assertInstanceOf('Asar_Resource_Interface', $this->R);
+    $this->assertInstanceOf('Asar\Resource\ResourceInterface', $this->R);
   }
   
   function testResourceImplementsConfigInterface() {
-    $this->assertInstanceOf('Asar_Config_Interface', $this->R);
-    $this->config = $this->getMock('Asar_Config_Interface');
+    $this->assertInstanceOf('Asar\Config\ConfigInterface', $this->R);
+    $this->config = $this->getMock('Asar\Config\ConfigInterface');
     $this->config->expects($this->once())
       ->method('getConfig')
       ->will($this->returnValue(array('foo' => 'bar')));
@@ -31,13 +34,13 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   
   function testResourceReturnsAResponse() {
     $this->assertInstanceOf(
-      'Asar_Response', $this->R->handleRequest(new Asar_Request)
+      'Asar\Response', $this->R->handleRequest(new Request)
     );
   }
   
   function testShouldBeAbleToSetRequestAttribute() {
-    $this->request = new Asar_Request;
-    $this->R = $this->getMock('Asar_Resource', array('GET'));
+    $this->request = new Request;
+    $this->R = $this->getMock('Asar\Resource', array('GET'));
     $this->R->expects($this->once())
       ->method('GET')
       ->will($this->returnCallBack(array($this, 'checkRequestAttribute')));
@@ -56,9 +59,9 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
    * @dataProvider dataRunsResourceMethodBasedOnRequestMethod
    */
   function testRunsResourceMethodBasedOnRequestMethod($method) {
-    $request = new Asar_Request;
+    $request = new Request;
     $request->setMethod($method);
-    $this->R = $this->getMock('Asar_Resource', array($method));
+    $this->R = $this->getMock('Asar\Resource', array($method));
     $this->R->expects($this->once())
       ->method($method);
     $this->R->handleRequest($request);
@@ -75,9 +78,9 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $method = 'GET',
     $method_run_times = 'once'
   ) {
-    $request = new Asar_Request($req_opts);
+    $request = new Request($req_opts);
     $request->setMethod($method);
-    $R = $this->getMock('Asar_Resource', array($method));
+    $R = $this->getMock('Asar\Resource', array($method));
     $R->expects($this->$method_run_times())
       ->method($method)
       ->will($this->returnValue('hello world'));
@@ -108,8 +111,8 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testResourceWithoutDefinedHttpMethodShouldReturn405HttpStatus() {
-    $R = $this->getMock('Asar_Resource', array('some_method'));
-    $request = new Asar_Request;
+    $R = $this->getMock('Asar\Resource', array('some_method'));
+    $request = new Request;
     foreach (array('GET', 'POST', 'PUT', 'DELETE') as $method) {
       $request->setMethod($method);
       $response = $R->handleRequest($request);
@@ -118,11 +121,11 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   }
   
   function testResourceShouldSendResponse500StatusWhenMethodRaisesException() {
-    $R = $this->getMock('Asar_Resource', array('GET'));
+    $R = $this->getMock('Asar\Resource', array('GET'));
     $R->expects($this->once())
       ->method('GET')
       ->will($this->returnCallBack(array($this, 'checkRaisingException')));
-    $response = $R->handleRequest(new Asar_Request);
+    $response = $R->handleRequest(new Request);
     $this->assertEquals(
       500, $response->getStatus(),
       'The HTTP Response Status is not 500 for method throwing an Exception'
@@ -184,7 +187,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $R = new $cname;
     $this->assertEquals(
       'application/xml', 
-      $R->handleRequest(new Asar_Request(array(
+      $R->handleRequest(new Request(array(
         'headers' => array('Accept' => 'application/xml')
       )))->getHeader('Content-Type')
     );
@@ -207,7 +210,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $R = new $cname;
     $this->assertEquals(
       'de', 
-      $R->handleRequest(new Asar_Request(array(
+      $R->handleRequest(new Request(array(
         'headers' => array('Accept' => 'de')
       )))->getHeader('Content-Language')
     );
@@ -220,7 +223,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $R = new $cname;
     $this->assertEquals(
       '/foo/bar/baz',
-      $R->handleRequest(new Asar_Request(array(
+      $R->handleRequest(new Request(array(
         'path' => '/foo/bar/baz'
       )))->getContent()
     );
@@ -249,7 +252,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   ) {
     $cname = get_class($this) . '_' . $rname;
     eval("
-      class $cname extends Asar_Resource {
+      class $cname extends \Asar\Resource {
         function setUp() {
           $setup_body
         }
@@ -267,16 +270,16 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
       'Forwarding', 'return $this->forwardTo("Some_Resource");'
     );
     $R = new $cname;
-    $request = new Asar_Request(array('path'=>'/foo/bar'));
+    $request = new Request(array('path'=>'/foo/bar'));
     try {
       $R->handleRequest($request);
-    } catch (Asar_Resource_Exception_ForwardRequest $e) {
+    } catch (\Asar\Resource\Exception\ForwardRequest $e) {
       $this->assertEquals('Some_Resource', $e->getMessage());
       $payload = $e->getPayload();
       $this->assertEquals($request, $payload['request']);
       return TRUE;
     }
-    $this->fail('Did not throw Asar_Resource_Exception_ForwardRequest.');
+    $this->fail('Did not throw Asar\Resource\Exception\ForwardRequest.');
   }
   
   /**
@@ -285,7 +288,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   function testPathComponents($rname, $expected, $path) {
     $cname = get_class($this) . '_Resource_' . $rname;
     eval('
-      class '. $cname . ' extends Asar_Resource {
+      class '. $cname . ' extends \Asar\Resource {
         function GET() {
           return $this->getPathComponents();
         }
@@ -295,7 +298,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->assertSame(
       $expected,
       $R->handleRequest(
-        new Asar_Request(array('path' => $path))
+        new Request(array('path' => $path))
       )->getContent()
     );
   }
@@ -330,7 +333,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   
   private function mockResourceExpectsQualify($cname = '') {
     $this->R = $this->getMock(
-      'Asar_Resource', array('qualify'), array(), $cname
+      'Asar\Resource', array('qualify'), array(), $cname
     );
     return $this->R->expects($this->once())->method('qualify');
   }
@@ -338,13 +341,13 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
   function testRunQualifyWhenHandlingRequest() {
     $this->mockResourceExpectsQualify()
       ->will($this->returnValue(TRUE));
-    $this->R->handleRequest(new Asar_Request);
+    $this->R->handleRequest(new Request);
   }
   
   function testReturns404ResponseWhenQualifyReturnsFalse() {
     $this->mockResourceExpectsQualify()
       ->will($this->returnValue(FALSE));
-    $response = $this->R->handleRequest(new Asar_Request);
+    $response = $this->R->handleRequest(new Request);
     $this->assertEquals(404, $response->getStatus());
   }
   
@@ -359,7 +362,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
     $this->mockResourceExpectsQualify(get_class($this) . '_Resource_' . $rname)
       ->with($path_components);
     $this->R->handleRequest(
-      new Asar_Request(array('path' => $path))
+      new Request(array('path' => $path))
     )->getContent();
   }
   
@@ -375,7 +378,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
       "return \$this->redirectTo('$location', '$type');"
     );
     $R = new $cname;
-    $response = $R->handleRequest(new Asar_Request);
+    $response = $R->handleRequest(new Request);
     $this->assertEquals($expected_status_code, $response->getStatus());
     $this->assertEquals(
       $expected_location, $response->getHeader('Location')
@@ -399,7 +402,7 @@ class Asar_ResourceTest extends PHPUnit_Framework_TestCase {
       "return \$this->redirectTo($location, 'multiple');"
     );
     $R = new $cname;
-    $response = $R->handleRequest(new Asar_Request);
+    $response = $R->handleRequest(new Request);
     $this->assertEquals(300, $response->getStatus());
     $headers = $response->getHeaders();
     $this->assertEquals(

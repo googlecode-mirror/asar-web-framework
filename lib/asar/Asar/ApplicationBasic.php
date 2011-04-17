@@ -1,6 +1,9 @@
 <?php
+namespace Asar;
+
+use \Asar\Application;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ApplicationBasic extends Asar_Application {}
+class ApplicationBasic extends Application {}

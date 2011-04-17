@@ -1,10 +1,14 @@
 <?php
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
+
+use Asar\FileSearcher;
+
 set_include_path(
   Asar::getInstance()->getFrameworkDevTestingPath() . PATH_SEPARATOR .
   get_include_path()
 );
+
 /*require_once 'Asar/TempFilesManager.php';
 require_once 'Asar/FileSearcher.php';*/
 
@@ -21,7 +25,7 @@ class Asar_FileSearcherTest extends PHPUnit_Framework_TestCase {
       $this->TFM->clearTempDirectory();
       $this->old_include_path = get_include_path();
     }
-    $this->FS = new Asar_FileSearcher();
+    $this->FS = new FileSearcher;
     set_include_path($this->tempdir . PATH_SEPARATOR . $this->old_include_path);
   }
   

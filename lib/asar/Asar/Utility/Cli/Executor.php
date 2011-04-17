@@ -1,14 +1,22 @@
 <?php
+namespace Asar\Utility\Cli;
+
+use \Asar\Utility\Cli\Executor\ExecutorInterface;
+use \Asar\Utility\Cli\CliInterface;
+use \Asar\Utility\Cli\Command;
+use \Asar\Utility\Cli\Exception\UndefinedTask;
+use \Asar\Utility\String;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
+class Executor implements ExecutorInterface {
   
   private $tasklists = array(), $tasklists_n = array();
   
   function registerTasks(
-    Asar_Utility_CLI_Interface $tasklist, $namespace = null
+    CliInterface $tasklist, $namespace = null
   ) {
     if ($namespace) {
       $this->tasklists_n[$namespace] = $tasklist;
@@ -21,12 +29,12 @@ class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
     $list = array();
     $alltasks = array_merge($this->tasklists, $this->tasklists_n);
     foreach ($alltasks as $namespace => $tasklist) {
-      $refclass = new ReflectionClass(get_class($tasklist));
+      $refclass = new \ReflectionClass(get_class($tasklist));
       $methods = $refclass->getMethods();
       foreach ($methods as $method) {
         $name = $method->getName();
         if (strpos($name, 'task') === 0) {
-          $n_name = Asar_Utility_String::dashLowerCase(substr($name, 4));
+          $n_name = String::dashLowerCase(substr($name, 4));
           $list[] = is_string($namespace) ? "$namespace:$n_name" : $n_name;
         }
       }
@@ -34,8 +42,8 @@ class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
     return $list;
   }
   
-  function execute(Asar_Utility_Cli_Command $command) {
-    $method = 'task' . Asar_Utility_String::camelCase($command->getCommand());
+  function execute(Command $command) {
+    $method = 'task' . String::camelCase($command->getCommand());
     $method_called = false;
     if (array_key_exists($command->getNamespace(), $this->tasklists_n)) {
       $method_called = $this->invokeTaskMethod(
@@ -52,7 +60,7 @@ class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
       }
     }
     if ($command->getCommand() && !$method_called) {
-      throw new Asar_Utility_Cli_Exception_UndefinedTask(
+      throw new UndefinedTask(
         "The task method '$method' is not defined."
       );
     }
@@ -66,7 +74,7 @@ class Asar_Utility_Cli_Executor implements Asar_Utility_Cli_Executor_Interface {
   private function executeFlag($flag) {
     $tasklists = $this->getAllTaskLists();
     foreach ($tasklists as $tasklist) {
-      $method = 'flag' . Asar_Utility_String::camelCase($flag);
+      $method = 'flag' . String::camelCase($flag);
       $this->invokeTaskMethod($tasklist, $method, array());
     }
   }

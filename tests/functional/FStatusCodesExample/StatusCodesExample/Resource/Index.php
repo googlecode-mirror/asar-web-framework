@@ -1,5 +1,5 @@
 <?php
-class StatusCodesExample_Resource_Index extends Asar_Resource {
+class StatusCodesExample_Resource_Index extends \Asar\Resource {
   
   public function GET() {
     $this->setConfig('use_templates', false);

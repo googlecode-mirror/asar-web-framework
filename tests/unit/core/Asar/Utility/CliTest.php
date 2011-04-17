@@ -2,26 +2,29 @@
 
 require_once realpath(dirname(__FILE__) . '/../../../../config.php');
 
+use \Asar\Utility\Cli;
+use \Asar\Utility\Cli\Command;
+
 class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
     // This is called to help the reflector
-    $this->getMock('Asar_Utility_Cli_Interface');
-    $this->interpreter = $this->getMock('Asar_Utility_Cli_Interpreter');
+    $this->getMock('Asar\Utility\Cli\CliInterface');
+    $this->interpreter = $this->getMock('Asar\Utility\Cli\Interpreter');
     $this->executor = $this->getMock(
-      'Asar_Utility_Cli_Executor_Interface'
+      'Asar\Utility\Cli\Executor\ExecutorInterface'
     );
     $this->dir = realpath(dirname(__FILE__));
-    $this->cli = new Asar_Utility_Cli($this->interpreter, $this->executor, $this->dir);
+    $this->cli = new Cli($this->interpreter, $this->executor, $this->dir);
   }
   
   function mock($methods = array()) {
-    return $this->getMock('Asar_Utility_Cli', $methods, array(), '', false);
+    return $this->getMock('Asar\Utility\Cli', $methods, array(), '', false);
   }
   
   function mockTaskList($methods = array()) {
     return $this->getMock(
-      'Asar_Utility_Cli_Interface',
+      'Asar\Utility\Cli\CliInterface',
       array_merge($methods, array('setController', 'getTaskNamespace'))
     );
   }
@@ -30,7 +33,7 @@ class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
     $arguments = array(
       '/cli/ui/front', '--aflag'
     );
-    $command = new Asar_Utility_Cli_Command(array());
+    $command = new Command(array());
     $this->interpreter->expects($this->once())
       ->method('interpret')
       ->with($this->equalto($arguments))
@@ -39,7 +42,7 @@ class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
   }
   
   function testExecutePassesCommandFromInterpreterToExecutor() {
-    $command = new Asar_Utility_Cli_Command(array());
+    $command = new Command(array());
     $this->interpreter->expects($this->once())
       ->method('interpret')
       ->will($this->returnValue($command));
@@ -61,7 +64,7 @@ class Asar_Utility_CliTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRegisterPassesNamespaceToExecutorRegisterTasks() {
-    $tasks = $this->getMock('Asar_Utility_Cli_Interface');
+    $tasks = $this->getMock('Asar\Utility\Cli\CliInterface');
     $tasks->expects($this->once())
       ->method('getTaskNamespace')
       ->will($this->returnValue('foo'));

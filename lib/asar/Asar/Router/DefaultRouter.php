@@ -1,16 +1,25 @@
 <?php
+namespace Asar\Router;
+
+use \Asar\Router\RouterInterface;
+use \Asar\Router\Exception\ResourceNotFound;
+use \Asar\ResourceFactory;
+use \Asar\ResourceLister\ResourceListerInterface;
+use \Asar\Debug;
+use \Asar\Utility\String;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Router_Default implements Asar_Router_Interface {
+class DefaultRouter implements RouterInterface {
   
   private $resource_factory, $resource_lister, $debug;
   
   function __construct(
-    Asar_ResourceFactory $resource_factory,
-    Asar_ResourceLister_Interface $resource_lister,
-    Asar_Debug $debug = null
+    ResourceFactory $resource_factory,
+    ResourceListerInterface $resource_lister,
+    Debug $debug = null
   ) {
     $this->resource_factory = $resource_factory;
     $this->resource_lister  = $resource_lister;
@@ -40,7 +49,7 @@ class Asar_Router_Default implements Asar_Router_Interface {
   private function getNameFromClassSuffix($app_name, $name) {
     $rname = $this->getResourceNamePrefix($app_name) . '_' . $name;
     if (!class_exists($rname)) {
-      throw new Asar_Router_Exception_ResourceNotFound;
+      throw new ResourceNotFound;
     }
     return $rname;
   }
@@ -55,7 +64,7 @@ class Asar_Router_Default implements Asar_Router_Interface {
     foreach ($this->getPathSubspaces($path) as $subspace) {
       $count++;
       $old_rname = $rname;
-      $rname = $rname . '_' . Asar_Utility_String::camelCase($subspace);
+      $rname = $rname . '_' . String::camelCase($subspace);
       if (class_exists($rname)) {
         continue;
       }
@@ -63,7 +72,7 @@ class Asar_Router_Default implements Asar_Router_Interface {
         $old_rname, $prefixed_with, $rname, $count
       );
       if (!class_exists($rname)) {
-        throw new Asar_Router_Exception_ResourceNotFound;
+        throw new Exception\ResourceNotFound;
       }
     }
     return $rname;

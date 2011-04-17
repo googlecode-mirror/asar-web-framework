@@ -1,11 +1,13 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../config.php');
 
+use \Asar\Request;
+
 /**
  * Test class
  */
 class FResourceAndRepresentation_Test_RepresentationDummy 
-  extends Asar_Representation {
+  extends \Asar\Representation {
   
   function getHtml($data) {
     return "<html><head></head><body><h1>GET $data</h1></body></html>";
@@ -23,7 +25,7 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
   }
   
   private function getResourceMock($methods = array()) {
-    return $this->getMock('Asar_Resource', $methods);
+    return $this->getMock('Asar\Resource', $methods);
   }
   
   function testResourceAndRepresentationInteraction() {
@@ -32,7 +34,7 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
       ->method('GET')
       ->will($this->returnValue('Hello!'));
     $rep = new FResourceAndRepresentation_Test_RepresentationDummy($resource);
-    $response = $rep->handleRequest(new Asar_Request);
+    $response = $rep->handleRequest(new Request);
     $this->assertContains('<h1>GET Hello!</h1>', $response->getContent());
   }
   
@@ -43,7 +45,7 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
       ->will($this->returnValue('Hello!'));
     $rep = new FResourceAndRepresentation_Test_RepresentationDummy($resource);
     $response = $rep->handleRequest(
-      new Asar_Request(array('headers' => array('Accept' => 'text/plain')))
+      new Request(array('headers' => array('Accept' => 'text/plain')))
     );
     $this->assertContains("===========\nGET Hello!", $response->getContent());
   }
@@ -55,7 +57,7 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
       ->will($this->returnValue('Hello!'));
     $rep = new FResourceAndRepresentation_Test_RepresentationDummy($resource);
     $response = $rep->handleRequest(
-      new Asar_Request(array('headers' => array('Accept' => 'application/json')))
+      new Request(array('headers' => array('Accept' => 'application/json')))
     );
     $this->assertEquals(406, $response->getStatus());
   }

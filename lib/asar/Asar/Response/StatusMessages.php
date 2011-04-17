@@ -1,10 +1,16 @@
 <?php
+namespace Asar\Response;
+
+use \Asar\Response\StatusMessages\StatusMessagesInterface;
+use \Asar\Response\ResponseInterface;
+use \Asar\Request\RequestInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Response_StatusMessages 
-  implements Asar_Response_StatusMessages_Interface {
+class StatusMessages 
+  implements StatusMessagesInterface {
   
   // TODO: These status messages should be moved to the configuration
   static protected $status_messages = array(
@@ -15,7 +21,7 @@ class Asar_Response_StatusMessages
   );
   
   function getMessage(
-    Asar_Response_Interface $response, Asar_Request_Interface $request
+    ResponseInterface $response, RequestInterface $request
   ) {
     $methodName = 'get' . $response->getStatus() . 'Message';
     if (!method_exists($this, $methodName)) {

@@ -2,14 +2,16 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Message;
+
 class Asar_MessageTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->M = new Asar_Message;
+    $this->M = new Message;
   }
   
   function testMessageShouldImplementAsarMessageInterface() {
-    $this->assertInstanceOf('Asar_Message_Interface', $this->M);
+    $this->assertInstanceOf('Asar\Message\MessageInterface', $this->M);
   }
   
   function testShouldBeAbleToSetContent() {
@@ -112,12 +114,12 @@ class Asar_MessageTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRequestSettingContentOnCreation() {
-    $M = new Asar_Message(array('content' => 'foo bar'));
+    $M = new Message(array('content' => 'foo bar'));
     $this->assertEquals('foo bar', $M->getContent());
   }
   
   function testRequestSettingHeadersOnCreation() {
-    $M = new Asar_Message(
+    $M = new Message(
       array('headers' => array('foo' => 'Foo', 'bar' => 'Baz'))
     );
     $this->assertEquals('Foo', $M->getHeader('foo'));

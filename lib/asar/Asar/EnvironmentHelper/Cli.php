@@ -1,11 +1,16 @@
 <?php
+namespace Asar\EnvironmentHelper;
+
+use \Asar\Utility\Cli;
+use \Asar\Utility\Cli\TaskFileLoader;
+
 /**
  * Environment Helper for setting up the CLI interface
  *
  * @package Asar
  * @subpackage core
  */
-class Asar_EnvironmentHelper_Cli {
+class Cli {
 
   private $cli, $args, $tasklists = array(), $task_file_loader;
 
@@ -16,8 +21,7 @@ class Asar_EnvironmentHelper_Cli {
    * @param Asar_Utility_Cli_TaskFileLoader $task_file_loader
    */
   function __construct(
-    Asar_Utility_Cli $cli, array $args, array $tasklists,
-    Asar_Utility_Cli_TaskFileLoader $task_file_loader
+    Cli $cli, array $args, array $tasklists, TaskFileLoader $task_file_loader
   ) {
     $this->cli = $cli;
     $this->args = $args;

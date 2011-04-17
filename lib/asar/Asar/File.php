@@ -1,4 +1,11 @@
 <?php
+namespace Asar;
+
+use \Asar\File\Exception\FileAlreadyExists;
+use \Asar\File\Exception\DirectoryNotFound;
+use \Asar\File\Exception\FileDoesNotExist;
+use \Asar\File\Exception as FileException;
+
 /**
  * A wrapper class for simplifying file creation and access
  * 
@@ -7,7 +14,7 @@
  * with the content 'Hello World!' and saves it.
  * 
  * <code>
- *   Asar_File::create('filename.ext')->write('Hello World!')->save();
+ *   Asar\File::create('filename.ext')->write('Hello World!')->save();
  * </code>
  * 
  * The following code creates a file named 'filename.ext'
@@ -15,7 +22,7 @@
  * writes the content 'Hello Again!' and saves it.
  * 
  * <code>
- *   Asar_File::create('path/filename.ext')->write('Hello Again!')->save();
+ *   Asar\File::create('path/filename.ext')->write('Hello Again!')->save();
  * </code>
  * 
  * 
@@ -24,13 +31,13 @@
  * The following gets the contents of a file:
  * 
  * <code>
- *   $contents = Asar_File::open('thefile.ext')->read(); 
+ *   $contents = Asar\File::open('thefile.ext')->read(); 
  * </code>
  * 
  * The following opens a file, writes a content on it, and then saves it:
  * 
  * <code>
- *   $f = Asar_File::open('tehfile.ext')->write($thecontentstring)->save();
+ *   $f = Asar\File::open('tehfile.ext')->write($thecontentstring)->save();
  * </code>
  * 
  * 
@@ -46,7 +53,7 @@
  * @package    Asar
  * @subpackage core
  */
-class Asar_File {
+class File {
   
   private $filename           = NULL;
   private $content            = NULL;
@@ -57,13 +64,13 @@ class Asar_File {
   
   public static function create ($filename) {
     if (file_exists($filename)) {
-      throw new Asar_File_Exception_FileAlreadyExists(
-        "Asar_File::create failed. The file '$filename' already exists."
+      throw new FileAlreadyExists(
+        "Asar\File::create failed. The file '$filename' already exists."
       );
     }
     if (!file_exists(dirname($filename))) {
-      throw new Asar_File_Exception_DirectoryNotFound(
-        'Asar_File::create failed. Unable to find the directory to create the '.
+      throw new DirectoryNotFound(
+        'Asar\File::create failed. Unable to find the directory to create the '.
         'file to (' . dirname($filename) . ').'
       );
     }
@@ -72,8 +79,8 @@ class Asar_File {
   
   public static function open ($filename) {
     if (!file_exists((string) $filename)) {
-      throw new Asar_File_Exception_FileDoesNotExist(
-        "Asar_File::open failed. The file '$filename' does not exist."
+      throw new FileDoesNotExist(
+        "Asar\File::open failed. The file '$filename' does not exist."
       );
     } else {
       return new self($filename, 'r+b');
@@ -111,8 +118,8 @@ class Asar_File {
     if (!is_resource($this->resource)) {
       // Attempt to create a resource using filename
       if (!$this->getFileName()) {
-        throw new Asar_File_Exception(
-          'Asar_File::getResource failed. The file object ' .
+        throw new FileException(
+          'Asar\File::getResource failed. The file object ' .
           'does not have a file name.'
         );
       }
@@ -129,8 +136,8 @@ class Asar_File {
   
   function setFileName($filename) {
     if (!is_string($filename) || $filename === '') {
-      throw new Asar_File_Exception(
-        'Asar_File::setFileName failed. Filename should be a non-empty string.'
+      throw new FileException(
+        'Asar\File::setFileName failed. Filename should be a non-empty string.'
       );
     }
     $this->filename = $filename;

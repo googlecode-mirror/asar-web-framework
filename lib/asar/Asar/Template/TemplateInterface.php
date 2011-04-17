@@ -1,9 +1,12 @@
 <?php
+namespace Asar\Template;
+
+use Asar\Configurable\ConfigurableInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-interface Asar_Template_Interface extends Asar_Configurable_Interface {
+interface TemplateInterface extends ConfigurableInterface {
   
   function setTemplateFile($file);
   function getTemplateFile();

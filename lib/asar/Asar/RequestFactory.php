@@ -1,9 +1,12 @@
 <?php
+namespace Asar;
+
+use \Asar\Request;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_RequestFactory {
+class RequestFactory {
   
   function createRequest($server = array(), $params = array(), $post = null) {
     $options = array();
@@ -14,7 +17,7 @@ class Asar_RequestFactory {
       $options['content'] = $post;
     }
     $options['headers'] = $this->createHeaders($server);
-    return new Asar_Request($options);
+    return new Request($options);
   }
   
   private function getIfExists($key, $array) {

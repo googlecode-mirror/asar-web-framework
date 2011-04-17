@@ -1,6 +1,8 @@
 <?php
+namespace Asar\Resource;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Resource_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}

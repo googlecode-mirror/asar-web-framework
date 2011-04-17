@@ -1,21 +1,24 @@
 <?php
+namespace Asar;
+
+use \Asar\Request\RequestInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_TemplatePackageProvider {
+class TemplatePackageProvider {
   
   private $locator, $factory;
   
   function __construct(
-    Asar_TemplateLocator $locator,
-    Asar_TemplateFactory $factory
+    TemplateLocator $locator,
+    TemplateFactory $factory
   ) {
     $this->locator = $locator;
     $this->factory = $factory;
   }
   
-  function getTemplatesFor($resource_name, Asar_Request_Interface $request) {
+  function getTemplatesFor($resource_name, RequestInterface $request) {
     $tpl_file = $this->locator->locateFor($resource_name, $request);
     return array(
       'template'  => $this->factory->createTemplate($tpl_file),

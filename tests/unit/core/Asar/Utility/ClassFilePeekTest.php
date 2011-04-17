@@ -2,10 +2,12 @@
 
 require_once realpath(dirname(__FILE__) . '/../../../../config.php');
 
+use \Asar\Utility\ClassFilePeek;
+
 class Asar_Utility_ClassFilePeekTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->peek = new Asar_Utility_ClassFilePeek;
+    $this->peek = new ClassFilePeek;
     $this->file = Asar::getInstance()->getFrameworkTestsDataPath() .
       DIRECTORY_SEPARATOR . 'classfilepeektestfile.php';
   }

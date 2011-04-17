@@ -1,7 +1,10 @@
 <?php
+namespace Asar\Utility\Cli\Exception;
+
+use Asar\Utility\Cli\Exception;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli_Exception_UndefinedTask 
-  extends Asar_Utility_Cli_Exception {}
+class UndefinedTask extends Exception {}

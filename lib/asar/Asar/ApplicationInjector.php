@@ -1,21 +1,23 @@
 <?php
+namespace Asar;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ApplicationInjector {
+class ApplicationInjector {
   
-  static function injectApplicationRunner(Asar_ApplicationScope $scope) {
-    return new Asar_ApplicationRunner(
+  static function injectApplicationRunner(ApplicationScope $scope) {
+    return new ApplicationRunner(
       self::injectApplication($scope)
     );
   }
   
-  static function injectRequest(Asar_ApplicationScope $scope) {
+  static function injectRequest(ApplicationScope $scope) {
     return $scope->getRequest();
   }
   
-  static function injectApplication(Asar_ApplicationScope $scope) {
+  static function injectApplication(ApplicationScope $scope) {
     $app_full_name = self::getApplicationClass($scope);
     self::registerLoggers($scope);
     return new $app_full_name(
@@ -28,19 +30,19 @@ class Asar_ApplicationInjector {
     );
   }
   
-  static function registerLoggers(Asar_ApplicationScope $scope) {
+  static function registerLoggers(ApplicationScope $scope) {
     if (self::injectLogFile($scope)) {
-      Asar_Logger_Registry::register(
+      Logger\Registry::register(
         $scope->getAppName(), self::injectLogFile($scope)
       );
     }
   }
   
-  static function injectLogFile(Asar_ApplicationScope $scope) {
+  static function injectLogFile(ApplicationScope $scope) {
     return self::injectAppConfig($scope)->getConfig('log_file');
   }
   
-  static function injectRouter(Asar_ApplicationScope $scope) {
+  static function injectRouter(ApplicationScope $scope) {
     $router_class = self::injectAppConfig($scope)->getConfig(
       'default_classes.router'
     );
@@ -51,10 +53,10 @@ class Asar_ApplicationInjector {
     );
   }
   
-  static function injectMessageFilterFactory(Asar_ApplicationScope $scope) {
+  static function injectMessageFilterFactory(ApplicationScope $scope) {
     if (!$scope->isInCache('MessageFilterFactory')) {
       $scope->addToCache(
-        'MessageFilterFactory', new Asar_MessageFilterFactory(
+        'MessageFilterFactory', new MessageFilterFactory(
           self::injectAppConfig($scope), self::injectDebug($scope)
         )
       );
@@ -62,15 +64,15 @@ class Asar_ApplicationInjector {
     return $scope->getCache('MessageFilterFactory');
   }
   
-  static function injectResourceFactory(Asar_ApplicationScope $scope) {
-    return new Asar_ResourceFactory(
+  static function injectResourceFactory(ApplicationScope $scope) {
+    return new ResourceFactory(
       self::injectTemplatePackageProvider($scope),
       self::injectTemplateSimpleRenderer($scope),
       self::injectAppConfig($scope)
     );
   }
   
-  static function injectStatusCodeMessages(Asar_ApplicationScope $scope) {
+  static function injectStatusCodeMessages(ApplicationScope $scope) {
     $status_messages = self::injectAppConfig($scope)->getConfig(
       'default_classes.status_messages'
     );
@@ -78,9 +80,10 @@ class Asar_ApplicationInjector {
   }
   
   // TODO: Refactor this
-  static function injectAppConfig(Asar_ApplicationScope $scope) {
+  static function injectAppConfig(ApplicationScope $scope) {
     if (!$scope->isInCache('AppConfig')) {
       $app_config_class = self::getApplicationConfigClass($scope);
+      //throw new \Exception;
       $app_config = new $app_config_class;
       if ('development' == $app_config->getConfig('mode')) {
         $app_config->importConfig(self::injectConfigDevelopment($scope));
@@ -91,18 +94,18 @@ class Asar_ApplicationInjector {
     return $scope->getCache('AppConfig');
   }
   
-  static function injectConfigDefault(Asar_ApplicationScope $scope) {
-    return new Asar_Config_Default;
+  static function injectConfigDefault(ApplicationScope $scope) {
+    return new Config\DefaultConfig;
   }
   
-  static function injectTemplatePackageProvider(Asar_ApplicationScope $scope) {
-    return new Asar_TemplatePackageProvider(
+  static function injectTemplatePackageProvider(ApplicationScope $scope) {
+    return new TemplatePackageProvider(
       self::injectTemplateLocator($scope),
       self::injectTemplateFactoryWithRegisteredEngines($scope)
     );
   }
   
-  static function injectTemplateFactoryWithRegisteredEngines(Asar_ApplicationScope $scope) {
+  static function injectTemplateFactoryWithRegisteredEngines(ApplicationScope $scope) {
     $template_factory = self::injectTemplateFactory($scope);
     foreach (
       self::injectRegisteredTemplateEngines($scope) as $filetype => $engine_class
@@ -115,70 +118,70 @@ class Asar_ApplicationInjector {
     return $template_factory;
   }
   
-  static function injectRegisteredTemplateEngines(Asar_ApplicationScope $scope) {
+  static function injectRegisteredTemplateEngines(ApplicationScope $scope) {
     return self::injectAppConfig($scope)->getConfig('template_engines');
   }
   
-  static function injectTemplateFactory(Asar_ApplicationScope $scope) {
+  static function injectTemplateFactory(ApplicationScope $scope) {
     if (!$scope->isInCache('TemplateFactory')) {
       $scope->addToCache(
-        'TemplateFactory', new Asar_TemplateFactory(self::injectDebug($scope))
+        'TemplateFactory', new TemplateFactory(self::injectDebug($scope))
       );
     }
     return $scope->getCache('TemplateFactory');
   }
   
-  static function injectConfigDevelopment(Asar_ApplicationScope $scope) {
-    return new Asar_Config_Development;
+  static function injectConfigDevelopment(ApplicationScope $scope) {
+    return new Config\Development;
   }
   
-  static function injectTemplateLocator(Asar_ApplicationScope $scope) {
-    return new Asar_TemplateLocator(
+  static function injectTemplateLocator(ApplicationScope $scope) {
+    return new TemplateLocator(
       self::injectContentNegotiator($scope),
       self::injectAppPath($scope),
       self::injectEngineExtensions($scope)
     );
   }
   
-  static function injectEngineExtensions(Asar_ApplicationScope $scope) {
+  static function injectEngineExtensions(ApplicationScope $scope) {
     return array_keys(self::injectRegisteredTemplateEngines($scope));
   }
   
-  static function injectContentNegotiator(Asar_ApplicationScope $scope) {
-    return new Asar_ContentNegotiator;
+  static function injectContentNegotiator(ApplicationScope $scope) {
+    return new ContentNegotiator;
   }
   
-  static function injectResourceLister(Asar_ApplicationScope $scope) {
-    return new Asar_ResourceLister(self::injectFileSearcher($scope));
+  static function injectResourceLister(ApplicationScope $scope) {
+    return new ResourceLister(self::injectFileSearcher($scope));
   }
   
-  static function injectTemplateSimpleRenderer(Asar_ApplicationScope $scope) {
-    return new Asar_TemplateSimpleRenderer;
+  static function injectTemplateSimpleRenderer(ApplicationScope $scope) {
+    return new TemplateSimpleRenderer;
   }
   
-  static function injectFileSearcher(Asar_ApplicationScope $scope) {
+  static function injectFileSearcher(ApplicationScope $scope) {
     if (!$scope->isInCache('FileSearcher')) {
-      $scope->addToCache('FileSearcher', new Asar_FileSearcher);
+      $scope->addToCache('FileSearcher', new FileSearcher);
     }
     return $scope->getCache('FileSearcher');
   }
   
-  static function injectDebug(Asar_ApplicationScope $scope) {
+  static function injectDebug(ApplicationScope $scope) {
     if (!$scope->isInCache('Debug')) {
-      $scope->addToCache('Debug', new Asar_Debug);
+      $scope->addToCache('Debug', new Debug);
     }
     return $scope->getCache('Debug');
   }
   
-  static function injectRequestFilters(Asar_ApplicationScope $scope) {
+  static function injectRequestFilters(ApplicationScope $scope) {
     return self::filterBuilder($scope, 'request_filters');
   }
   
-  static function injectResponseFilters(Asar_ApplicationScope $scope) {
+  static function injectResponseFilters(ApplicationScope $scope) {
     return self::filterBuilder($scope, 'response_filters');
   }
   
-  static function filterBuilder(Asar_ApplicationScope $scope, $type) {
+  static function filterBuilder(ApplicationScope $scope, $type) {
     $filter_factory = self::injectMessageFilterFactory($scope);
     foreach (
       self::injectAppConfig($scope)->getConfig($type) as $key => $filter
@@ -191,11 +194,11 @@ class Asar_ApplicationInjector {
     return $filters;
   }
   
-  static function injectAppPath(Asar_ApplicationScope $scope) {
+  static function injectAppPath(ApplicationScope $scope) {
     return self::injectFileSearcher($scope)->find($scope->getAppName());
   }
   
-  static function getApplicationClass(Asar_ApplicationScope $scope) {
+  static function getApplicationClass(ApplicationScope $scope) {
     $test = $scope->getAppName() . '_Application';
     if (class_exists($test)) {
       return $test;
@@ -203,11 +206,11 @@ class Asar_ApplicationInjector {
     return $scope->getConfig()->getConfig('default_classes.application');
   }
 
-  static function getApplicationConfigClass(Asar_ApplicationScope $scope) {
+  static function getApplicationConfigClass(ApplicationScope $scope) {
     $test = $scope->getAppName() . '_Config';
     if (class_exists($test)) {
       return $test;
-    } 
+    }
     return $scope->getConfig()->getConfig('default_classes.config');
   }
   

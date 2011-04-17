@@ -1,9 +1,12 @@
 <?php
+namespace Asar;
+
+use \Asar\Message\MessageInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Message implements Asar_Message_Interface {
+class Message implements MessageInterface {
   
   protected $headers = array(), $content = '';
   

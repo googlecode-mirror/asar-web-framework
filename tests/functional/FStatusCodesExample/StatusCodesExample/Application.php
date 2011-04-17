@@ -1,6 +1,6 @@
 <?php
 
-class StatusCodesExample_Application extends Asar_Application {
+class StatusCodesExample_Application extends \Asar\Application {
   
   protected function setUp() {
     $this->setMap('/', 'Index');

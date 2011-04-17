@@ -1,14 +1,16 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../config.php');
 
+use \Asar\Utility\String;
+
 class Asar_Utility_StringTest extends PHPUnit_Framework_TestCase {
 
   private function _testFunction($method, $test_data) {
-    $failmsg = "Asar_Utility_String::$method() did not return expected string.";
+    $failmsg = "Asar\Utility\String::$method() did not return expected string.";
     foreach($test_data as $orig => $converted) {
       $this->assertEquals(
         $converted, 
-        call_user_func(array('Asar_Utility_String', $method), $orig),
+        call_user_func(array('Asar\Utility\String', $method), $orig),
         $failmsg
       );
     }
@@ -51,9 +53,9 @@ class Asar_Utility_StringTest extends PHPUnit_Framework_TestCase {
   }
   
   function testStartsWith() {
-    $this->assertSame(true, Asar_Utility_String::startsWith('Rararara', 'R'));
-    $this->assertSame(true, Asar_Utility_String::startsWith('Wararara', 'War'));
-    $this->assertSame(false, Asar_Utility_String::startsWith('Rararara', 'ar'));
+    $this->assertSame(true, String::startsWith('Rararara', 'R'));
+    $this->assertSame(true, String::startsWith('Wararara', 'War'));
+    $this->assertSame(false, String::startsWith('Rararara', 'ar'));
   }
   
   function testUnderScore() {

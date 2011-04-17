@@ -1,9 +1,13 @@
 <?php
+namespace Asar\Request;
+
+use \Asar\Message\MessageInterface;
 /**
  * @package Asar
  * @subpackage core
+ * @todo Move Request to Message namespace
  */
-interface Asar_Request_Interface extends Asar_Message_Interface {
+interface RequestInterface extends MessageInterface {
   function setParams(array $params);
   function getParams();
   function setPath($path);

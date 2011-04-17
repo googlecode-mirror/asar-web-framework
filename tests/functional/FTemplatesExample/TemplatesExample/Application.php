@@ -1,6 +1,6 @@
 <?php
 
-class TemplatesExample_Application extends Asar_Application {
+class TemplatesExample_Application extends \Asar\Application {
 
   protected function setUp() {
     $this->setMap('/', 'Index');

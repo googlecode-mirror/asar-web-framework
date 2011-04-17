@@ -1,15 +1,18 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../../config.php');
 
+use \Asar\Utility\Cli\Executor;
+use \Asar\Utility\Cli\Command;
+
 class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
-    $this->cli = new Asar_Utility_Cli_Executor;
+    $this->cli = new Executor;
   }
   
   function mockTaskList($methods = array()) {
     return $this->getMock(
-      'Asar_Utility_Cli_Interface',
+      'Asar\Utility\Cli\CliInterface',
       array_merge($methods, array('setController', 'getTaskNamespace'))
     );
   }
@@ -20,7 +23,7 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
       ->method('taskCreateProjectDirectories')
       ->with($this->equalTo('adirectory'));
     $this->cli->registerTasks($tasks);
-    $this->cli->execute(new Asar_Utility_Cli_Command(array(
+    $this->cli->execute(new Command(array(
       'caller'    => '/yo',
       'command'   => 'create-project-directories',
       'arguments' => array('adirectory')
@@ -37,7 +40,7 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
       ->with($this->equalTo('adirectory'));
     $this->cli->registerTasks($tasks1);
     $this->cli->registerTasks($tasks2);
-    $this->cli->execute(new Asar_Utility_Cli_Command(array(
+    $this->cli->execute(new Command(array(
       'caller'    => '/yo',
       'command'   => 'dummy-task',
       'arguments' => array('adirectory')
@@ -50,7 +53,7 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
       ->method('taskCreateProjectDirectories')
       ->with($this->equalTo('adirectory'));
     $this->cli->registerTasks($tasks, 'foo');
-    $this->cli->execute(new Asar_Utility_Cli_Command(array(
+    $this->cli->execute(new Command(array(
       'caller'    => '/yo',
       'namespace' => 'foo',
       'command'   => 'create-project-directories',
@@ -60,13 +63,13 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
   
   function testInvokingTaskMethodWithoutNamespaceThrowsUndefined() {
     $this->setExpectedException(
-		  'Asar_Utility_Cli_Exception_UndefinedTask'
+		  'Asar\Utility\Cli\Exception\UndefinedTask'
 	  );
     $tasks = $this->mockTaskList(array('taskCreateProjectDirectories'));
     $tasks->expects($this->never())
       ->method('taskCreateProjectDirectories');
     $this->cli->registerTasks($tasks, 'foo');
-    $this->cli->execute(new Asar_Utility_Cli_Command(array(
+    $this->cli->execute(new Command(array(
       'caller'    => '/yo',
       'command'   => 'create-project-directories',
       'arguments' => array('adirectory')
@@ -75,10 +78,10 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
   
   function testThrowAsarUtilityCliExceptionWhenTaskMethodIsNotDefined() {
     $this->setExpectedException(
-		  'Asar_Utility_Cli_Exception_UndefinedTask',
+		  'Asar\Utility\Cli\Exception\UndefinedTask',
 		  "The task method 'taskSomethingToDoButCannotDo' is not defined."
 	  );
-	  $this->cli->execute(new Asar_Utility_Cli_Command(array(
+	  $this->cli->execute(new Command(array(
 	    'caller'  => '/a',
 	    'command' => 'something-to-do-but-cannot-do',
 	    'arguments' => 'arg1'
@@ -90,7 +93,7 @@ class Asar_Utility_Cli_ExecutorTest extends PHPUnit_Framework_TestCase {
     $tasks->expects($this->once())
       ->method('flagDoSomething');
     $this->cli->registerTasks($tasks);
-    $this->cli->execute(new Asar_Utility_Cli_Command(array(
+    $this->cli->execute(new Command(array(
       'caller'    => '/yo',
       'flags'   => array('do-something'),
     )));

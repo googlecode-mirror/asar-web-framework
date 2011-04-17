@@ -1,21 +1,25 @@
 <?php
+namespace Asar;
+
+use \Asar\Template\TemplateInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_TemplateSimpleRenderer {
+class TemplateSimpleRenderer {
   
   function renderTemplate(
     $template, $vars,
     $layout = null
   ) {
-    if (!$template instanceof Asar_Template_Interface) {
+    if (!$template instanceof TemplateInterface) {
       return null;
     }
     $output = $template->render($vars);
     if (
       !$template->getConfig('no_layout') && 
-      $layout instanceof Asar_Template_Interface
+      $layout instanceof TemplateInterface
     ) {
       $output = $layout->render($this->extractLayoutVars($output, $template));
     }

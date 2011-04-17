@@ -1,30 +1,40 @@
 <?php
+namespace Asar\MessageFilter;
+
+use \Asar\RequestFilter\RequestFilterInterface;
+use \Asar\ResponseFilter\ResponseFilterInterface;
+use \Asar\Config\ConfigInterface;
+use \Asar\Request\RequestInterface;
+use \Asar\Response\ResponseInterface;
+use \Asar\Message\MessageInterface;
+use \Asar\Utility\String;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_MessageFilter_Standard
-  implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface
+class Standard
+  implements RequestFilterInterface, ResponseFilterInterface
 {
   
   private $config;
   
-  function __construct(Asar_Config_Interface $config) {
+  function __construct(ConfigInterface $config) {
     $this->config = $config;
   }
   
-  function filterRequest(Asar_Request_Interface $request) {
+  function filterRequest(RequestInterface $request) {
     $this->removeInternalHeaders($request);
     return $request;
   }
   
-  function filterResponse(Asar_Response_Interface $response) {
+  function filterResponse(ResponseInterface $response) {
     $this->reformatLocationHeader($response);
     $this->removeInternalHeaders($response);
     return $response;
   }
   
-  private function reformatLocationHeader(Asar_Response $response) {
+  private function reformatLocationHeader(ResponseInterface $response) {
     $location = $response->getHeader('Location');
     if ($location && !preg_match('/^http[s]?:\/\//', $location)) {
       $response->setHeader(
@@ -35,10 +45,10 @@ class Asar_MessageFilter_Standard
     }
   }
   
-  private function removeInternalHeaders(Asar_Message $message) {
+  private function removeInternalHeaders(MessageInterface $message) {
     $headers = $message->getHeaders();
     foreach (array_keys($headers) as $key) {
-      if (Asar_Utility_String::startsWith($key, 'Asar-Internal')) {
+      if (String::startsWith($key, 'Asar-Internal')) {
         $message->unsetHeader($key);
       }
     }

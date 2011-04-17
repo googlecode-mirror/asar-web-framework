@@ -2,14 +2,17 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\ResponseExporter;
+use \Asar\Response;
+
 class Asar_ResponseExporterTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->exporter = new Asar_ResponseExporter;
+    $this->exporter = new ResponseExporter;
   }
   
   function testExportOutputsContentOfResponse() {
-	  $response = new Asar_Response;
+	  $response = new Response;
 	  $response->setContent('The quick brown fox.');
 	  ob_start();
 	  $this->exporter->exportResponse($response);
@@ -20,7 +23,7 @@ class Asar_ResponseExporterTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	function testExportResponseHeadersUsesHeaderFunctionWrapper() {
-	  $exporter = $this->getMock('Asar_ResponseExporter', array('header'));
+	  $exporter = $this->getMock('Asar\ResponseExporter', array('header'));
 	  $exporter->expects($this->exactly(3))
 	    ->method('header');
     $exporter->expects($this->at(0))
@@ -34,7 +37,7 @@ class Asar_ResponseExporterTest extends PHPUnit_Framework_TestCase {
     $exporter->expects($this->at(2))
       ->method('header')
       ->with($this->equalTo('HTTP/1.1 404 Not Found'));
-	  $response = new Asar_Response;
+	  $response = new Response;
 	  $response->setHeader('Content-Type', 'text/plain');
 	  $response->setHeader('Content-Encoding', 'gzip');
 	  $response->setStatus(404);

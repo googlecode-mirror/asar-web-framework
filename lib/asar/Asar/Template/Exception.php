@@ -1,6 +1,8 @@
 <?php
+namespace Asar\Template;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Template_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}

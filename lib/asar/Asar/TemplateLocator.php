@@ -1,9 +1,13 @@
 <?php
+namespace Asar;
+
+use \Asar\ContentNegotiator\ContentNegotiatorInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_TemplateLocator {
+class TemplateLocator {
   
   private 
     $app_path,
@@ -21,7 +25,7 @@ class Asar_TemplateLocator {
     );
   
   function __construct(
-    Asar_ContentNegotiator_Interface $content_negotiator,
+    ContentNegotiatorInterface $content_negotiator,
     $app_path, $engine_extensions
   ) {
     $this->content_negotiator = $content_negotiator;

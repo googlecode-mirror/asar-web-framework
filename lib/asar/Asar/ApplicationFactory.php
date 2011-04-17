@@ -1,21 +1,27 @@
 <?php
+namespace Asar;
+
+use \Asar\Config\ConfigInterface;
+use \Asar\ApplicationScope;
+use \Asar\ApplicationInjector;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ApplicationFactory {
+class ApplicationFactory {
   
   private 
     $config;
   
-  function __construct(Asar_Config_Interface $config) {
+  function __construct(ConfigInterface $config) {
     $this->config = $config;
   }
   
   function getApplication($app_name) {
-    $app_scope = new Asar_ApplicationScope(
+    $app_scope = new ApplicationScope(
       $app_name, $this->config
     );
-    return Asar_ApplicationInjector::injectApplication($app_scope);
+    return ApplicationInjector::injectApplication($app_scope);
   }
 }

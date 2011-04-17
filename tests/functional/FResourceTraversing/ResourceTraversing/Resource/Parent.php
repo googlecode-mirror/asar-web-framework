@@ -1,6 +1,6 @@
 <?php
 
-class ResourceTraversing_Resource_Parent extends Asar_Resource {
+class ResourceTraversing_Resource_Parent extends \Asar\Resource {
   
   function GET() {
     return '/parent GET.';

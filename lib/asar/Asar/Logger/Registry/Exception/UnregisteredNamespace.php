@@ -1,7 +1,9 @@
 <?php
+namespace Asar\Logger\Registry\Exception;
+
+use Asar\Logger\Registry\Exception;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Logger_Registry_Exception_UnregisteredNamespace
-  extends Asar_Logger_Registry_Exception {}
+class UnregisteredNamespace extends Exception {}

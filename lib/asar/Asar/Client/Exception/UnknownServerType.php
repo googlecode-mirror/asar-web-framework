@@ -1,6 +1,9 @@
 <?php
+namespace Asar\Client\Exception;
+
+use \Asar\Client\Exception;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Client_Exception_UnknownServerType extends Asar_Client_Exception {}
+class UnknownServerType extends Exception {}

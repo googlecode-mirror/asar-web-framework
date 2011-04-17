@@ -1,15 +1,20 @@
 <?php
+namespace Asar;
+
+use \Asar\FileSearcher\FileSearcherInterface;
+use \Asar\FileIncludeManager\FileIncludeManagerInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ClassLoader {
+class ClassLoader {
   
   private $searcher, $includer;
   
   function __construct(
-    Asar_FileSearcher_Interface $searcher,
-    Asar_FileIncludeManager_Interface $includer
+    FileSearcherInterface $searcher,
+    FileIncludeManagerInterface $includer
   ) {
     $this->searcher = $searcher;
     $this->includer = $includer;

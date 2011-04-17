@@ -2,23 +2,27 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\TemplateRenderer;
+use \Asar\Request;
+use \Asar\Response;
+
 class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->tpp = $this->getMock(
-      'Asar_TemplatePackageProvider', array(), array(), '', false
+      'Asar\TemplatePackageProvider', array(), array(), '', false
     );
     $this->tsr = $this->getMock(
-      'Asar_TemplateSimpleRenderer', array(), array(), '', false
+      'Asar\TemplateSimpleRenderer', array(), array(), '', false
     );
-    $this->tpl = $this->getMock('Asar_Template_Interface');
-    $this->renderer = new Asar_TemplateRenderer($this->tpp, $this->tsr);
+    $this->tpl = $this->getMock('Asar\Template\TemplateInterface');
+    $this->renderer = new TemplateRenderer($this->tpp, $this->tsr);
   }
   
   private function tppRetursTemplates($arg = null) {
     if (!$arg) {
       $arg = array(
-        'template' => $this->getMock('Asar_Template_Interface'),
+        'template' => $this->getMock('Asar\Template\TemplateInterface'),
         'layout' => 'bar'
       );
     }
@@ -28,8 +32,8 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
   }
   
   function testHandleRequestPassesResourceNameAndRequestToLFactory() {
-    $request = new Asar_Request;
-    $response = new Asar_Response;
+    $request = new Request;
+    $response = new Response;
     $this->tpp->expects($this->once())
       ->method('getTemplatesFor')
       ->with('A_Resource', $request);
@@ -43,14 +47,14 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     );
     $this->tppRetursTemplates($arg);
     $response = $this->renderer->renderFor(
-      'Bar', new Asar_Response, new Asar_Request
+      'Bar', new Response, new Request
     );
     $this->assertEquals(406, $response->getStatus());
   }
   
   function testPassesReturnFromLFactoryToRenderer() {
-    $response = new Asar_Response(array('content' => 'response_argument'));
-    $tpl = $this->getMock('Asar_Template_Interface');
+    $response = new Response(array('content' => 'response_argument'));
+    $tpl = $this->getMock('Asar\Template\TemplateInterface');
     $arg = array(
       'template' => $tpl, 'layout' => $tpl, 'mime-type' => 'text/html'
     );
@@ -58,22 +62,22 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $this->tsr->expects($this->once())
       ->method('renderTemplate')
       ->with($tpl, $response->getContent(), $tpl);
-    $this->renderer->renderFor('A_Resource', $response, new Asar_Request);
+    $this->renderer->renderFor('A_Resource', $response, new Request);
   }
   
   function testSkipsRendererWhenLfactoryReturnsBadTemplate() {
-    $response = new Asar_Response(array('content' => 'response_argument'));
+    $response = new Response(array('content' => 'response_argument'));
     $arg = array(
       'template' => 'foo', 'layout' => 'bar', 'mime-type' => 'text/html'
     );
     $this->tppRetursTemplates($arg);
     $this->tsr->expects($this->never())
       ->method('renderTemplate');
-    $this->renderer->renderFor('A_Resource', $response, new Asar_Request);
+    $this->renderer->renderFor('A_Resource', $response, new Request);
   }
   
   function testReturnsResponseWithRenderedContentFromSimpleRenderer() {
-    $tpl = $this->getMock('Asar_Template_Interface');
+    $tpl = $this->getMock('Asar\Template\TemplateInterface');
     $arg = array(
       'template' => $tpl, 'layout' => $tpl, 'mime-type' => 'text/html'
     );
@@ -83,14 +87,14 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
       ->method('renderTemplate')
       ->will($this->returnValue($content));
     $response = $this->renderer->renderFor(
-      'Bar', new Asar_Response, new Asar_Request
+      'Bar', new Response, new Request
     );
     $this->assertEquals($content, $response->getContent());
   }
   
   // TODO: Maybe move content-negotiation code to locator
   function testSetsContentTypeWhenTemplateIsAvailable() {
-    $tpl = $this->getMock('Asar_Template_Interface');
+    $tpl = $this->getMock('Asar\Template\TemplateInterface');
     $arg = array(
       'template' => $tpl, 'layout' => 'foo', 'mime-type' => 'text/plain'
     );
@@ -99,9 +103,9 @@ class Asar_TemplateRendererTest extends PHPUnit_Framework_TestCase {
     $this->tsr->expects($this->once())
       ->method('renderTemplate')
       ->will($this->returnValue($content));
-    $request = new Asar_Request;
+    $request = new Request;
     $response = $this->renderer->renderFor(
-      'Boo', new Asar_Response, $request
+      'Boo', new Response, $request
     );
     $this->assertEquals(
       'text/plain', $response->getHeader('Content-Type')

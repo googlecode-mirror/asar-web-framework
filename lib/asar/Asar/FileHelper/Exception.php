@@ -1,6 +1,8 @@
 <?php
+namespace Asar\FileHelper;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_FileHelper_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}

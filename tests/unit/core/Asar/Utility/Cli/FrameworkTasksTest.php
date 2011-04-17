@@ -1,14 +1,20 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../../config.php');
 
+use \Asar\Utility\Cli\FrameworkTasks;
+use \Asar\Utility\Cli\CliInterface;
+use \Asar\File;
+use \Asar\FileHelper\Exception\FileAlreadyExists;
+use \Asar\FileHelper\Exception\DirectoryAlreadyExists;
+
 class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
     $this->dir = '/foo';
-    $this->file_helper = $this->getMock('Asar_FileHelper');
-    $this->tasks = new Asar_Utility_Cli_FrameworkTasks($this->file_helper);
+    $this->file_helper = $this->getMock('Asar\FileHelper');
+    $this->tasks = new FrameworkTasks($this->file_helper);
     $this->controller = $this->getMock(
-      'Asar_Utility_Cli', array(), array(), '', false
+      'Asar\Utility\Cli', array(), array(), '', false
     );
     $this->controller->expects($this->any())
       ->method('getWorkingDirectory')
@@ -30,7 +36,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       $methods = array('taskCreateDirectory');
     }
     return $this->getMock(
-      'Asar_Utility_Cli_FrameworkTasks', $methods, array(),
+      'Asar\Utility\Cli\FrameworkTasks', $methods, array(),
       '', false
     );
   }
@@ -43,8 +49,8 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   
   function testBaseTasksImplementsCLIInterface() {
     $this->assertTrue(
-      $this->tasks instanceof Asar_Utility_CLI_Interface,
-      'BaseTasks does not implement Asar_Utility_CLI_Interface.'
+      $this->tasks instanceof CliInterface,
+      'BaseTasks does not implement Asar\Utility\Cli\CliInterface.'
     );
   }
   
@@ -77,7 +83,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     $contents = "The contents of the file. Hehehe.";
     $this->fileHelperCreate()
       ->with($this->getFullPath($path), $contents)
-      ->will($this->returnValue(new Asar_File));
+      ->will($this->returnValue(new File));
     $this->controllerOut('Created: afile.txt');
     $this->tasks->taskCreateFile( $path, $contents );
   }
@@ -85,9 +91,7 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
   function testCreateFileWhenFileExists() {
     $filename = 'adifferentfile.txt';
     $this->fileHelperCreate()
-      ->will($this->throwException(
-        new Asar_FileHelper_Exception_FileAlreadyExists
-      ));
+      ->will($this->throwException(new FileAlreadyExists));
     $this->controllerOut("Skipped - File exists: $filename");
     $this->tasks->taskCreateFile( $filename, 'foo');
   }
@@ -99,7 +103,13 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
       ->with($this->getFullPath($dir))
       ->will($this->returnValue(TRUE));
     $this->controllerOut("Created: " . $dir);
-    $this->tasks->taskCreateDirectory( $dir);
+    try {
+      $this->tasks->taskCreateDirectory( $dir);
+    } catch (Exception $e) {
+      $this->fail(
+        'Task was unable to catch expected exception ' . get_class($e)
+      );
+    }
   }
   
   function testCreateDirectoryWhenDirectoryExists() {
@@ -107,11 +117,15 @@ class Asar_Utility_Cli_FrameworkTasksTest extends PHPUnit_Framework_TestCase {
     $this->file_helper->expects($this->once())
       ->method('createDir')
       ->with($this->getFullPath($subpath))
-      ->will($this->throwException(
-        new Asar_FileHelper_Exception_DirectoryAlreadyExists
-      ));
+      ->will($this->throwException(new DirectoryAlreadyExists));
     $this->controllerOut("Skipped - Directory exists: $subpath");
-    $this->tasks->taskCreateDirectory($subpath);
+    try {
+      $this->tasks->taskCreateDirectory($subpath);
+    } catch (Exception $e) {
+      $this->fail(
+        'Task was unable to catch expected exception ' . get_class($e)
+      );
+    }
   }
   
   function testCreateFileAndDirectory() {

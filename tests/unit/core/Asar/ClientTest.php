@@ -2,17 +2,21 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Client;
+use \Asar\Request;
+use \Asar\Response;
+
 class Asar_ClientTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->client = new Asar_Client;
+    $this->client = new Client;
     $this->server = $this->getMock(
-      'Asar_Resource_Interface', array('handleRequest')
+      'Asar\Resource\ResourceInterface', array('handleRequest')
     );
   }
   
   function testClientSendsRequestToServer() {
-    $request = new Asar_Request;
+    $request = new Request;
     $this->server->expects($this->once())
       ->method('handleRequest')
       ->with($request);
@@ -23,7 +27,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
    * @dataProvider dataClientSendsRequest
    */
   function testClientSendsRequest($method, $options) {
-    $request = new Asar_Request($options);
+    $request = new Request($options);
     $request->setMethod($method);
     $this->server->expects($this->once())
       ->method('handleRequest')
@@ -51,17 +55,17 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
   }
   
   function testClientReturnsResponseFromServer() {
-    $response = new Asar_Response;
+    $response = new Response;
     $this->server->expects($this->once())
       ->method('handleRequest')
       ->will($this->returnValue($response));
     $this->assertSame(
-      $response, $this->client->sendRequest($this->server, new Asar_Request)
+      $response, $this->client->sendRequest($this->server, new Request)
     );
   }
   
   function testHelperMethodsReturnsResponseFromServer() {
-    $response = new Asar_Response;
+    $response = new Response;
     $this->server->expects($this->any())
       ->method('handleRequest')
       ->will($this->returnValue($response));
@@ -76,7 +80,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
    * @dataProvider dataClientThrowsExceptionWhenServerIsUnknown
    */
   function testClientThrowsExceptionWhenServerIsUnknown($method, $server) {
-    $this->setExpectedException('Asar_Client_Exception_UnknownServerType');
+    $this->setExpectedException('Asar\Client\Exception\UnknownServerType');
     call_user_func_array(
       array($this->client, $method), array($server, array())
     );
@@ -95,7 +99,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
     $this->server->expects($this->any())
       ->method('handleRequest')
       ->with($this->equalTo(
-        new Asar_Request(array('headers' => array('Accept' => 'text/plain')))
+        new Request(array('headers' => array('Accept' => 'text/plain')))
       ));
     $this->client->GET(
       $this->server, array('headers' => array('Accept' => 'text/plain'))

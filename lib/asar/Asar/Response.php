@@ -1,9 +1,14 @@
 <?php
+namespace Asar;
+
+use \Asar\Message;
+use \Asar\Response\ResponseInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Response extends Asar_Message implements Asar_Response_Interface {
+class Response extends Message implements ResponseInterface {
   
   private $status = 200;
   private static $reason_phrases = array(

@@ -2,13 +2,15 @@
 
 require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
+use Asar\Debug;
+
 class Asar_DebugPrinter_HtmlTest extends PHPUnit_Framework_TestCase {
   
   private $html = "<html>\n<head>\n</head>\n<body>\n</body>\n</html>";
   
   function setUp() {
-    $this->debug = new Asar_Debug;
-    $this->printer = new Asar_DebugPrinter_Html;
+    $this->debug = new Debug;
+    $this->printer = new \Asar\DebugPrinter\Html;
   }
   
   function testDebugContent() {

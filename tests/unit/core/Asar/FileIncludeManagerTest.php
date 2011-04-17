@@ -5,13 +5,13 @@ set_include_path(
   Asar::getInstance()->getFrameworkDevTestingPath() . PATH_SEPARATOR .
   get_include_path()
 );
-/*require_once 'Asar/TempFilesManager.php';
-require_once 'Asar/FileIncludeManager.php';*/
+
+use \Asar\FileIncludeManager;
 
 class Asar_FileIncludeManagerTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->FI = new Asar_FileIncludeManager;
+    $this->FI = new FileIncludeManager;
     $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
   }

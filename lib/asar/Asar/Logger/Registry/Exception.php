@@ -1,6 +1,8 @@
 <?php
+namespace Asar\Logger\Registry;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Logger_Registry_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}

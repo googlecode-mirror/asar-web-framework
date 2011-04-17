@@ -1,4 +1,5 @@
 <?php
+namespace Asar\ContentNegotiator;
 /**
  * Provides an interface for content negotiation like how HTTP servers negotiate
  * the Content-type and/or language through an HTTP Request accept header.
@@ -6,7 +7,7 @@
  * @package Asar
  * @subpackage core
  */
-interface Asar_ContentNegotiator_Interface {
+interface ContentNegotiatorInterface {
   
   /**
    * @param string $accept_header the accept header passed by a request which

@@ -1,9 +1,10 @@
 <?php
+namespace Asar\Utility;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_ClassFilePeek {
+class ClassFilePeek {
   
   function getDefinedClasses($file) {
     $php_code = file_get_contents($file);

@@ -1,9 +1,13 @@
 <?php
+namespace Asar;
+
+use \Asar\Config\Exception;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Config implements Asar_Config_Interface {
+class Config implements Config\ConfigInterface {
   
   protected $config = array();
   
@@ -38,7 +42,7 @@ class Asar_Config implements Asar_Config_Interface {
     return $this->config;
   }
   
-  function importConfig(Asar_Config_Interface $config) {
+  function importConfig(Config\ConfigInterface $config) {
     $this->config = $this->configMerge($config->getConfig(), $this->config);
   }
   
@@ -47,8 +51,8 @@ class Asar_Config implements Asar_Config_Interface {
       if (isset($to[$key])) {
         $thekey = !$parent_key ? $key : "$parent_key.$key";
         if (is_array($value) XOR is_array($to[$key])) {
-          throw new Asar_Config_Exception(
-            "Asar_Config::importConfig() failed. Type mismatch. Unable to " .
+          throw new Exception(
+            "Asar\Config::importConfig() failed. Type mismatch. Unable to " .
             "merge '$thekey' => '$value' with Array."
           );
         }          

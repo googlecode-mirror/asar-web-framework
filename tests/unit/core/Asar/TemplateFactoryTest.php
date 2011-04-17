@@ -2,14 +2,16 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use Asar\TemplateFactory;
+
 class Asar_TemplateFactoryTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->engine = get_class($this) . '_DummyTemplateClass';
     if (!class_exists($this->engine)) {
-      //$this->getMock('Asar_Template_Interface', array(), array(), $this->engine);
+      //$this->getMock('Asar\Template\TemplateInterface', array(), array(), $this->engine);
       eval('
-        class '. $this->engine . ' implements Asar_Template_Interface {
+        class '. $this->engine . ' implements \Asar\Template\TemplateInterface {
           private $file;
           function setTemplateFile($file) {
             $this->file = $file;
@@ -29,7 +31,7 @@ class Asar_TemplateFactoryTest extends PHPUnit_Framework_TestCase {
         }
       ');
     }
-    $this->F = new Asar_TemplateFactory;
+    $this->F = new TemplateFactory;
   }
   
   function testBasicTemplateCreation() {
@@ -63,7 +65,7 @@ class Asar_TemplateFactoryTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSettingAnotherTemplateEngine() {
-    $engine2 = get_class($this->getMock('Asar_Template_Interface'));
+    $engine2 = get_class($this->getMock('Asar\Template\TemplateInterface'));
     $this->F->registerTemplateEngine('x', $engine2);
     $this->F->registerTemplateEngine('php', $this->engine);
     $template = $this->F->createTemplate('foo.x');
@@ -71,7 +73,7 @@ class Asar_TemplateFactoryTest extends PHPUnit_Framework_TestCase {
   }
   
   function testGettingRegisteredEngines() {
-    $engine2 = get_class($this->getMock('Asar_Template_Interface'));
+    $engine2 = get_class($this->getMock('Asar\Template\TemplateInterface'));
     $this->F->registerTemplateEngine('x', $engine2);
     $this->F->registerTemplateEngine('php', $this->engine);
     $engines = $this->F->getRegisteredTemplateEngines();

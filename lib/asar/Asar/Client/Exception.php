@@ -1,6 +1,8 @@
 <?php
+namespace Asar\Client;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Client_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}

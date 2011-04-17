@@ -1,10 +1,13 @@
 <?php
+namespace Asar;
+use \Asar\Resource\ResourceInterface;
+use \Asar\Config\ConfigInterface;
+use \Asar\Request\RequestInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Representation
-  implements Asar_Resource_Interface, Asar_Config_Interface
+class Representation implements ResourceInterface, ConfigInterface
 {
   
   protected
@@ -17,11 +20,11 @@ class Asar_Representation
       'application/json' => 'Json',
     );
   
-  function __construct(Asar_Resource_Interface $resource) {
+  function __construct(ResourceInterface $resource) {
     $this->resource = $resource;
-    $this->config_bag = new Asar_Config();
+    $this->config_bag = new Config();
     $this->setUp();
-    $this->config_bag->importConfig(new Asar_Config($this->config));
+    $this->config_bag->importConfig(new Config($this->config));
   }
   
   protected function setUp() {}
@@ -30,14 +33,14 @@ class Asar_Representation
     return $this->config_bag->getConfig($key);
   }
   
-  function importConfig(Asar_Config_Interface $config) {
-    if ($this->resource instanceof Asar_Config_Interface) {
+  function importConfig(ConfigInterface $config) {
+    if ($this->resource instanceof Config\ConfigInterface) {
       $this->resource->importConfig($config);
     }
     return $this->config_bag->importConfig($config);
   }
   
-  function handleRequest(Asar_Request_Interface $request) {
+  function handleRequest(RequestInterface $request) {
     $response = $this->resource->handleRequest($request);
     $response->setContent(
       $this->callRequestMethod(

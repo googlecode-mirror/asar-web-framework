@@ -1,32 +1,44 @@
 <?php
+namespace Asar;
+
+use \Asar\Resource\ResourceInterface;
+use \Asar\Response\ResponseInterface;
+use \Asar\Request\RequestInterface;
+use \Asar\Config\ConfigInterface;
+use \Asar\Config;
+use \Asar\PathDiscover\PathDiscoverInterface;
+use \Asar\TemplateRenderer;
+/**
+ * @todo remove "as ..."
+ */
+use \Asar\Templater\Exception as TemplaterException;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Templater
-  implements Asar_Resource_Interface, Asar_Config_Interface,
-    Asar_PathDiscover_Interface
+class Templater
+  implements ResourceInterface, ConfigInterface, PathDiscoverInterface
 {
   
   private $resource, $renderer, $config;
   
   function __construct(
-    Asar_Resource_Interface $resource,
-    Asar_TemplateRenderer $renderer
+    ResourceInterface $resource,
+    TemplateRenderer $renderer
   ) {
     $this->resource = $resource;
-    if ($this->resource instanceof Asar_Config_Interface) {
+    if ($this->resource instanceof ConfigInterface) {
       $this->config = $resource;
     } else {
-      $this->config = new Asar_Config;
+      $this->config = new Config;
     }
     $this->renderer = $renderer;
   }
   
-  function handleRequest(Asar_Request_Interface $request) {
+  function handleRequest(RequestInterface $request) {
     $response = $this->resource->handleRequest($request);
-    if (!$response instanceof Asar_Response_Interface) {
-      throw new Asar_Templater_Exception(
+    if (!$response instanceof ResponseInterface) {
+      throw new TemplaterException(
         'Unable to create template. The Resource did not return a response ' .
         'object.'
       );
@@ -48,7 +60,7 @@ class Asar_Templater
     return $this->config->getConfig($key);
   }
   
-  function importConfig(Asar_Config_Interface $config) {
+  function importConfig(ConfigInterface $config) {
     return $this->config->importConfig($config);
   }
   

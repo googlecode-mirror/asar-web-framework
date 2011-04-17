@@ -2,10 +2,13 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\ResourceLister;
+use \Asar\FileSearcher;
+
 class Asar_ResourceListerTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
-    $this->resource_lister = new Asar_ResourceLister(new Asar_FileSearcher);
+    $this->resource_lister = new ResourceLister(new FileSearcher);
     $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
     $this->IPM = new Asar_IncludePathManager();

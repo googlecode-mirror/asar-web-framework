@@ -6,7 +6,7 @@
  * named 'Example1'. This test application is used only for integration
  * testing.
  */
-class Example1_Config extends Asar_Config {
+class Example1_Config extends \Asar\Config {
   
   protected $config = array(
     'map' => array(

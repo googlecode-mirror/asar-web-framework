@@ -1,6 +1,6 @@
 <?php
 
-class LoggingExample_Config extends Asar_Config {
+class LoggingExample_Config extends \Asar\Config {
   
   protected $config = array(
     'use_templates' => false,

@@ -2,7 +2,8 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
-// TODO: How do we test factories?
+use \Asar\EnvironmentScope;
+
 class Asar_EnvironmentScopeTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
@@ -14,7 +15,7 @@ class Asar_EnvironmentScopeTest extends PHPUnit_Framework_TestCase {
     $this->cookie  = array('cookie_key' => 'cookie_value');
     $this->env     = array('var' => 'val');
     $this->dir     = '/foo';
-    $this->scope = new Asar_EnvironmentScope(
+    $this->scope = new EnvironmentScope(
       $this->server, $this->get, $this->post, $this->files,
       $this->session, $this->cookie, $this->env, $this->dir
     );

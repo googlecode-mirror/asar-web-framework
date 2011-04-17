@@ -2,15 +2,18 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\TemplateLocator;
+use \Asar\Request;
+
 class Asar_TemplateLocatorTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
     $this->TFM->clearTempDirectory();
-    $this->content_negotiator = $this->getMock('Asar_ContentNegotiator');
+    $this->content_negotiator = $this->getMock('Asar\ContentNegotiator');
     $engine_extensions = array('php', 'haml');
-    $this->RT = new Asar_TemplateLocator(
+    $this->RT = new TemplateLocator(
       $this->content_negotiator,
       $this->tempdir, $engine_extensions
     );
@@ -30,7 +33,7 @@ class Asar_TemplateLocatorTest extends PHPUnit_Framework_TestCase {
     foreach ($files as $file) {
       $this->TFM->newFile($file, '');
     }
-    $request = new Asar_Request($request_options);
+    $request = new Request($request_options);
     $this->content_negotiator->expects($this->once())
       ->method('negotiateFormat')
       ->with($request->getHeader('Accept'), $available_types);
@@ -107,7 +110,7 @@ class Asar_TemplateLocatorTest extends PHPUnit_Framework_TestCase {
     $this->content_negotiator->expects($this->once())
       ->method('negotiateFormat')
       ->will($this->returnValue($negotiator_returns));
-    $request = new Asar_Request($request_options);
+    $request = new Request($request_options);
     $this->assertEquals(
       $this->TFM->getPath($expected_file),
       $this->RT->locateFor($resource_name, $request)
@@ -148,7 +151,7 @@ class Asar_TemplateLocatorTest extends PHPUnit_Framework_TestCase {
   
   function testTemplateLocatorReturnsFalseWhenNoTemplateIsFoundForResource() {
     $this->assertSame(
-      FALSE, $this->RT->locateFor('Some_Resource', new Asar_Request)
+      FALSE, $this->RT->locateFor('Some_Resource', new Request)
     );
   }
   
@@ -159,7 +162,7 @@ class Asar_TemplateLocatorTest extends PHPUnit_Framework_TestCase {
       ->will($this->returnValue(FALSE));
     $this->assertEquals(
       FALSE, $this->RT->locateFor(
-        'Moonda_Resource_AResource_Go', new Asar_Request
+        'Moonda_Resource_AResource_Go', new Request
       )
     );
   }

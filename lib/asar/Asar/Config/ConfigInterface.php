@@ -1,11 +1,13 @@
 <?php
+namespace Asar\Config;
+
 /**
  * Provides a generic interface for configurations
  *
  * @package Asar
  * @subpackage core
  */
-interface Asar_Config_Interface {
+interface ConfigInterface {
   
   /**
    * Returns the value of a configuration directive based on a key or
@@ -23,5 +25,5 @@ interface Asar_Config_Interface {
    * For matching keys, implementations of this interface should retain the
    * value from the original configuration.
    */
-  function importConfig(Asar_Config_Interface $config);
+  function importConfig(ConfigInterface $config);
 }

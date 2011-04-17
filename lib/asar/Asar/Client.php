@@ -1,19 +1,25 @@
 <?php
+namespace Asar;
+
+use \Asar\Resource\ResourceInterface;
+use \Asar\Client\Exception\UnknownServerType;
+use \Asar\Request;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Client {
+class Client {
 
   function sendRequest($server, $request) {
-    if ($server instanceof Asar_Resource_Interface) {
+    if ($server instanceof ResourceInterface) {
       return $server->handleRequest($request);
     }
-    throw new Asar_Client_Exception_UnknownServerType;
+    throw new UnknownServerType;
   }
   
   private function sendRequestByMethod($server, $options, $method) {
-    $request = new Asar_Request($options);
+    $request = new Request($options);
     $request->setMethod($method);
     return $this->sendRequest($server, $request);
   }

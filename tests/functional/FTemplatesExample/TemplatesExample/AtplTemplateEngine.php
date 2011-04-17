@@ -1,4 +1,7 @@
 <?php
+
+use \Asar\Template\TemplateInterface;
+
 /**
  * TemplatesExample_AtplTemplateEngine
  *
@@ -7,7 +10,7 @@
  * be used in your applications.
  *
  */
-class TemplatesExample_AtplTemplateEngine implements Asar_Template_Interface {
+class TemplatesExample_AtplTemplateEngine implements TemplateInterface {
 
   private
     $file,
@@ -18,7 +21,7 @@ class TemplatesExample_AtplTemplateEngine implements Asar_Template_Interface {
   
   function setTemplateFile($file) {
     if (!file_exists($file)) {
-      throw new Asar_Template_Exception_FileNotFound(
+      throw new \Asar\Template\Exception\FileNotFound(
         "The file '$file' passed to the template does not exist."
       );
     }

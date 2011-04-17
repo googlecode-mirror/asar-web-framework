@@ -1,13 +1,16 @@
 <?php
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\FileHelper;
+use \Asar\File;
+
 class Asar_FileHelperTest extends PHPUnit_Framework_TestCase {
 	
 	function setUp() {
 	  $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
     $this->TFM->clearTempDirectory();
-    $this->helper = new Asar_FileHelper;
+    $this->helper = new FileHelper;
 	}
 	
 	function tearDown() {
@@ -29,15 +32,15 @@ class Asar_FileHelperTest extends PHPUnit_Framework_TestCase {
 	function testBasicCreationReturnsAFileObject() {
 	  $filename = $this->createDirPath($this->tempdir, 'bar.txt');
 	  $file = $this->helper->create($filename, "Bar!");
-	  $this->assertInstanceOf('Asar_File', $file);
+	  $this->assertInstanceOf('Asar\File', $file);
 	  $this->assertEquals($filename, $file->getFileName());
 	  $this->assertEquals("Bar!", $file->getContents());
 	}
 	
 	function testCreationReturnsFalseWhenItFailsToCreateFile() {
 	  $filename = $this->createDirPath($this->tempdir, 'foo.txt');
-	  Asar_File::create($filename, 'boo!');
-	  $this->setExpectedException('Asar_FileHelper_Exception_FileAlreadyExists');
+	  File::create($filename, 'boo!');
+	  $this->setExpectedException('Asar\FileHelper\Exception\FileAlreadyExists');
 	  $this->helper->create($filename, "Foo!");
 	}
 	
@@ -63,14 +66,14 @@ class Asar_FileHelperTest extends PHPUnit_Framework_TestCase {
 	
 	function testCreatingDirectoriesThrowsParentDirectoryDoesNotExistException() {
     $dir = $this->createDirPath('/bar', 'foo');
-    $this->setExpectedException('Asar_FileHelper_Exception_ParentDirectoryDoesNotExist');
+    $this->setExpectedException('Asar\FileHelper\Exception\ParentDirectoryDoesNotExist');
     $this->assertFalse($this->helper->createDir($dir));
 	}
 	
 	function testCreatingDirectoriesThrowsDirectoryExistsException() {
     $dir = $this->createDirPath($this->tempdir, 'foo');
     mkdir($dir);
-    $this->setExpectedException('Asar_FileHelper_Exception_DirectoryAlreadyExists');
+    $this->setExpectedException('Asar\FileHelper\Exception\DirectoryAlreadyExists');
     $this->assertFalse($this->helper->createDir($dir));
 	}
 	

@@ -1,9 +1,11 @@
 <?php
+namespace Asar;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_EnvironmentScope {
+class EnvironmentScope {
   
   private
     $server  = array(),

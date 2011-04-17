@@ -14,7 +14,7 @@ RedBean_OODBBean
  */
 
 // TODO: Figure out if we can use mocking instead of this static class
-class Asar_Model_RedBeanTest_DummyBeanModel extends Asar_Model_RedBean {
+class Asar_Model_RedBeanTest_DummyBeanModel extends \Asar\Model\RedBean {
   
 }
 
@@ -56,7 +56,7 @@ class Asar_Model_RedBeanTest extends PHPUnit_Framework_TestCase {
   
   function testModelInvokesDefinePropertiesMethodOnConstruction() {
     eval('
-      class ' . get_class($this) . '_DummyBeanModel2 extends Asar_Model_RedBean {
+      class ' . get_class($this) . '_DummyBeanModel2 extends \Asar\Model\RedBean {
         function defineProperties() {
           $GLOBALS["foo"] = "bar";
           return array("foo" => array());

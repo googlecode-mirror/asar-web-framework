@@ -1,5 +1,5 @@
 <?php
-class TemplatesExample_Resource_Index extends Asar_Resource {
+class TemplatesExample_Resource_Index extends \Asar\Resource {
   
   public function GET() {
     return array('p' => 'This is the paragraph. Easy, no?');

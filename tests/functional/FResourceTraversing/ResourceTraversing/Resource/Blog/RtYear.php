@@ -1,6 +1,6 @@
 <?php
 
-class ResourceTraversing_Resource_Blog_RtYear extends Asar_Resource {
+class ResourceTraversing_Resource_Blog_RtYear extends \Asar\Resource {
   
   function GET() {
     return $this->request->getPath() . ' GET.';

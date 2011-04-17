@@ -1,4 +1,11 @@
 <?php
+namespace Asar\EnvironmentHelper;
+
+use \Asar\Config\ConfigInterface;
+use \Asar\RequestFactory;
+use \Asar\ResponseExporter;
+use \Asar\ApplicationScope;
+use \Asar\ApplicationInjector;
 /**
  * Environment helper that sets up the web server environment. This is
  * what is mostly used in the front controller.
@@ -6,7 +13,7 @@
  * @package Asar
  * @subpackage core
  */
-class Asar_EnvironmentHelper_Web {
+class Web {
 
   private 
     $config, $request_factory, $response_exporter,
@@ -18,9 +25,9 @@ class Asar_EnvironmentHelper_Web {
    * @param Asar_ResponseExporter $response_exporter
    */
   function __construct(
-    Asar_Config_Interface $config,
-    Asar_RequestFactory $request_factory,
-    Asar_ResponseExporter $response_exporter, $server_vars, $params, $post
+    ConfigInterface $config,
+    RequestFactory $request_factory,
+    ResponseExporter $response_exporter, $server_vars, $params, $post
   ) {
     $this->config = $config;
     $this->request_factory = $request_factory;
@@ -39,11 +46,11 @@ class Asar_EnvironmentHelper_Web {
    *                         application class without the "_Application" suffix
    */
   function runAppInProductionEnvironment($app_name) {
-    $app_scope = new Asar_ApplicationScope(
+    $app_scope = new ApplicationScope(
       $app_name, $this->config
     );
     $this->response_exporter->exportResponse(
-      Asar_ApplicationInjector::injectApplicationRunner($app_scope)->run(
+      ApplicationInjector::injectApplicationRunner($app_scope)->run(
         $this->request_factory->createRequest(
           $this->server_vars, $this->params, $this->post
         )

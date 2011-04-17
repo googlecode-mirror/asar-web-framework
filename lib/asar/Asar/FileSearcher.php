@@ -1,10 +1,13 @@
 <?php
-require_once 'FileSearcher/Interface.php';
+namespace Asar;
+
+use \Asar\FileSearcher\FileSearcherInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_FileSearcher implements Asar_FileSearcher_Interface {
+class FileSearcher implements FileSearcherInterface {
   
   function find($file_path) {
     if ($this->isAbsolutePath($file_path)) {

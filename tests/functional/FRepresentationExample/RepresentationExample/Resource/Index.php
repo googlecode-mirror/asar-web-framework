@@ -1,6 +1,6 @@
 <?php
 
-class RepresentationExample_Resource_Index extends Asar_Resource {
+class RepresentationExample_Resource_Index extends \Asar\Resource {
   
   function GET() {
     return array(

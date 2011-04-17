@@ -4,7 +4,7 @@ require_once realpath(dirname(__FILE__) . '/../../../../../config.php');
 class Asar_Utility_Cli_InterpreterTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
-    $this->interpreter = new Asar_Utility_Cli_Interpreter;
+    $this->interpreter = new \Asar\Utility\Cli\Interpreter;
   }
   
   /**
@@ -22,7 +22,7 @@ class Asar_Utility_Cli_InterpreterTest extends PHPUnit_Framework_TestCase {
         array(
           '/the/cli/caller', '--flag1', '--flag2', 'the-command', 'arg1', 'arg2'
         ),
-        new Asar_Utility_Cli_Command(array(
+        new \Asar\Utility\Cli\Command(array(
           'caller'    => '/the/cli/caller',
           'flags'     => array('flag1', 'flag2'),
           'command'   => 'the-command',
@@ -34,7 +34,7 @@ class Asar_Utility_Cli_InterpreterTest extends PHPUnit_Framework_TestCase {
         array(
           '/the/cli/callerx', '--flag1', 'a-command'
         ),
-        new Asar_Utility_Cli_Command(array(
+        new \Asar\Utility\Cli\Command(array(
           'caller'    => '/the/cli/callerx',
           'flags'     => array('flag1'),
           'command'   => 'a-command',
@@ -46,7 +46,7 @@ class Asar_Utility_Cli_InterpreterTest extends PHPUnit_Framework_TestCase {
         array(
           '/another/caller', 'mycommand', 'arg1', 'arg2'
         ),
-        new Asar_Utility_Cli_Command(array(
+        new \Asar\Utility\Cli\Command(array(
           'caller'    => '/another/caller',
           'flags'     => array(),
           'command'   => 'mycommand',
@@ -58,7 +58,7 @@ class Asar_Utility_Cli_InterpreterTest extends PHPUnit_Framework_TestCase {
         array(
           '/another/caller', 'mycommand', '--command-flag', 'arg2'
         ),
-        new Asar_Utility_Cli_Command(array(
+        new \Asar\Utility\Cli\Command(array(
           'caller'    => '/another/caller',
           'flags'     => array(),
           'command'   => 'mycommand',
@@ -70,7 +70,7 @@ class Asar_Utility_Cli_InterpreterTest extends PHPUnit_Framework_TestCase {
         array(
           '/caller', 'nspace:mycommand', 'arg1', 'arg2'
         ),
-        new Asar_Utility_Cli_Command(array(
+        new \Asar\Utility\Cli\Command(array(
           'caller'    => '/caller',
           'flags'     => array(),
           'namespace' => 'nspace',

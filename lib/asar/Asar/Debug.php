@@ -1,9 +1,12 @@
 <?php
+namespace Asar;
+
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Debug implements Iterator {
+class Debug implements \Iterator {
   
   private $data = array(), $valid = FALSE;
   

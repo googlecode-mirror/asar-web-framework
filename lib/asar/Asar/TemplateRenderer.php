@@ -1,25 +1,32 @@
 <?php
+namespace Asar;
+
+use \Asar\TemplatePackageProvider;
+use \Asar\TemplateSimpleRenderer;
+use \Asar\Response\ResponseInterface;
+use \Asar\Request\RequestInterface;
+use \Asar\Template\TemplateInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_TemplateRenderer {
+class TemplateRenderer {
   
   private $factory, $renderer;
   
   function __construct(
-    Asar_TemplatePackageProvider $factory,
-    Asar_TemplateSimpleRenderer $renderer
+    TemplatePackageProvider $factory, TemplateSimpleRenderer $renderer
   ) {
     $this->factory = $factory;
     $this->renderer = $renderer;
   }
   
   function renderFor(
-    $resource_name, Asar_Response $response, Asar_Request $request
+    $resource_name, ResponseInterface $response, RequestInterface $request
   ) {
     $templates = $this->factory->getTemplatesFor($resource_name, $request);
-    if (!$templates['template'] instanceof Asar_Template_Interface) {
+    if (!$templates['template'] instanceof TemplateInterface) {
       $response->setStatus(406);
     } else {
       $response->setContent(

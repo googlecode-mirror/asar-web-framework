@@ -2,10 +2,13 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Request;
+use \Asar\RequestFactory;
+
 class Asar_RequestFactoryTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->factory = new Asar_RequestFactory();
+    $this->factory = new RequestFactory();
   }
   
   function testCreatingRequest() {
@@ -13,7 +16,7 @@ class Asar_RequestFactoryTest extends PHPUnit_Framework_TestCase {
     $SERVER['REQUEST_METHOD'] = 'POST';
 	  $SERVER['REQUEST_URI']  = '/a_page';
 	  $request = $this->factory->createRequest($SERVER);
-	  $this->assertInstanceOf('Asar_Request', $request);
+	  $this->assertInstanceOf('Asar\Request', $request);
     $this->assertEquals('POST', $request->getMethod());
     $this->assertEquals('/a_page', $request->getPath());
   }
@@ -28,7 +31,7 @@ class Asar_RequestFactoryTest extends PHPUnit_Framework_TestCase {
 	    'boo' => 'far'
 	  );
 	  $request = $this->factory->createRequest($SERVER, $GET);
-	  $this->assertInstanceOf('Asar_Request', $request);
+	  $this->assertInstanceOf('Asar\Request', $request);
     $this->assertEquals('DELETE', $request->getMethod());
     $this->assertEquals('/foo', $request->getPath());
     $this->assertEquals($GET, $request->getParams());
@@ -43,7 +46,7 @@ class Asar_RequestFactoryTest extends PHPUnit_Framework_TestCase {
 	    'boo' => 'far'
 	  );
 	  $request = $this->factory->createRequest($SERVER, array(), $POST);
-	  $this->assertInstanceOf('Asar_Request', $request);
+	  $this->assertInstanceOf('Asar\Request', $request);
     $this->assertEquals($POST, $request->getContent());
   }
   
@@ -56,7 +59,7 @@ class Asar_RequestFactoryTest extends PHPUnit_Framework_TestCase {
 	    'boo' => 'far'
 	  );
 	  $request = $this->factory->createRequest($SERVER, array(), $POST);
-	  $this->assertInstanceOf('Asar_Request', $request);
+	  $this->assertInstanceOf('Asar\Request', $request);
     $this->assertEquals(null, $request->getContent());
   }
   

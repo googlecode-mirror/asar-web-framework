@@ -1,17 +1,27 @@
 <?php
+
+namespace Asar\Utility\Cli;
+
+use \Asar;
+use \Asar\Utility\Cli;
+use \Asar\Utility\String;
+use \Asar\FileHelper;
+use \Asar\FileHelper\Exception\FileAlreadyExists;
+use \Asar\FileHelper\Exception\DirectoryAlreadyExists;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
+class FrameworkTasks implements CliInterface {
   
   private $controller, $file_helper, $cwd;
   
-  function __construct(Asar_FileHelper $file_helper) {
+  function __construct(FileHelper $file_helper) {
     $this->file_helper = $file_helper;
   }
   
-  function setController(Asar_Utility_Cli $controller) {
+  function setController(Cli $controller) {
     $this->controller = $controller;
     $this->cwd = $this->controller->getWorkingDirectory();
   }
@@ -32,7 +42,7 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
       if ($result) {
         $this->out('Created: ' . $filename);
       }
-    } catch (Asar_FileHelper_Exception_FileAlreadyExists $e) {
+    } catch (FileAlreadyExists $e) {
       $this->out('Skipped - File exists: ' . $filename);
     }
   }
@@ -247,7 +257,7 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     $fragments = explode('/', trim($url, '/'));
     $rewritten = array();
     foreach ($fragments as $fragment) {
-      if (Asar_Utility_String::startsWith($fragment, '{')) {
+      if (String::startsWith($fragment, '{')) {
         $rewritten[] = '{$path[\'' . trim($fragment, '{}') . "']}";
       } else {
         $rewritten[] = $fragment;
@@ -260,7 +270,7 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     $fragments = explode('/', trim($url, '/'));
     $validations = array();
     foreach ($fragments as $fragment) {
-      if (Asar_Utility_String::startsWith($fragment, '{')) {
+      if (String::startsWith($fragment, '{')) {
         $validations[] = '      preg_match(\'/.+/\', $path[\''. trim($fragment, '{}') . '\'])';
       }
     }
@@ -268,10 +278,10 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
   }
   
   private function formatResourceNameFragment($path) {
-    if (Asar_Utility_String::startsWith($path, '{')) {
-      return 'Rt'. Asar_Utility_String::camelCase(trim($path, '{}'));
+    if (String::startsWith($path, '{')) {
+      return 'Rt'. String::camelCase(trim($path, '{}'));
     }
-    return Asar_Utility_String::camelCase($path);
+    return String::camelCase($path);
   }
   
   private function constructPath() {
@@ -283,7 +293,7 @@ class Asar_Utility_Cli_FrameworkTasks implements Asar_Utility_Cli_Interface {
     try {
       $this->file_helper->createDir($this->getFullPath($dir));
       $this->out("Created: $dir");
-    } catch (Asar_FileHelper_Exception_DirectoryAlreadyExists $e) {
+    } catch (DirectoryAlreadyExists $e) {
       $this->out("Skipped - Directory exists: $dir");
     }
   }

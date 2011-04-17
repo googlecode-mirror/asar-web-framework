@@ -1,10 +1,12 @@
 <?php
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
-class Asar_FileTest extends PHPUnit_Framework_TestCase {
+use \Asar\File;
+
+class FileTest extends PHPUnit_Framework_TestCase {
 	
 	function setUp() {
-	  $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
+	  $this->tempdir = \Asar::getInstance()->getFrameworkTestsDataTempPath();
     $this->TFM = new Asar_TempFilesManager($this->tempdir);
     $this->TFM->clearTempDirectory();
 	}
@@ -19,15 +21,15 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	
 	function testSettingFileName() {
 		$testFileName = $this->tempdir.'AAAAARD';
-		$file = new Asar_File();
+		$file = new File();
 		$file->setFileName($testFileName);
 		$this->assertEquals($testFileName, $file->getFileName(), 'Filename returned is not the same');
 	}
 	
 	function testSimpleCreateFile() {
 		$testString = 'This is a test';
-		$testFileName = $this->getTempFileName('Asar_FileTesting.txt');
-		$file = Asar_File::create($testFileName);
+		$testFileName = $this->getTempFileName('FileTesting.txt');
+		$file = File::create($testFileName);
 		$file->write($testString)
 		     ->save();
     $this->assertFileExists($testFileName, 'Unable to create file');
@@ -37,7 +39,7 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	function testLongWayToCreateFile() {
 		$testString = 'This is just a string';
 		$testFileName = $this->getTempFileName('GAAnotherFileToTest.txt');
-		$file = new Asar_File();
+		$file = new File();
 		$file->setFileName($testFileName);
 		$file->write($testString);
 		$file->save();
@@ -50,7 +52,7 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		$testFileName = $this->getTempFileName('GAAnotherFileToTest.txt');
 		file_put_contents($testFileName, $testString);
     $this->assertFileExists($testFileName, 'Unable to create test file');
-		$file = new Asar_File($testFileName);
+		$file = new File($testFileName);
 		$this->assertEquals($testString, $file->getContent());
 		$this->assertEquals($testString, $file->getContents());
 		$this->assertEquals($testString, $file->read());
@@ -61,15 +63,15 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		$testString = '';
 		file_put_contents($testFileName, $testString);
     $this->assertFileExists($testFileName, 'Unable to create test file');
-    $file = Asar_File::unlink($testFileName);
+    $file = File::unlink($testFileName);
     $this->assertFileNotExists($testFileName, 'Unable to delete the file');
 	}
 	
 	function testStaticUnlinkReturnsFalseWhenFileDoesNotExist() {
     $testFileName = $this->getTempFileName('Nothingnothing');
     $this->assertFalse(
-      Asar_File::unlink($testFileName),
-      'Asar_File::unlink() did not return false for non-existent-file.'
+      File::unlink($testFileName),
+      'File::unlink() did not return false for non-existent-file.'
     );
 	}
 	
@@ -78,7 +80,7 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		$testString = 'asdfsadf';
 		file_put_contents($testFileName, $testString);
    	$this->assertFileExists($testFileName, 'Unable to create test file');
-    $file = new Asar_File($testFileName);
+    $file = new File($testFileName);
     $file->write($testString)->save();
     $file->delete();
   
@@ -87,8 +89,8 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	
 	function testWritingBeforeAndAfter() {
 		$testString = 'XXX';
-		$testFileName = $this->getTempFileName('Asar_FileTesting.txt');
-		Asar_File::create($testFileName)
+		$testFileName = $this->getTempFileName('FileTesting.txt');
+		File::create($testFileName)
 		      ->write($testString)
 		      ->writeBefore('BBBB')
 		      ->writeAfter('CCC')
@@ -99,8 +101,8 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	
 	function testManyWrites() {
 		$testString = 'XXX';
-		$testFileName = $this->getTempFileName('Asar_FileTesting.txt');
-		$testfile = Asar_File::create($testFileName);
+		$testFileName = $this->getTempFileName('FileTesting.txt');
+		$testfile = File::create($testFileName);
 		$testfile->write($testString)->save();
 		$testfile->write('iii')->save();
 		$testfile->write('ABCDEFG')->save();
@@ -110,8 +112,8 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	
 	function testManyWritesButInAppendMode() {
 		$testString = 'XXX';
-		$testFileName = $this->getTempFileName('Asar_FileTesting.txt');
-		$testfile = Asar_File::create($testFileName)->appendMode();
+		$testFileName = $this->getTempFileName('FileTesting.txt');
+		$testfile = File::create($testFileName)->appendMode();
 		$testfile->write($testString)->save();
 		$testfile->write('iii')->save();
 		$testfile->write('ABCDEFG')->save();
@@ -123,7 +125,7 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 		$testString = 'asdf;lkj';
 		$testFileName = $this->getTempFileName('temp/XXXXXXtest.txt');
 		mkdir($this->getTempFileName('temp'));
-		Asar_File::create($testFileName)
+		File::create($testFileName)
 		      ->write($testString)
 		      ->save();
 		$this->assertFileExists($testFileName, 'Unable to create or save file');
@@ -133,48 +135,48 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	function testRaiseExceptionWhenTheFileAlreadyExists() {
 		$testString = 'nananananana';
 		$testFileName = $this->getTempFileName('nanana.txt');
-		Asar_File::create($testFileName)->write($testString)->save();
+		File::create($testFileName)->write($testString)->save();
 		$this->setExpectedException(
-		  'Asar_File_Exception_FileAlreadyExists',
-		  "Asar_File::create failed. The file '$testFileName' already exists."
+		  'Asar\File\Exception\FileAlreadyExists',
+		  "File::create failed. The file '$testFileName' already exists."
 	  );
-	  Asar_File::create($testFileName);
+  	File::create($testFileName);
 	}
 	
 	function testOpeningAFile() {
 	    $testFileName = $this->getTempFileName('nanananana.js');
 		$testString = 'nananananana';
 		file_put_contents($testFileName, $testString);
-		$obj = Asar_File::open($testFileName);
-		$this->assertTrue($obj instanceof Asar_File);
+		$obj = File::open($testFileName);
+		$this->assertTrue($obj instanceof File);
 	    $this->assertEquals($testString, $obj->getContent());
 	}
 	
 	function testRaiseExceptionWhenOpeningAFileThatDoesNotExist() {
 		$testFileName = $this->getTempFileName('hahahaha.js');
 		$this->setExpectedException(
-		  'Asar_File_Exception_FileDoesNotExist',
-		  "Asar_File::open failed. The file '$testFileName' does not exist."
+		  'Asar\File\Exception\FileDoesNotExist',
+		  "File::open failed. The file '$testFileName' does not exist."
 	  );
-		Asar_File::open($testFileName);
+		File::open($testFileName);
 	}
 	
 	function testRaiseExceptionWhenNoFileNameIsSpecified() {
-		$file = new Asar_File;
+		$file = new File;
 		$this->setExpectedException(
-		  'Asar_File_Exception',
-		  "Asar_File::getResource failed. The file object does not have a file name."
+		  'Asar\File\Exception',
+		  "File::getResource failed. The file object does not have a file name."
 	  );
 	  $file->save();
 	}
 	
 	function testRaiseExceptionWhenSettingInvalidFileNames() {
 		$names = array( null, 1, array(1,2,3), '');
-		$file = new Asar_File;
+		$file = new File;
 		foreach ($names as $name) {
 		  $this->setExpectedException(
-		    'Asar_File_Exception',
-		    'Asar_File::setFileName failed. Filename should be a non-empty string.'
+		    'Asar\File\Exception',
+		    'File::setFileName failed. Filename should be a non-empty string.'
 	    );
 		  $file->setFileName($name);
 		}
@@ -182,18 +184,18 @@ class Asar_FileTest extends PHPUnit_Framework_TestCase {
 	
 	function testRaiseExceptionWhenCreatingAFileOnANonExistentDirectory() {
 	  $this->setExpectedException(
-		  'Asar_File_Exception_DirectoryNotFound',
-		  'Asar_File::create failed. Unable to find the directory to create the '.
+		  'Asar\File\Exception\DirectoryNotFound',
+		  'File::create failed. Unable to find the directory to create the '.
 				'file to (a/non-existent/directory).'
 	  );
-	  Asar_File::create('a/non-existent/directory/file.txt');
+	  File::create('a/non-existent/directory/file.txt');
 	}
 	
 	function testSettingContentUsingArrayAsArgument() {
 	  $content = array('AA', 'BB', 'CC', 'DD');
 		$testFileName = $this->getTempFileName('temp/XXXXXXtest.txt');
 		mkdir($this->getTempFileName('temp'));
-		$file = Asar_File::create($testFileName)->write($content)->save();
+		$file = File::create($testFileName)->write($content)->save();
     $this->assertEquals("AA\nBB\nCC\nDD", $file->getContent());
 	}
   

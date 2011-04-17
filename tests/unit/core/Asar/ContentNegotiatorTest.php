@@ -1,5 +1,7 @@
 <?php
 
+use \Asar\ContentNegotiator;
+
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 class Asar_ContentNegotiatorTest extends PHPUnit_Framework_TestCase {
@@ -10,7 +12,7 @@ class Asar_ContentNegotiatorTest extends PHPUnit_Framework_TestCase {
   function testFormatNegotiation(
     $accept_header, $available_formats, $expected_format
   ) {
-    $this->CN = new Asar_ContentNegotiator;
+    $this->CN = new ContentNegotiator;
     $this->assertSame(
       $expected_format,
       $this->CN->negotiateFormat($accept_header, $available_formats)
@@ -77,10 +79,10 @@ class Asar_ContentNegotiatorTest extends PHPUnit_Framework_TestCase {
   }
   
   function testFormatNegotiationWhenAvailableFormatsIsEmpty() {
-    $this->CN = new Asar_ContentNegotiator;
+    $this->CN = new \Asar\ContentNegotiator;
     $this->setExpectedException(
-      'Asar_ContentNegotiator_Exception',
-      'Asar_ContentNegotiator::negotiateFormat(). 2nd argument '.
+      'Asar\ContentNegotiator\Exception',
+      'Asar\ContentNegotiator::negotiateFormat(). 2nd argument '.
       'must not be empty. Please specify available formats.'
     );
     $this->CN->negotiateFormat('text/html', array());

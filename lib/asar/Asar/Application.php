@@ -1,9 +1,23 @@
 <?php
+namespace Asar;
+
+use \Asar\Resource\ResourceInterface;
+use \Asar\Router\RouterInterface;
+use \Asar\Response\StatusMessages\StatusMessagesInterface;
+use \Asar\Response;
+use \Asar\Response\ResponseInterface;
+use \Asar\Request\RequestInterface;
+use \Asar\RequestFilter\RequestFilterInterface;
+use \Asar\ResponseFilter\ResponseFilterInterface;
+use \Asar\Router\Exception\ResourceNotFound;
+use \Asar\Resource\Exception\ForwardRequest;
+use \Asar\Utility\String;
+use \Asar\PathDiscover\PathDiscoverInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Application implements Asar_Resource_Interface {
+class Application implements ResourceInterface {
   
   private
     $map,
@@ -16,8 +30,8 @@ class Asar_Application implements Asar_Resource_Interface {
     $forward_recursion = 0;
   
   function __construct(
-    $name, Asar_Router_Interface $router,
-    Asar_Response_StatusMessages_Interface $status_messages,
+    $name, RouterInterface $router,
+    StatusMessagesInterface $status_messages,
     $map = array(),
     $request_filters = array(),
     $response_filters = array()
@@ -45,11 +59,11 @@ class Asar_Application implements Asar_Resource_Interface {
     $this->map[$path] = $resource_name;
   }
   
-  protected function addRequestFilter(Asar_RequestFilter_Interface $filter) {
+  protected function addRequestFilter(RequestFilterInterface $filter) {
     $this->request_filters[] = $filter;
   }
   
-  protected function addResponseFilter(Asar_ResponseFilter_Interface $filter) {
+  protected function addResponseFilter(ResponseFilterInterface $filter) {
     $this->response_filters[] = $filter;
   }
   
@@ -57,8 +71,8 @@ class Asar_Application implements Asar_Resource_Interface {
     return $this->map;
   }
   
-  function handleRequest(Asar_Request_Interface $request) {
-    $response = new Asar_Response;
+  function handleRequest(RequestInterface $request) {
+    $response = new Response;
     $this->forward_recursion = 0;
     try {
       $request = $this->filterRequest($request);
@@ -71,7 +85,7 @@ class Asar_Application implements Asar_Resource_Interface {
       $response = $this->filterResponse(
         $this->passRequest($request, $response, $request->getPath())
       );
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $response->setStatus(500);
       $response->setContent($this->set500Message($e));
     }
@@ -95,6 +109,9 @@ class Asar_Application implements Asar_Resource_Interface {
   
   private function passRequest($request, $response, $path) {
     if ($this->forward_recursion >= $this->forward_level_max) {
+      /** 
+       * @todo Throw Asar\Application\Exception instead
+       */
       throw new Exception(
         "Maximum forwards reached for path '{$request->getPath()}'."
       );
@@ -106,9 +123,9 @@ class Asar_Application implements Asar_Resource_Interface {
       );
       $this->checkIfResource($resource);
       $response = $this->returnIfResponse($resource->handleRequest($request));
-    } catch (Asar_Router_Exception_ResourceNotFound $e) {
+    } catch (ResourceNotFound $e) {
       $response->setStatus(404);
-    } catch (Asar_Resource_Exception_ForwardRequest $e) {
+    } catch (ForwardRequest $e) {
       $payload = $e->getPayload();
       $req = $payload['request'];
       $req->setHeader('Asar-Internal-Isforwarded', true);
@@ -119,12 +136,12 @@ class Asar_Application implements Asar_Resource_Interface {
     if (
         $response->getStatus() >= 300 && 
         $response->getStatus() < 400 &&
-        !Asar_Utility_String::startsWith($response->getHeader('Location'), '/')
+        !String::startsWith($response->getHeader('Location'), '/')
       ) {
       $resource = $this->router->route(
         $this->name, $response->getHeader('Location'), $this->getMap()
       );
-      if ($resource instanceof Asar_PathDiscover_Interface) {
+      if ($resource instanceof PathDiscoverInterface) {
         $response->setHeader('Location', $resource->getPermaPath());
       }
     }
@@ -147,17 +164,18 @@ class Asar_Application implements Asar_Resource_Interface {
   }
   
   private function checkIfResource($resource) {
-    if (!$resource instanceof Asar_Resource_Interface) {
+    if (!$resource instanceof ResourceInterface) {
       throw new Exception(
-        'Router did not return an Asar_Resource_Interface object.'
+        'Router did not return an Asar\Resource\ResourceInterface object.'
       );
     }
   }
   
   private function returnIfResponse($response) {
-    if (!$response instanceof Asar_Response_Interface) {
+    if (!$response instanceof ResponseInterface) {
+      $type = is_object($response) ? get_class($response) : gettype($response);
       throw new Exception(
-        gettype($response) . "is not a valid response object."
+        "$type is not a valid response object."
       );
     }
     return $response;

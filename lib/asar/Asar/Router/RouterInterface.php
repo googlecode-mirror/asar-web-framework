@@ -1,8 +1,10 @@
 <?php
+namespace Asar\Router;
+
 /**
  * @package Asar
  * @subpackage core
  */
-interface Asar_Router_Interface {
+interface RouterInterface {
   function route($app_name, $path, $map);
 }

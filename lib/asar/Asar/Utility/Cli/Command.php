@@ -1,9 +1,10 @@
 <?php
+namespace Asar\Utility\Cli;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli_Command {
+class Command {
   
   private
     $caller,

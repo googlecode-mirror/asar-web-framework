@@ -2,10 +2,12 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use Asar\Debug;
+
 class Asar_DebugTest  extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->debug = new Asar_Debug;
+    $this->debug = new Debug;
   }
   
   function testBasicSet() {

@@ -1,20 +1,27 @@
 <?php
+
+namespace Asar\Utility\Cli;
+
+use \Asar\Utility\Cli\CliInterface;
+use \Asar\Utility\Cli;
+
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli_BaseTasks implements Asar_Utility_Cli_Interface {
+class BaseTasks implements CliInterface {
   
   private $controller;
   private $asar = null;
   
-  function setController(Asar_Utility_Cli $controller) {
+  function setController(Cli $controller) {
     $this->controller = $controller;
   }
   
   private function getAsar() {
     if (!$this->asar) {
-      $this->asar = new Asar;
+      $this->asar = new \Asar;
     }
     return $this->asar;
   }

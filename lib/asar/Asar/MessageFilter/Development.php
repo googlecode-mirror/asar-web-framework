@@ -1,10 +1,21 @@
 <?php
+namespace Asar\MessageFilter;
+
+use \Asar\RequestFilter\RequestFilterInterface;
+use \Asar\ResponseFilter\ResponseFilterInterface;
+use \Asar\Request\RequestInterface;
+use \Asar\Response\ResponseInterface;
+use \Asar\Config\ConfigInterface;
+use \Asar\Debug;
+use \Asar\DebugPrinter\DebugPrinterInterface;
+use \Asar\DebugPrinter\NullDebugPrinter;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_MessageFilter_Development
-  implements Asar_RequestFilter_Interface, Asar_ResponseFilter_Interface
+class Development
+  implements RequestFilterInterface, ResponseFilterInterface
 {
   
   private 
@@ -16,17 +27,17 @@ class Asar_MessageFilter_Development
       'text/plain' => 'txt'
     );
   
-  function __construct(Asar_Config_Interface $config, Asar_Debug $debug) {
+  function __construct(ConfigInterface $config, Debug $debug) {
     $this->exec_start = microtime(true);
     $this->config = $config;
     $this->debug  = $debug;
   }
   
-  function setPrinter($type, Asar_DebugPrinter_Interface $printer) {
+  function setPrinter($type, DebugPrinterInterface $printer) {
     $this->printers[$type] = $printer;
   }
   
-  function filterRequest(Asar_Request_Interface $request) {
+  function filterRequest(RequestInterface $request) {
     $request->setHeader('Asar-Internal-Debug', $this->debug);
     $app_name = $request->getHeader('Asar-Internal-Application-Name');
     if ($app_name) {
@@ -45,7 +56,7 @@ class Asar_MessageFilter_Development
       return sprintf("%01.2f", round($mem_usage/1048576, 2))."MB";
   }
   
-  function filterResponse(Asar_Response_Interface $response) {
+  function filterResponse(ResponseInterface $response) {
     $printer = $this->getPrinter(
       $this->getOutputType($response->getHeader('Content-Type'))
     );
@@ -74,7 +85,7 @@ class Asar_MessageFilter_Development
      if (isset($this->printers[$output_type])) {
        return $this->printers[$output_type];
      }
-     return new Asar_DebugPrinter_Null;
+     return new NullDebugPrinter;
   }
   
   function getOutputType($content_type) {

@@ -1,11 +1,25 @@
 <?php
+
+namespace Asar;
+
+use \Asar\Resource\ResourceInterface;
+use \Asar\Resource\Exception\NotFound;
+use \Asar\Resource\Exception\MethodUndefined;
+use \Asar\Resource\Exception\ForwardRequest;
+use \Asar\Resource\Exception\Redirect;
+use \Asar\Config\ConfigInterface;
+use \Asar\Config;
+use \Asar\PathDiscover\PathDiscoverInterface;
+use \Asar\Response;
+use \Asar\Request\RequestInterface;
+use \Asar\Utility\String;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Resource 
-  implements Asar_Resource_Interface, Asar_Config_Interface,
-    Asar_PathDiscover_Interface
+class Resource 
+  implements ResourceInterface, ConfigInterface, PathDiscoverInterface
 {
   protected
     $request,
@@ -22,9 +36,9 @@ class Asar_Resource
     );
   
   function __construct() {
-    $this->config_bag = new Asar_Config();
+    $this->config_bag = new Config();
     $this->setUp();
-    $this->config_bag->importConfig(new Asar_Config($this->config));
+    $this->config_bag->importConfig(new Config($this->config));
   }
   
   protected function setUp() {}
@@ -34,18 +48,18 @@ class Asar_Resource
   }
   
   protected function setConfig($key, $value) {
-    $new_config_bag = new Asar_Config(array($key => $value));
+    $new_config_bag = new Config(array($key => $value));
     $new_config_bag->importConfig($this->config_bag);
     $this->config_bag = $new_config_bag;
   }
   
-  function importConfig(Asar_Config_Interface $config) {
+  function importConfig(ConfigInterface $config) {
     return $this->config_bag->importConfig($config);
   }
   
-  function handleRequest(Asar_Request_Interface $request) {
+  function handleRequest(RequestInterface $request) {
     $this->request = $request;
-    $response = new Asar_Response(array(
+    $response = new Response(array(
       'headers' => array(
         'Content-Type' => $this->getConfig('default_content_type'),
         'Content-Language' => $this->getConfig('default_language')
@@ -54,17 +68,17 @@ class Asar_Resource
     
     try {
       if (!$this->qualify($this->getPathComponents())) {
-        throw new Asar_Resource_Exception_NotFound;
+        throw new NotFound;
       }
       $response->setContent(
         $this->runIfExists($request->getMethod())
       );
-    } catch (Asar_Resource_Exception_NotFound $e) {
+    } catch (NotFound $e) {
       $response->setStatus(404);
-    } catch (Asar_Resource_Exception_MethodUndefined $e) {
+    } catch (MethodUndefined $e) {
       $response->setStatus(405);
       $response->setHeader('Allow', $this->getDefinedMethods());
-    } catch (Asar_Resource_Exception_Redirect $e) {
+    } catch (Redirect $e) {
       $payload = $e->getPayload();
       $response->setStatus($payload['status_code']);
       $response->setHeader('Location', $payload['location']);
@@ -73,9 +87,9 @@ class Asar_Resource
           'Asar-Internal-Locationslist', $payload['locations_list']
         );
       }
-    } catch (Asar_Resource_Exception_ForwardRequest $e) {
+    } catch (ForwardRequest $e) {
       throw $e;
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $response->setStatus(500);
       $response->setContent($e->getMessage());
     }
@@ -90,7 +104,7 @@ class Asar_Resource
       }
       return $this->$method();
     }
-    throw new Asar_Resource_Exception_MethodUndefined;
+    throw new MethodUndefined;
   }
   
   private function getDefinedMethods() {
@@ -105,7 +119,7 @@ class Asar_Resource
   }
   
   function forwardTo($resource_name) {
-    $exception = new Asar_Resource_Exception_ForwardRequest($resource_name);
+    $exception = new ForwardRequest($resource_name);
     $exception->setPayload(array('request' => $this->request));
     throw $exception;
   }
@@ -115,7 +129,7 @@ class Asar_Resource
       $location_list = $location;
       $location = $location[0];
     }
-    $exception = new Asar_Resource_Exception_Redirect($location);
+    $exception = new Redirect($location);
     $code = isset(self::$redirect_codes[$type]) ? 
       self::$redirect_codes[$type] : self::$redirect_codes['basic'];
     $exception->setPayload(
@@ -151,7 +165,7 @@ class Asar_Resource
       }
     }
     return '/' . implode(
-      '/', array_map(array('Asar_Utility_String', 'dashLowerCase'), $touse)
+      '/', array_map(array('Asar\Utility\String', 'dashLowerCase'), $touse)
     );
   }
   
@@ -177,7 +191,7 @@ class Asar_Resource
       $this->path_template = array();
       $relevant = $this->getResourceNameAsArray();
       $keys = array_map(
-        array('Asar_Utility_String', 'dashLowerCase'), $relevant
+        array('Asar\Utility\String', 'dashLowerCase'), $relevant
       );
       for ($i = 0, $size = count($keys); $i < $size; $i++) {
         if ($this->strStartsWith($keys[$i], 'rt-')) {

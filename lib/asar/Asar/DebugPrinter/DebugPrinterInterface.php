@@ -1,11 +1,15 @@
 <?php
+namespace Asar\DebugPrinter;
+
+use Asar\Debug;
+
 /**
  * Inserts debug information in a content with a suitable format
  *
  * @package Asar
  * @subpackage core
  */
-interface Asar_DebugPrinter_Interface {
+interface DebugPrinterInterface {
   
   /**
    * Inserts debug information from $debug into $content
@@ -14,7 +18,7 @@ interface Asar_DebugPrinter_Interface {
    * @param string $content the content where the debug info will be inserted
    * @return string $content with the debug info inserted
    */
-  function printDebug(Asar_Debug $debug, $content);
+  function printDebug(Debug $debug, $content);
 }
 
 

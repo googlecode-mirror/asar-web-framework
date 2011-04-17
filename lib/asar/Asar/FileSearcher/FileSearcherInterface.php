@@ -1,10 +1,12 @@
 <?php
+namespace Asar\FileSearcher;
+
 /**
  * Provides an interfaces for searching a file given a path
  * @package Asar
  * @subpackage core
  */
-interface Asar_FileSearcher_Interface {
+interface FileSearcherInterface {
   
   /**
    * @param string $file_path a path to a file that is not usually absolute

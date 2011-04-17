@@ -2,10 +2,14 @@
 
 require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
+use \Asar\Response\StatusMessages;
+use \Asar\Request;
+use \Asar\Response;
+
 class Asar_Response_StatusMessagesTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->SM = new Asar_Response_StatusMessages;
+    $this->SM = new StatusMessages;
   }
   
   /**
@@ -14,10 +18,10 @@ class Asar_Response_StatusMessagesTest extends PHPUnit_Framework_TestCase {
   function testStatusMessages(
     $status, $full_message, $path = '/', $method = 'GET', $response_content = ''
   ) {
-    $request = new Asar_Request(array(
+    $request = new Request(array(
       'path' => $path, 'method' => $method
     ));
-    $response = new Asar_Response(array('status' => $status));
+    $response = new Response(array('status' => $status));
     $response->setContent($response_content);
     $msg = $this->SM->getMessage($response, $request);
     $this->assertContains(
@@ -65,14 +69,14 @@ class Asar_Response_StatusMessagesTest extends PHPUnit_Framework_TestCase {
   }
   
   function testStatusMessagesReturnsFalseForUnknwonStatus() {
-    $request = new Asar_Request;
-    $response = new Asar_Response(array('status' => 1));
+    $request = new Request;
+    $response = new Response(array('status' => 1));
     $this->assertFalse($this->SM->getMessage($response, $request));
   }
   
   function testStatusMessage500Sureness() {
-    $request = new Asar_Request;
-    $response = new Asar_Response(array('status' => 500));
+    $request = new Request;
+    $response = new Response(array('status' => 500));
     $response->setContent('The error message');
     $msg = $this->SM->getMessage($response, $request);
     $this->assertContains( 

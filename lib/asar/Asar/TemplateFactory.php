@@ -1,13 +1,17 @@
 <?php
+namespace Asar;
+
+use \Asar\Debug;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_TemplateFactory {
+class TemplateFactory {
   
   private $engines, $debug;
   
-  function __construct(Asar_Debug $debug = null) {
+  function __construct(Debug $debug = null) {
     $this->debug = $debug;
   }
   

@@ -1,10 +1,12 @@
 <?php
+namespace Asar\Logger;
+
 /**
  * Provides a generic interface for logging
  * @package Asar
  * @subpackage core
  */
-interface Asar_Logger_Interface {
+interface LoggerInterface {
   
   /**
    * Log a message

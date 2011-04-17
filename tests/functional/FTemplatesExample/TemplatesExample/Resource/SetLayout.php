@@ -1,5 +1,5 @@
 <?php
-class TemplatesExample_Resource_SetLayout extends Asar_Resource {
+class TemplatesExample_Resource_SetLayout extends \Asar\Resource {
   
   public function GET() {
     return array(

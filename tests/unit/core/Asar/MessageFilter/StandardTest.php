@@ -1,18 +1,23 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../config.php');
 
+use \Asar\MessageFilter\Standard as StandardMessageFilter;
+use \Asar\Config;
+use \Asar\Response;
+use \Asar\Request;
+
 class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->config = new Asar_Config(array(
+    $this->config = new Config(array(
       'site_protocol' => 'http',
       'site_domain'   => 'example.domain.com'
     ));
-    $this->filter = new Asar_MessageFilter_Standard($this->config);
+    $this->filter = new StandardMessageFilter($this->config);
   }
   
   function testRedirectResponseToProperlyFormattingTheLocationHeaderValue() {
-    $response = new Asar_Response(array(
+    $response = new Response(array(
       'headers' => array('Location' => '/foo/bar')
     ));
     $this->assertEquals(
@@ -22,7 +27,7 @@ class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSkipFormattingTheLocationHeaderValueWhenItIsCorrect() {
-    $response = new Asar_Response(array('headers' => array(
+    $response = new Response(array('headers' => array(
       'Location' => 'http://somewhere.com/foo/bar'
     )));
     $this->assertEquals(
@@ -32,8 +37,8 @@ class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
   }
   
   function testFilterRequestReturnsRequest() {
-    $request = new Asar_Request;
-    $this->assertInstanceOf('Asar_Request', $this->filter->filterRequest($request));
+    $request = new Request;
+    $this->assertInstanceOf('Asar\Request', $this->filter->filterRequest($request));
   }
   
   function testFilteringInternalHeadersFromRequest() {
@@ -42,7 +47,7 @@ class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
       'Asar-Internal' => 2,
       'Asar-Internal-Foo' => 'bar'
     );
-    $request = new Asar_Request(array('headers' => $headers));
+    $request = new Request(array('headers' => $headers));
     foreach (array_keys($headers) as $key) {
       $this->assertEquals(
         null, $this->filter->filterRequest($request)->getHeader($key)
@@ -56,7 +61,7 @@ class Asar_MessageFilter_StandardTest extends PHPUnit_Framework_TestCase {
       'Asar-Internal' => 2,
       'Asar-Internal-Foo' => 'bar'
     );
-    $response = new Asar_Response(array('headers' => $headers));
+    $response = new Response(array('headers' => $headers));
     foreach (array_keys($headers) as $key) {
       $this->assertEquals(
         null, $this->filter->filterResponse($response)->getHeader($key)

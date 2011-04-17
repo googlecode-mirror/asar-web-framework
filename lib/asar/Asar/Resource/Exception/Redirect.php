@@ -1,9 +1,13 @@
 <?php
+namespace Asar\Resource\Exception;
+
+use \Asar\Resource\Exception;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Resource_Exception_Redirect extends Asar_Resource_Exception {
+class Redirect extends Exception {
   
   private $payload = array('location' => null);
   

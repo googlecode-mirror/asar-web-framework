@@ -1,5 +1,5 @@
 <?php
-class StatusCodesExample_Resource_405 extends Asar_Resource {
+class StatusCodesExample_Resource_405 extends \Asar\Resource {
   
   function GET() {
     return "Get request";

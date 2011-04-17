@@ -1,8 +1,10 @@
 <?php
+namespace Asar\ResourceLister;
+
 /**
  * @package Asar
  * @subpackage core
  */
-interface Asar_ResourceLister_Interface {
+interface ResourceListerInterface {
   function getResourceListFor($app_name);
 }

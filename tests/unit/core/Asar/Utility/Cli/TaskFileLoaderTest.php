@@ -1,37 +1,39 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../../config.php');
 
+use \Asar\Utility\Cli\TaskFileLoader;
+
 class Asar_Utility_Cli_TaskFileLoaderTest_TaskFileSample 
-  implements Asar_Utility_Cli_Interface 
+  implements \Asar\Utility\Cli\CliInterface
 {
   
-  function setController(Asar_Utility_Cli $controller) {}
+  function setController(\Asar\Utility\Cli $controller) {}
   function getTaskNamespace() {}
   
 }
 
 class Asar_Utility_Cli_TaskFileLoaderTest_TaskFileSample2 
-  implements Asar_Utility_Cli_Interface 
+  implements \Asar\Utility\Cli\CliInterface
 {
   
-  function setController(Asar_Utility_Cli $controller) {}
+  function setController(\Asar\Utility\Cli $controller) {}
   function getTaskNamespace() {}
 }
 
 class Asar_Utility_Cli_TaskFileLoaderTest_NotTaskFile {}
 
-class Asar_Utility_Cli_TaskFileLoaderTest extends PHPUnit_Framework_TestCase {
+class Asar_Utility_Cli_TaskFileLoaderTest extends \PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->cwd = Asar::getInstance()->getFrameworkTestsDataPath();
     $this->tasks_file = $this->cwd . DIRECTORY_SEPARATOR . 'tasks.php';
     $this->class_file_seek = $this->getMock(
-      'Asar_Utility_ClassFilePeek', array('getDefinedClasses')
+      'Asar\Utility\ClassFilePeek', array('getDefinedClasses')
     );
     $this->cli = $this->getMock(
-      'Asar_Utility_Cli', array('register'), array(), '', false
+      'Asar\Utility\Cli', array('register'), array(), '', false
     );
-    $this->task_file_loader = new Asar_Utility_Cli_TaskFileLoader(
+    $this->task_file_loader = new TaskFileLoader(
       $this->cwd, $this->class_file_seek, $this->cli
     );
     
@@ -42,7 +44,7 @@ class Asar_Utility_Cli_TaskFileLoaderTest extends PHPUnit_Framework_TestCase {
   }
   
   private function taskFileLoaderWithNoTaskFile() {
-    return new Asar_Utility_Cli_TaskFileLoader(
+    return new TaskFileLoader(
       dirname(__FILE__), $this->class_file_seek, $this->cli
     );
   }

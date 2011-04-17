@@ -1,13 +1,17 @@
 <?php
+namespace Asar;
+
+use \Asar\ResourceLister\ResourceListerInterface;
+use \Asar\FileSearcher;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ResourceLister implements Asar_ResourceLister_Interface {
+class ResourceLister implements ResourceListerInterface {
   
   private $file_searcher;
   
-  function __construct(Asar_FileSearcher $file_searcher) {
+  function __construct(FileSearcher $file_searcher) {
     $this->file_searcher = $file_searcher;
   }
   

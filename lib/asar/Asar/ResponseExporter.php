@@ -1,11 +1,15 @@
 <?php
+namespace Asar;
+
+use \Asar\Response;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ResponseExporter {
+class ResponseExporter {
   
-  function exportResponse(Asar_Response $response) {
+  function exportResponse(Response $response) {
     $headers = $response->getHeaders();
     foreach ($headers as $key => $value) {
       $this->header("$key: $value");

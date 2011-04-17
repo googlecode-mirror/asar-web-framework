@@ -1,13 +1,20 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+use \Asar\Client;
+use \Asar\ApplicationInjector;
+use \Asar\ApplicationScope;
+use \Asar\Config\DefaultConfig;
+use \Asar\Request;
+
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
 class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->client = new Asar_Client;
-    $this->app = Asar_ApplicationInjector::injectApplication(
-      new Asar_ApplicationScope('ResourceTraversing', new Asar_Config_Default)
+    $this->client = new Client;
+    $this->app = ApplicationInjector::injectApplication(
+      new ApplicationScope('ResourceTraversing', new DefaultConfig)
     );
   }
   
@@ -15,7 +22,7 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
    * @dataProvider dataTraversing
    */
   function testTraversing($path, $expected_content, $xpctdstatus = 200) {
-    $response = $this->app->handleRequest(new Asar_Request(
+    $response = $this->app->handleRequest(new Request(
       array('path' => $path)
     ));
     $this->assertEquals(
@@ -42,7 +49,7 @@ class FResourceTraversing_Test extends PHPUnit_Framework_TestCase {
   }
   
   function testRedirection() {
-    $response = $this->app->handleRequest(new Asar_Request(
+    $response = $this->app->handleRequest(new Request(
       array('path' => '/redirect-one')
     ));
     $this->assertEquals(302, $response->getStatus(), $response->getContent());

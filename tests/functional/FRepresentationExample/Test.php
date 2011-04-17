@@ -1,14 +1,20 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+use \Asar\Client;
+use \Asar\ApplicationInjector;
+use \Asar\ApplicationScope;
+use \Asar\Config\DefaultConfig;
+
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
 class FRepresentationExample_Test extends PHPUnit_Framework_TestCase {
 
   public function setUp() {
-    $this->client = new Asar_Client;
-    $this->app = Asar_ApplicationInjector::injectApplication(
-      new Asar_ApplicationScope(
-        'RepresentationExample', new Asar_Config_Default
+    $this->client = new Client;
+    $this->app = ApplicationInjector::injectApplication(
+      new ApplicationScope(
+        'RepresentationExample', new DefaultConfig
       )
     );
   }

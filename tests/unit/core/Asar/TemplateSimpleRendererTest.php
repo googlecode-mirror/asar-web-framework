@@ -2,12 +2,14 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\TemplateSimpleRenderer;
+
 class Asar_TemplateSimpleRendererTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->tsr = new Asar_TemplateSimpleRenderer;
-    $this->tpl = $this->getMock('Asar_Template_Interface');
-    $this->layout = $this->getMock('Asar_Template_Interface');
+    $this->tsr = new TemplateSimpleRenderer;
+    $this->tpl = $this->getMock('Asar\Template\TemplateInterface');
+    $this->layout = $this->getMock('Asar\Template\TemplateInterface');
   }
 
   private function tplExpectsRender() {

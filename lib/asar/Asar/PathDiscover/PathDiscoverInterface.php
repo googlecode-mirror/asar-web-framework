@@ -1,8 +1,10 @@
 <?php
+namespace Asar\PathDiscover;
+
 /**
  * @package Asar
  * @subpackage core
  */
-interface Asar_PathDiscover_Interface {
+interface PathDiscoverInterface {
   function getPermaPath($path_params = array());
 }

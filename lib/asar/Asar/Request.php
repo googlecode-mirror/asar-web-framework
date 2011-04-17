@@ -1,9 +1,13 @@
 <?php
+namespace Asar;
+
+use \Asar\Message;
+use \Asar\Request\RequestInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Request extends Asar_Message implements Asar_Request_Interface {
+class Request extends Message implements RequestInterface {
   
   private 
     $path    = '/', 

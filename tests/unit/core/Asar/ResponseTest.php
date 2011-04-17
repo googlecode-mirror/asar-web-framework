@@ -2,14 +2,16 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Response;
+
 class Asar_ResponseTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->R = new Asar_Response;
+    $this->R = new Response;
   }
   
   function testInstanceOfAsarResponseInterface() {
-    $this->assertInstanceOf('Asar_Response_Interface', $this->R);
+    $this->assertInstanceOf('Asar\Response\ResponseInterface', $this->R);
   }
   
   function testAbleToSetStatus() {
@@ -25,7 +27,7 @@ class Asar_ResponseTest extends PHPUnit_Framework_TestCase {
    */
   function testGettingReasonPhrases($status, $reason_phrase) {
     $this->assertEquals(
-      $reason_phrase, Asar_Response::getReasonPhrase($status)
+      $reason_phrase, Response::getReasonPhrase($status)
     );
   }
   
@@ -81,17 +83,17 @@ class Asar_ResponseTest extends PHPUnit_Framework_TestCase {
    * @dataProvider dataStatusCodeMessages
    */
   function testGetStatusMessagesFromStatusSummary($status, $reason_phrase) {
-    $R = new Asar_Response(array('status' => $status));
+    $R = new Response(array('status' => $status));
     $this->assertEquals($reason_phrase, $R->getStatusReasonPhrase());
   }
   
   function testSettingStatusOnCreation() {
-    $R = new Asar_Response(array('status' => 404));
+    $R = new Response(array('status' => 404));
     $this->assertEquals(404, $R->getStatus());
   }
   
   function testStatusDefaultsTo200OnCreation() {
-    $R = new Asar_Response();
+    $R = new Response();
     $this->assertEquals(200, $R->getStatus());
   }
   
@@ -113,7 +115,7 @@ class Asar_ResponseTest extends PHPUnit_Framework_TestCase {
       "Connection: close\r\n" .
       "Content-Type: text/plain\r\n\r\n" .
       $content;
-    $R = new Asar_Response;
+    $R = new Response;
     $R->import($raw);
     $this->assertEquals($status, $R->getStatus());
     $headers = $R->getHeaders();

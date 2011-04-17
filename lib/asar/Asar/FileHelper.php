@@ -1,15 +1,21 @@
 <?php
+namespace Asar;
+
+use \Asar\File;
+use \Asar\FileHelper\Exception\FileAlreadyExists;
+use \Asar\FileHelper\Exception\DirectoryAlreadyExists;
+use \Asar\FileHelper\Exception\ParentDirectoryDoesNotExist;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_FileHelper {
+class FileHelper {
   
   function create($filename, $contents) {
     try {
-      return Asar_File::create($filename)->write($contents)->save();
-    } catch (Asar_File_Exception_FileAlreadyExists $e) {
-      throw new Asar_FileHelper_Exception_FileAlreadyExists(
+      return File::create($filename)->write($contents)->save();
+    } catch (\Asar\File\Exception\FileAlreadyExists $e) {
+      throw new FileAlreadyExists(
         "The file '$filename' already exists." 
       );
     }
@@ -26,12 +32,12 @@ class Asar_FileHelper {
   
   function _createDir($directory) {
     if (file_exists($directory)) {
-      throw new Asar_FileHelper_Exception_DirectoryAlreadyExists(
+      throw new DirectoryAlreadyExists(
         "The directory '" . $directory . "' already exists."
       );
     }
     if (!file_exists(dirname($directory))) {
-      throw new Asar_FileHelper_Exception_ParentDirectoryDoesNotExist(
+      throw new ParentDirectoryDoesNotExist(
         "The directory '" . dirname($directory) . "' does not exist."
       );
     }

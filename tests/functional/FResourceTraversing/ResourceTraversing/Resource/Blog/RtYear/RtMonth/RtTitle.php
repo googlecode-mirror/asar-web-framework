@@ -1,7 +1,7 @@
 <?php
 
 class ResourceTraversing_Resource_Blog_RtYear_RtMonth_RtTitle
-  extends Asar_Resource
+  extends \Asar\Resource
 {
   
   function GET() {

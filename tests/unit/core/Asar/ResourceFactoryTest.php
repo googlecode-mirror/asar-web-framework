@@ -2,13 +2,16 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Config;
+use \Asar\ResourceFactory;
+
 class Asar_ResourceFactoryTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
-    $conf = new Asar_Config(array('foo' => 'bar'));
-    $this->F = new Asar_ResourceFactory(
-      $this->getMock('Asar_TemplatePackageProvider', array(), array(), '', false),
-      $this->getMock('Asar_TemplateSimpleRenderer', array(), array(), '', false),
+    $conf = new Config(array('foo' => 'bar'));
+    $this->F = new ResourceFactory(
+      $this->getMock('Asar\TemplatePackageProvider', array(), array(), '', false),
+      $this->getMock('Asar\TemplateSimpleRenderer', array(), array(), '', false),
       $conf
     );
   }
@@ -25,12 +28,12 @@ class Asar_ResourceFactoryTest extends PHPUnit_Framework_TestCase {
   
   function testGetResourceReturnsResourceObject() {
     $class = self::generateRandomClassName(get_class($this), 'Resource_Foo');
-    eval("class $class extends Asar_Resource {}");
-    $this->assertInstanceOf('Asar_Templater', $this->F->getResource($class));
+    eval("class $class extends \Asar\Resource {}");
+    $this->assertInstanceOf('\Asar\Templater', $this->F->getResource($class));
   }
   
   private function buildResourceClass($resource_class) {
-    eval("class $resource_class extends Asar_Resource {}");
+    eval("class $resource_class extends \Asar\Resource {}");
   }
   
   /**
@@ -41,7 +44,7 @@ class Asar_ResourceFactoryTest extends PHPUnit_Framework_TestCase {
   ) {
     $this->buildResourceClass($resource_class);
     eval(
-      'class ' . $representation_class . ' extends Asar_Representation {
+      'class ' . $representation_class . ' extends \Asar\Representation {
         function getResource() {
           return $this->resource;
         }

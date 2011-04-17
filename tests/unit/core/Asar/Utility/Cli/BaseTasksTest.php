@@ -1,12 +1,14 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../../../../config.php');
 
+use \Asar\Utility\Cli\BaseTasks;
+
 class Asar_Utility_Cli_BaseTasksTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
-    $this->base_tasks = new Asar_Utility_Cli_BaseTasks;
+    $this->base_tasks = new BaseTasks;
     $this->controller = $this->getMock(
-      'Asar_Utility_Cli', array(), array(), '', false
+      'Asar\Utility\Cli', array(), array(), '', false
     );
     $this->base_tasks->setController($this->controller);
   }

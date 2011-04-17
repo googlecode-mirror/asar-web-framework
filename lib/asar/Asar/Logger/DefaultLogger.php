@@ -1,16 +1,21 @@
 <?php
+namespace Asar\Logger;
+
+use Asar\Logger\LoggerInterface;
+use Asar\File;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Logger_Default implements Asar_Logger_Interface {
+class DefaultLogger implements LoggerInterface {
   
   private $file;
   
   /**
    * @param Asar_File $file an Asar_File object to store the log files in
    */
-  function __construct(Asar_File $file) {
+  function __construct(File $file) {
     $this->file = $file;
   }
 

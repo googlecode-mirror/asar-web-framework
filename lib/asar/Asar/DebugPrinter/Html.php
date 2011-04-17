@@ -1,11 +1,16 @@
 <?php
+namespace Asar\DebugPrinter;
+
+use Asar\DebugPrinter\DebugPrinterInterface;
+use Asar\Debug;
+use Asar\Utility\String as StringUtility;
 /**
  * Debug printer that outputs the debug information in HTML format
  *
  * @package Asar
  * @subpackage core
  */
-class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
+class Html implements DebugPrinterInterface {
   
   private $block_elements = array('div', 'table', 'tbody', 'tr');
   
@@ -18,7 +23,7 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
    *                        as HTML content.
    * @return string $content with the debug info inserted
    */
-  function printDebug(Asar_Debug $debug, $content) {
+  function printDebug(Debug $debug, $content) {
     if (strpos($content, '</body>')) {
       return str_replace(
         '</body>', $this->createDebugContent($debug) . "\n</body>", $content
@@ -48,7 +53,7 @@ class Asar_DebugPrinter_Html implements Asar_DebugPrinter_Interface {
   private function createDebugTableData($debug) {
     $data = '';
     foreach ($debug as $name => $value) {
-      $id = Asar_Utility_String::underScore($name);
+      $id = StringUtility::underScore($name);
       $data .= $this->element(
         'tr', 
         $this->element(

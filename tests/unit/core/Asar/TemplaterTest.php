@@ -2,25 +2,30 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Templater;
+use \Asar\Config;
+use \Asar\Response;
+use \Asar\Request;
+
 class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
     $this->resource = $this->getMock(
-      'Asar_Resource',
+      'Asar\Resource',
       array('handleRequest', 'getConfig', 'importConfig', 'getPermaPath')
     );
     $this->renderer  = $this->getMock(
-      'Asar_TemplateRenderer', array('renderFor'), array(), '', false
+      'Asar\TemplateRenderer', array('renderFor'), array(), '', false
     );
-    $this->conf = $this->getMock('Asar_Config_Interface');
-    $this->templater = new Asar_Templater($this->resource, $this->renderer);
+    $this->conf = $this->getMock('Asar\Config\ConfigInterface');
+    $this->templater = new Templater($this->resource, $this->renderer);
   }
   
   private function resourceReturnsResponse(
-    Asar_Response $response = null, $use_templates = true
+    Response $response = null, $use_templates = true
   ) {
     if (!$response) {
-      $response = new Asar_Response;
+      $response = new Response;
     }
     $this->resource->expects($this->any())
       ->method('getConfig')
@@ -33,7 +38,7 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testTemplaterImplementsAsarConfigInterface() {
-    $this->assertInstanceOf('Asar_Config_Interface', $this->templater);
+    $this->assertInstanceOf('Asar\Config\ConfigInterface', $this->templater);
   }
   
   function testTemplaterDelagatesGetConfigToResource() {
@@ -52,16 +57,16 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testIfResourceIsNotAsarConfigImportConfigCreatesConfig() {
-    $resource = $this->getMock('Asar_Resource_Interface');
-    $conf = new Asar_Config(array('foo' => 'bar'));
-    $templater = new Asar_Templater($resource, $this->renderer);
+    $resource = $this->getMock('Asar\Resource\ResourceInterface');
+    $conf = new Config(array('foo' => 'bar'));
+    $templater = new Templater($resource, $this->renderer);
     $templater->importConfig($conf);
     $this->assertEquals('bar', $templater->getConfig('foo'));
   }
   
   function testResourceReceivesRequest() {
     $this->resourceReturnsResponse();
-    $request = new Asar_Request(array('path' => '/foo'));
+    $request = new Request(array('path' => '/foo'));
     $this->resource->expects($this->once())
       ->method('handleRequest')
       ->with($request);
@@ -69,8 +74,8 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   }
   
   function testHandleRequestPassesResourceNameAndRequestToLocator() {
-    $request = new Asar_Request(array( 'path'=> '/foo' ));
-    $response = new Asar_Response(array('content' => 'Foo.'));
+    $request = new Request(array( 'path'=> '/foo' ));
+    $response = new Response(array('content' => 'Foo.'));
     $this->resourceReturnsResponse($response);
     $this->renderer->expects($this->once())
       ->method('renderFor')
@@ -82,46 +87,48 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
     $this->resourceReturnsResponse(null, false);
     $this->renderer->expects($this->never())
       ->method('renderFor');
-    $this->templater->handleRequest(new Asar_Request);
+    $this->templater->handleRequest(new Request);
   }
   
   function testUsesResponseFromResourceWhenConfigUseTemplatesIsFalse() {
-    $response = new Asar_Response(array('content' => 'hello'));
+    $response = new Response(array('content' => 'hello'));
     $this->resourceReturnsResponse($response, false);
-    $response2 = $this->templater->handleRequest(new Asar_Request);
+    $response2 = $this->templater->handleRequest(new Request);
     $this->assertEquals($response, $response2);
   }
   
   function testReturnsModifiedResponseByRenderer() {
-    $request = new Asar_Request;
+    $request = new Request;
     $this->resourceReturnsResponse();
     $content = "Hello World!";
     $this->renderer->expects($this->once())
       ->method('renderFor')
       ->will($this->returnValue(
-        new Asar_Response(array('content' => $content))
+        new Response(array('content' => $content))
       ));
     $response = $this->templater->handleRequest($request);
     $this->assertEquals($content, $response->getContent());
   }
   
   function testSkipsRendererWhenResponseFromResourceIsNot200() {
-    $response = new Asar_Response(array('status' => 405));
+    $response = new Response(array('status' => 405));
     $this->resourceReturnsResponse($response);
     $this->renderer->expects($this->never())
       ->method('renderFor');
-    $this->templater->handleRequest(new Asar_Request);
+    $this->templater->handleRequest(new Request);
   }
   
   function testSkippingRenderingReturnsResponseFromResource() {
-    $response = new Asar_Response(array('status' => 405));
+    $response = new Response(array('status' => 405));
     $this->resourceReturnsResponse($response);
-    $response2 = $this->templater->handleRequest(new Asar_Request);
+    $response2 = $this->templater->handleRequest(new Request);
     $this->assertEquals($response, $response2);
   }
   
   function testTemplaterImplementsPathDiscoverInterface() {
-    $this->assertInstanceOf('Asar_PathDiscover_Interface', $this->templater);
+    $this->assertInstanceOf(
+      'Asar\PathDiscover\PathDiscoverInterface', $this->templater
+    );
   }
   
   function testPassesGetPermaPathCallToResource() {
@@ -135,13 +142,13 @@ class Asar_TemplaterTest extends PHPUnit_Framework_TestCase {
   
   function testThrowExceptionWhenResourceReturnsSomethingOtherThanResponse() {
     $this->setExpectedException(
-      'Asar_Templater_Exception',
+      'Asar\Templater\Exception',
       'Unable to create template. The Resource did not return a response object.'
     );
     $this->resource->expects($this->any())
       ->method('handleRequest')
       ->will($this->returnValue(false));
-    $this->templater->handleRequest(new Asar_Request);
+    $this->templater->handleRequest(new Request);
   }
   
 }

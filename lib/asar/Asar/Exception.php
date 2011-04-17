@@ -1,6 +1,7 @@
 <?php
+namespace Asar;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Exception extends Exception {}
+class Exception extends \Exception {}

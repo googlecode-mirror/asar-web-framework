@@ -1,16 +1,19 @@
 <?php
+namespace Asar\Utility;
+
+use \Asar\Utility\Cli\Interpreter;
+use \Asar\Utility\Cli\Executor\ExecutorInterface;
+use \Asar\Utility\Cli\CliInterface;
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_Cli {
+class Cli {
   
   private $interpreter, $executor, $cwd;
   
   function __construct(
-    Asar_Utility_Cli_Interpreter $interpreter,
-    Asar_Utility_Cli_Executor_Interface $executor,
-    $cwd
+    Interpreter $interpreter, ExecutorInterface $executor, $cwd
   ) {
     $this->interpreter = $interpreter;
     $this->executor = $executor;
@@ -21,7 +24,7 @@ class Asar_Utility_Cli {
     $this->executor->execute($this->interpreter->interpret($arguments));
   }
   
-  function register(Asar_Utility_Cli_Interface $tasklist) {
+  function register(CliInterface $tasklist) {
     $this->executor->registerTasks($tasklist, $tasklist->getTaskNamespace());
     $tasklist->setController($this);
   }

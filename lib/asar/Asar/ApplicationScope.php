@@ -1,13 +1,17 @@
 <?php
+namespace Asar;
+
+use \Asar\Config\ConfigInterface;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_ApplicationScope {
+class ApplicationScope {
   
   private $app_name, $config, $cache = array();
   
-  function __construct($app_name, Asar_Config_Interface $config) {
+  function __construct($app_name, ConfigInterface $config) {
     $this->app_name = $app_name;
     $this->config = $config;
   }

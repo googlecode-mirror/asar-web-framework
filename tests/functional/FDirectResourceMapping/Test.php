@@ -1,13 +1,20 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+use \Asar\Client;
+use \Asar\ApplicationInjector;
+use \Asar\ApplicationScope;
+use \Asar\Config\DefaultConfig;
+use \Asar\Response;
+
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
 class FDirectResourceMapping_Test extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->client = new Asar_Client;
-    $this->app = Asar_ApplicationInjector::injectApplication(
-      new Asar_ApplicationScope('Example1', new Asar_Config_Default)
+    $this->client = new Client;
+    $this->app = ApplicationInjector::injectApplication(
+      new ApplicationScope('Example1', new DefaultConfig)
     );
   }
   
@@ -15,7 +22,7 @@ class FDirectResourceMapping_Test extends PHPUnit_Framework_TestCase {
   function testGetIndexShouldReturnAResponseObject() {
     $response = $this->client->GET($this->app, array('path' => '/'));
     $this->assertTrue(
-       $response instanceof Asar_Response,
+       $response instanceof Response,
       'The returned object from GET request is not an ' .
       'Asar_Response object but '. get_class($response) . '.'
     );

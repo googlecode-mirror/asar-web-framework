@@ -2,14 +2,17 @@
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
+use \Asar\Request;
+use \Asar\Utility\String;
+
 class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   
   function setUp() {
-    $this->R = new Asar_Request;
+    $this->R = new Request;
   }
   
   function testRequestShouldImplementAsarRequestInterface() {
-    $this->assertInstanceOf('Asar_Request_Interface', $this->R);
+    $this->assertInstanceOf('Asar\Request\RequestInterface', $this->R);
   }
   
   function testRequestShouldBeAbleToSetPath() {
@@ -63,22 +66,22 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testRequestSettingContentOnCreation() {
-    $R = new Asar_Request(array('content' => 'foo bar'));
+    $R = new Request(array('content' => 'foo bar'));
     $this->assertEquals('foo bar', $R->getContent());
   }
   
   function testRequestSettingPathOnCreation() {
-    $R = new Asar_Request(array('path' => '/foo'));
+    $R = new Request(array('path' => '/foo'));
     $this->assertEquals('/foo', $R->getPath());
   }
   
   function testRequestSettingMethodOnCreation() {
-    $R = new Asar_Request(array('method' => 'PUT'));
+    $R = new Request(array('method' => 'PUT'));
     $this->assertEquals('PUT', $R->getMethod());
   }
   
   function testSettingMultiplePropertiesOnCreation() {
-    $R = new Asar_Request(array(
+    $R = new Request(array(
       'method' => 'POST',
       'content' => 'churva',
       'headers' => array('foo' => 'bar')
@@ -89,7 +92,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testSettingParamsCreation() {
-    $R = new Asar_Request(array(
+    $R = new Request(array(
       'params' => array('foo' => 'bar')
     ));
     $this->assertEquals(array('foo' => 'bar'), $R->getParams('foo'));
@@ -97,7 +100,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   
   function testExportRawHttpRequestString() {
     $headers = array('Accept' => 'text/html', 'Connection' => 'Close' );
-    $R = new Asar_Request(array(
+    $R = new Request(array(
       'path'    => '/a/path/to/a/resource.html',
       'headers' => $headers
     ));
@@ -119,7 +122,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
       $pattern = "/\r\n" . 
         str_replace(
           array('.', '-'), array('\.', '\-'),
-          Asar_Utility_String::dashCamelCase($key)
+          String::dashCamelCase($key)
         ) . 
         ": $value\r\n/";
       $this->assertRegExp(
@@ -130,7 +133,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testExportWithPostValues() {
-    $R = new Asar_Request(array(
+    $R = new Request(array(
       'method'  => 'POST',
       'path'    => '/post/processor',
       'content' => array(
@@ -156,7 +159,7 @@ class Asar_RequestTest extends PHPUnit_Framework_TestCase {
   }
   
   function testExportGetShouldHaveNoContent() {
-    $R = new Asar_Request(array(
+    $R = new Request(array(
       'path'    => '/a/get/path',
       'content' => array('foo' => 'bar')
     ));

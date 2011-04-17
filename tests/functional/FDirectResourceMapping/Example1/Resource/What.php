@@ -1,6 +1,6 @@
 <?php
 
-class Example1_Resource_What extends Asar_Resource {
+class Example1_Resource_What extends \Asar\Resource {
   
   function setUp() {
     $this->config['use_templates'] = false;

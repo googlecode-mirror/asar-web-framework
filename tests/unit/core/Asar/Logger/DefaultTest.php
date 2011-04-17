@@ -2,13 +2,15 @@
 
 require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
+use Asar\Logger\DefaultLogger;
+
 class Asar_Logger_DefaultTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
     $this->log_file = $this->getMock(
-      'Asar_File', array('writeAfter', 'save')
+      'Asar\File', array('writeAfter', 'save')
     );
-    $this->logger = new Asar_Logger_Default($this->log_file);
+    $this->logger = new DefaultLogger($this->log_file);
     // Matches with [Thu, 11 Oct 2007 12:38:29 GMT]
     $this->date_time_format = '\[[MTWFS][ouehra][neduit], [0-3][0-9] ' .
       '[A-Za-z]{3} [0-9]{4} [0-2][0-9]:[0-6][0-9]:[0-6][0-9] GMT\]';

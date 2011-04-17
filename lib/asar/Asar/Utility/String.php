@@ -1,9 +1,11 @@
 <?php
+namespace Asar\Utility;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_Utility_String {
+class String {
   static function dashCamelCase($string) {
     return str_replace(' ', '-', self::ucwordsLower($string));
   }

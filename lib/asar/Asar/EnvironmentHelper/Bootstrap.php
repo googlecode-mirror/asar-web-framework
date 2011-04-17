@@ -1,4 +1,6 @@
 <?php
+
+namespace Asar\EnvironmentHelper;
 /**
  * A bootstrap environment helper for setting up a class loader and registering
  * it.
@@ -6,7 +8,7 @@
  * @package Asar
  * @subpackage core
  */
-class Asar_EnvironmentHelper_Bootstrap {
+class Bootstrap {
 
   private $class_loader;
   
