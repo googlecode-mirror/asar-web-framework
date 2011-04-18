@@ -1,10 +1,12 @@
 <?php
 
+namespace Asar\Tests\Unit;
+
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 use \Asar\ClassLoader;
 
-class Asar_ClassLoaderTest extends PHPUnit_Framework_TestCase {
+class ClassLoaderTest extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->file_searcher = $this->getMock(

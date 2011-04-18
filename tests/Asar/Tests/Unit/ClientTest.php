@@ -1,12 +1,14 @@
 <?php
 
+namespace Asar\Tests\Unit;
+
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 use \Asar\Client;
 use \Asar\Request;
 use \Asar\Response;
 
-class Asar_ClientTest extends PHPUnit_Framework_TestCase {
+class ClientTest extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->client = new Client;
@@ -89,7 +91,7 @@ class Asar_ClientTest extends PHPUnit_Framework_TestCase {
   function dataClientThrowsExceptionWhenServerIsUnknown() {
     return array(
       array('GET', 'foo'),
-      array('POST', new stdClass),
+      array('POST', new \stdClass),
       array('PUT', null), 
       array('DELETE', 1)
     );

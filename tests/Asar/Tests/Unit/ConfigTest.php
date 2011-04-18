@@ -1,60 +1,18 @@
 <?php
 
+namespace Asar\Tests\Unit {
+
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
-// For testing purposes only...
-class Asar_ConfigTest_ConfigSample extends \Asar\Config {
-  public $config = array(
-    'foo' => 'bar',
-    'goo' => 'car',
-    'hoo' => 'dar',
-    'joo' => array(
-      'joo1' => 'doo1',
-      'joo2' => 'doo2',
-      'joo3' => array(
-        'a' => 32
-      )
-    )
-  );
-}
 
-class Asar_ConfigTest_ConfigSample2 extends \Asar\Config {
-  protected $config = array(
-    'foo' => 'baz',
-    'zoo' => 'zaz'
-  );
-}
-
-class Asar_ConfigTest_ConfigSample3 extends \Asar\Config {
-  protected $config = array(
-    'joo' => array(
-      'joo1' => 'eoo1',
-      'joo3' => array(
-        'a'  => 'aye',
-        'b'  => 'bee'
-      ),
-      'joo4' => 'doo4'
-    )
-  );
-}
-
-class Asar_ConfigTest_ConfigSample4 extends \Asar\Config {
-  protected $config = array(
-    'joo' => array(
-      'joo3' => 'meh'
-    )
-  );
-  
-  protected function init() {
-    $this->config['foo'] = 'Foo';
-  }
-}
-
-class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
+/**
+ * See test classes near the end of this file.
+ */
+class ConfigTest extends \Asar\Tests\TestCase {
   
   function setUp() {
-    $this->config = new Asar_ConfigTest_ConfigSample;
-    $this->config2 = new Asar_ConfigTest_ConfigSample2;
+    $this->config = new \Asar_ConfigTest_ConfigSample;
+    $this->config2 = new \Asar_ConfigTest_ConfigSample2;
   }
   
   function testGettingConfig() {
@@ -85,7 +43,7 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
   }
   
   function testImportingConfigWithArrays() {
-    $config3 = new Asar_ConfigTest_ConfigSample3;
+    $config3 = new \Asar_ConfigTest_ConfigSample3;
     $this->config->importConfig($config3);
     $this->assertSame('doo1', $this->config->getConfig('joo.joo1'));
     $this->assertSame('doo2', $this->config->getConfig('joo.joo2'));
@@ -101,7 +59,7 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
 	      'Unable to merge \'joo.joo3\' => '.
 	      '\'meh\' with Array.'
     );
-    $config4 = new Asar_ConfigTest_ConfigSample4;
+    $config4 = new \Asar_ConfigTest_ConfigSample4;
     $this ->config->importConfig($config4);
   }
   
@@ -119,8 +77,60 @@ class Asar_ConfigTest extends PHPUnit_Framework_TestCase {
   }
   
   function testConfigRunsInitializationOnConstruction() {
-    $config = new Asar_ConfigTest_ConfigSample4;
+    $config = new \Asar_ConfigTest_ConfigSample4;
     $this->assertEquals('Foo', $config->getConfig('foo'));
   }
   
+}
+}
+
+
+namespace {
+  // For testing purposes only...
+  class Asar_ConfigTest_ConfigSample extends \Asar\Config {
+    public $config = array(
+      'foo' => 'bar',
+      'goo' => 'car',
+      'hoo' => 'dar',
+      'joo' => array(
+        'joo1' => 'doo1',
+        'joo2' => 'doo2',
+        'joo3' => array(
+          'a' => 32
+        )
+      )
+    );
+  }
+
+  class Asar_ConfigTest_ConfigSample2 extends \Asar\Config {
+    protected $config = array(
+      'foo' => 'baz',
+      'zoo' => 'zaz'
+    );
+  }
+
+  class Asar_ConfigTest_ConfigSample3 extends \Asar\Config {
+    protected $config = array(
+      'joo' => array(
+        'joo1' => 'eoo1',
+        'joo3' => array(
+          'a'  => 'aye',
+          'b'  => 'bee'
+        ),
+        'joo4' => 'doo4'
+      )
+    );
+  }
+
+  class Asar_ConfigTest_ConfigSample4 extends \Asar\Config {
+    protected $config = array(
+      'joo' => array(
+        'joo3' => 'meh'
+      )
+    );
+    
+    protected function init() {
+      $this->config['foo'] = 'Foo';
+    }
+  }
 }

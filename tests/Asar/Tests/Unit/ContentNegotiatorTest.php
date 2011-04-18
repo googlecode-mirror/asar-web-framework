@@ -1,10 +1,12 @@
 <?php
 
-use \Asar\ContentNegotiator;
+namespace Asar\Tests\Unit;
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
-class Asar_ContentNegotiatorTest extends PHPUnit_Framework_TestCase {
+use \Asar\ContentNegotiator;
+
+class Asar_ContentNegotiatorTest extends \Asar\Tests\TestCase {
   
   /**
    * @dataProvider dataFormatNegotiation

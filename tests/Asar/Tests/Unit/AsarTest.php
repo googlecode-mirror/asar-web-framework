@@ -1,10 +1,17 @@
 <?php
 
-class AsarTest extends PHPUnit_Framework_TestCase {
+namespace Asar\Tests\Unit;
+
+require_once realpath(dirname(__FILE__). '/../../../config.php');
+
+use \Asar\Tests\TestCase;
+use \Asar;
+
+class AsarTest extends TestCase {
   
   function setUp() {
     $this->A = new Asar;
-    $this->framework_path = realpath(dirname(__FILE__). '/../../../');
+    $this->framework_path = realpath(dirname(__FILE__). '/../../../../');
   }
   
   /**

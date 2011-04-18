@@ -1,17 +1,18 @@
 <?php
 
+namespace Asar\Tests\Unit {
+
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 use \Asar\ApplicationFactory;
 
-class Asar_ApplicationFactoryTest_Application extends \Asar\Application {}
-
-class Asar_ApplicationFactoryTest_Test2_Config
-  extends \Asar\Config\DefaultConfig {}
-
-class Asar_ApplicationFactoryTest extends PHPUnit_Framework_TestCase {
+class ApplicationFactoryTest extends \Asar\Tests\TestCase {
   
   function setUp() {
+    /**
+     * See test classes near the end of this file.
+     */
+    
     $this->config = $this->getMock('Asar\Config\ConfigInterface');
     $this->F = new ApplicationFactory($this->config);
   }
@@ -42,5 +43,16 @@ class Asar_ApplicationFactoryTest extends PHPUnit_Framework_TestCase {
       $this->F->getApplication('Asar_ApplicationFactoryTest_Test2')
     );
   }
+  
+}
+
+}
+
+namespace {
+
+class Asar_ApplicationFactoryTest_Application extends \Asar\Application {}
+
+class Asar_ApplicationFactoryTest_Test2_Config
+  extends \Asar\Config\DefaultConfig {}
   
 }

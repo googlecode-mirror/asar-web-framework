@@ -1,4 +1,5 @@
 <?php
+namespace Asar\Tests\Unit;
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
@@ -9,7 +10,7 @@ use \Asar\Router\Exception\ResourceNotFound;
 use \Asar\Resource\Exception\ForwardRequest;
 use \Asar\Debug;
 
-class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
+class ApplicationTest extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->resource = $this->getMock(
@@ -36,7 +37,10 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
 
   function testAppRunsSetupMethodOnConstruction() {
     $old_post = $_POST;
-    $cname = get_class($this) . '_SetUpTest_Application';
+    /**
+     * convert to underscores
+     */
+    $cname =$this->generateAppName('_SetUpTest_Application');
     eval('
       class '. $cname . ' extends \Asar\Application {
         function setUp() {
@@ -96,7 +100,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   function testSends500ResponseWhenResourceThrowsAGeneralException() {
     $this->routerReturnsResource();
     $this->resourceExpects()
-      ->will($this->throwException(new Exception));
+      ->will($this->throwException(new \Exception));
     try {
       $response = $this->app->handleRequest($this->request);
     } catch (\Exception $e) {
@@ -108,7 +112,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   function test500ResponseExceptionContent() {
     $this->routerReturnsResource();
     $this->resourceExpects()
-      ->will($this->throwException(new Exception('Foo message')));
+      ->will($this->throwException(new \Exception('Foo message')));
     $this->setStatusMessagesMock()->will(
       $this->returnCallBack(array($this, 'cbSM'))
     );
@@ -165,8 +169,12 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('BarRa', $map['/foo_ra']);
   }
   
+  private function generateAppName($last) {
+    return str_replace('\\', '_', get_class($this)) . $last;
+  }
+  
   function testAppSetMapping() {
-    $app_name = get_class($this) . '_MappingTest';
+    $app_name = $this->generateAppName('_MappingTest');
     $cname = $app_name . '_Application';
     $resource1 = $app_name . '_Foo_Resource';
     $resource2 = $app_name . '_BarResource';
@@ -186,7 +194,7 @@ class Asar_ApplicationTest extends PHPUnit_Framework_TestCase {
   }
   
   function testAppOverridesMapping() {
-    $app_name = get_class($this) . '_MappingTest2';
+    $app_name = $this->generateAppName('_MappingTest2');
     $cname = $app_name . '_Application';
     $resource = $app_name . '_Foo_Resource';
     eval("

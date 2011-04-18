@@ -1,7 +1,7 @@
 <?php
 namespace Asar;
 
-use \Asar\Config\Exception;
+use \Asar\Config\Exception as ConfigException;
 
 /**
  * @package Asar
@@ -51,7 +51,7 @@ class Config implements Config\ConfigInterface {
       if (isset($to[$key])) {
         $thekey = !$parent_key ? $key : "$parent_key.$key";
         if (is_array($value) XOR is_array($to[$key])) {
-          throw new Exception(
+          throw new ConfigException(
             "Asar\Config::importConfig() failed. Type mismatch. Unable to " .
             "merge '$thekey' => '$value' with Array."
           );
