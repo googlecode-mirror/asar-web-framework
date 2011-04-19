@@ -25,6 +25,7 @@ class ResourceFactory {
   // The factory need only be passed the factories
   function getResource($resource_classname) {
     $rep_classname = $this->getRepresentationClassName($resource_classname);
+    //var_dump($resource_classname);exit;
     if (class_exists($rep_classname)) {
       $resource = new $rep_classname(new $resource_classname);
     } else {

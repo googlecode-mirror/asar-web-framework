@@ -169,10 +169,6 @@ class ApplicationTest extends \Asar\Tests\TestCase {
     $this->assertEquals('BarRa', $map['/foo_ra']);
   }
   
-  private function generateAppName($last) {
-    return str_replace('\\', '_', get_class($this)) . $last;
-  }
-  
   function testAppSetMapping() {
     $app_name = $this->generateAppName('_MappingTest');
     $cname = $app_name . '_Application';

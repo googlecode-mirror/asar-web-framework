@@ -137,7 +137,7 @@ class Asar {
    */
   function getToolSet() {
     if (!$this->toolset) {
-      $this->toolset = new Asar_Toolset;
+      $this->toolset = new \Asar\Toolset;
     }
     return $this->toolset;
   }

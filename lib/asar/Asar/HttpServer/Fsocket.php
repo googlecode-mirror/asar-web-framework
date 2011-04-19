@@ -1,11 +1,17 @@
 <?php
+namespace Asar\HttpServer;
+
+use \Asar\Resource\ResourceInterface;
+use \Asar\Request\RequestInterface;
+use \Asar\Response;
+
 /**
  * A wrapper class for making HTTP Requests
  *
  * @package Asar
  * @subpackage core
  */
-class Asar_HttpServer_Fsocket implements Asar_Resource_Interface {
+class Fsocket implements ResourceInterface {
   
   private $host;
   
@@ -20,7 +26,7 @@ class Asar_HttpServer_Fsocket implements Asar_Resource_Interface {
    * Converts the Request object to a raw HTTP request and returns a Response
    * object converted from the raw HTTP response sent by the host
    */
-  function handleRequest(Asar_Request_Interface $request) {
+  function handleRequest(RequestInterface $request) {
     $rstr = $this->createRawHttpRequestString($request);
     if ($rstr) {
       return $this->exportRawHttpResponse(
@@ -45,14 +51,14 @@ class Asar_HttpServer_Fsocket implements Asar_Resource_Interface {
       return str_replace('http://', '', $this->host);
   }
   
-  private function createRawHttpRequestString(Asar_Request_Interface $request) {
+  private function createRawHttpRequestString(RequestInterface $request) {
       $request->setHeader('Host', $this->getHostName());
       $request->setHeader('Connection', 'Close');
       return $request->export();
   }
   
   private function exportRawHttpResponse($raw) {
-    $response = new Asar_Response;
+    $response = new Response;
     $response->import($raw);
     return $response;
   }

@@ -58,7 +58,7 @@ class AsarTest extends TestCase {
   }
   
   function testGettingToolSet() {
-    $this->assertInstanceOf('Asar_Toolset', $this->A->getToolSet());
+    $this->assertInstanceOf('Asar\Toolset', $this->A->getToolSet());
   }
   
   function testGettingToolSetAgainReturnsTheSameInstance() {

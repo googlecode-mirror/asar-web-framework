@@ -1,6 +1,8 @@
 <?php
+namespace Asar\HttpServer;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_HttpServer_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}

@@ -1,9 +1,11 @@
 <?php
+namespace Asar;
+
 /**
  * @package Asar
  * @subpackage core
  */
-class Asar_IncludePathManager {
+class IncludePathManager {
   
   function add() {
     $paths = func_get_args();
