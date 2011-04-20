@@ -8,13 +8,11 @@ use \Asar\Config\DefaultConfig;
 
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
 
-class FLoggingExample_Test extends PHPUnit_Framework_TestCase {
+class FLoggingExample_Test extends \Asar\Tests\TestCase {
 
   function setUp() {
-    $this->tempdir = Asar::getInstance()->getFrameworkTestsDataTempPath();
-    $this->TFM = new Asar_TempFilesManager($this->tempdir);
-    $this->TFM->clearTempDirectory();
-    $this->log_file = $this->tempdir . DIRECTORY_SEPARATOR . 'example.log';
+    $this->clearTestTempDirectory();
+    $this->log_file = $this->getTempDir() . DIRECTORY_SEPARATOR . 'example.log';
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
       new ApplicationScope('LoggingExample', new DefaultConfig)
@@ -22,7 +20,7 @@ class FLoggingExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   function tearDown() {
-    $this->TFM->clearTempDirectory();
+    $this->clearTestTempDirectory();
   }
   
   function testLoggingStoresLogFileInWhateverIsSetInConfig() {

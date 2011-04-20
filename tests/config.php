@@ -13,8 +13,6 @@ $classLoader->register();
 /*
  Temporarily include testing sources
 */
-require_once $lib_path . 'dev/testing/Asar/TempFilesManager.php';
-require_once $lib_path . 'dev/testing/Asar/TempFilesManager/Exception.php';
 require_once $lib_path . 'dev/testing/Asar/TestServerManager.php';
 
 

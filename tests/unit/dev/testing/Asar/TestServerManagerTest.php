@@ -1,13 +1,13 @@
 <?php
 require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
-class Asar_TestServerManagerTest extends PHPUnit_Framework_TestCase {
+class Asar_TestServerManagerTest extends \Asar\Tests\TestCase {
   
   function setUp() {
-    $this->A = new Asar;
-    $this->TFM = new Asar_TempFilesManager($this->A->getFrameworkTestsDataTempPath());
+    $this->A = new \Asar;
+    $this->TFM = $this->getTFM();
     $this->TFM->clearTempDirectory();
-    $this->TSM = new Asar_TestServerManager($this->A->getFrameworkTestsDataPath());
+    $this->TSM = new \Asar_TestServerManager($this->A->getFrameworkTestsDataPath());
     $this->test_server_path = $this->A->getFrameworkTestsDataPath() . 
       DIRECTORY_SEPARATOR . 'test-server';
     $this->clearTestServer();
