@@ -1,24 +1,12 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+namespace Asar\Tests\Functional\ResourceAndRepresentation {
+
+require_once realpath(__DIR__ . '/../../../../') . '/config.php';
 
 use \Asar\Request;
 
-/**
- * Test class
- */
-class FResourceAndRepresentation_Test_RepresentationDummy 
-  extends \Asar\Representation {
-  
-  function getHtml($data) {
-    return "<html><head></head><body><h1>GET $data</h1></body></html>";
-  }
-  
-  function getTxt($data) {
-    return "===========\nGET $data\n===========\n";
-  }
-}
-
-class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
+class Test extends \Asar\Tests\TestCase {
   
   function setUp() {
     
@@ -33,7 +21,7 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
     $resource->expects($this->once())
       ->method('GET')
       ->will($this->returnValue('Hello!'));
-    $rep = new FResourceAndRepresentation_Test_RepresentationDummy($resource);
+    $rep = new \FResourceAndRepresentation_Test_RepresentationDummy($resource);
     $response = $rep->handleRequest(new Request);
     $this->assertContains('<h1>GET Hello!</h1>', $response->getContent());
   }
@@ -43,7 +31,7 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
     $resource->expects($this->once())
       ->method('GET')
       ->will($this->returnValue('Hello!'));
-    $rep = new FResourceAndRepresentation_Test_RepresentationDummy($resource);
+    $rep = new \FResourceAndRepresentation_Test_RepresentationDummy($resource);
     $response = $rep->handleRequest(
       new Request(array('headers' => array('Accept' => 'text/plain')))
     );
@@ -55,13 +43,33 @@ class FResourceAndRepresentation_Test extends PHPUnit_Framework_TestCase {
     $resource->expects($this->once())
       ->method('GET')
       ->will($this->returnValue('Hello!'));
-    $rep = new FResourceAndRepresentation_Test_RepresentationDummy($resource);
+    $rep = new \FResourceAndRepresentation_Test_RepresentationDummy($resource);
     $response = $rep->handleRequest(
       new Request(array('headers' => array('Accept' => 'application/json')))
     );
     $this->assertEquals(406, $response->getStatus());
   }
   
+}
+
+}
+
+namespace {
+
+  /**
+   * Test class
+   */
+  class FResourceAndRepresentation_Test_RepresentationDummy 
+    extends \Asar\Representation {
+    
+    function getHtml($data) {
+      return "<html><head></head><body><h1>GET $data</h1></body></html>";
+    }
+    
+    function getTxt($data) {
+      return "===========\nGET $data\n===========\n";
+    }
+  }
 }
 
 

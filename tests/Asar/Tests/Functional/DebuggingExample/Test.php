@@ -1,14 +1,17 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+namespace Asar\Tests\Functional\DebuggingExample;
+
+require_once realpath(__DIR__ . '/../../../../') . '/config.php';
 
 use \Asar\Client;
 use \Asar\ApplicationInjector;
 use \Asar\ApplicationScope;
 use \Asar\Config\DefaultConfig;
 
-set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
 
-class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
+class Test extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->client = new Client;
@@ -64,7 +67,7 @@ class FDebuggingExample_Test extends PHPUnit_Framework_TestCase {
   }
   
   private function findElementContent($html, $matcher) {
-    $el = PHPUnit_Util_XML::findNodes(
+    $el = \PHPUnit_Util_XML::findNodes(
       dom_import_simplexml(simplexml_load_string($html))->ownerDocument,
       $matcher
     );

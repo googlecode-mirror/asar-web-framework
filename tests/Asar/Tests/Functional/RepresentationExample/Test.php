@@ -1,14 +1,17 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../config.php');
+
+namespace Asar\Tests\Functional\RepresentationExample;
+
+require_once realpath(__DIR__ . '/../../../../') . '/config.php';
 
 use \Asar\Client;
 use \Asar\ApplicationInjector;
 use \Asar\ApplicationScope;
 use \Asar\Config\DefaultConfig;
 
-set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
 
-class FRepresentationExample_Test extends PHPUnit_Framework_TestCase {
+class Test extends \Asar\Tests\TestCase {
 
   public function setUp() {
     $this->client = new Client;
