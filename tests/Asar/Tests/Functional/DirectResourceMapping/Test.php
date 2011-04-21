@@ -1,5 +1,7 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../../config.php');
+namespace Asar\Tests\Functional\DirectResourceMapping;
+
+require_once realpath(__DIR__ . '/../../../../') . '/config.php';
 
 use \Asar\Client;
 use \Asar\ApplicationInjector;
@@ -7,9 +9,9 @@ use \Asar\ApplicationScope;
 use \Asar\Config\DefaultConfig;
 use \Asar\Response;
 
-set_include_path(get_include_path() . PATH_SEPARATOR . dirname(realpath(__FILE__)));
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
 
-class FDirectResourceMapping_Test extends PHPUnit_Framework_TestCase {
+class Test extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->client = new Client;
@@ -17,7 +19,6 @@ class FDirectResourceMapping_Test extends PHPUnit_Framework_TestCase {
       new ApplicationScope('Example1', new DefaultConfig)
     );
   }
-  
   
   function testGetIndexShouldReturnAResponseObject() {
     $response = $this->client->GET($this->app, array('path' => '/'));
