@@ -13,7 +13,7 @@ $classLoader->register();
 /*
  Temporarily include testing sources
 */
-require_once $lib_path . 'dev/testing/Asar/TestServerManager.php';
+//require_once $lib_path . 'dev/testing/Asar/TestServerManager.php';
 
 
 if (!isset($_SESSION)) {

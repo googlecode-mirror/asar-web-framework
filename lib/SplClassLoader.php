@@ -125,6 +125,7 @@ class SplClassLoader
      */
     public function loadClass($className)
     {
+        //echo $className;
         if (
             null === $this->_namespace ||
             $this->_namespace == $className ||
@@ -135,6 +136,7 @@ class SplClassLoader
                     )
                 )
         ) {
+            //echo " GO!\n";
             $fileName = '';
             $namespace = '';
             if ($className == $this->_namespace) {

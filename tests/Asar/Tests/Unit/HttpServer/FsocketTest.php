@@ -5,6 +5,7 @@ namespace Asar\Tests\Unit\HttpServer;
 require_once realpath(dirname(__FILE__). '/../../../../config.php');
 
 use \Asar\HttpServer\Fsocket as FsocketHttpServer;
+use \Asar\Tests\TestServerManager;
 use \Asar\Request;
 use \Asar;
 
@@ -14,7 +15,7 @@ class FsocketTest extends \Asar\Tests\TestCase {
     global $argv;
     
     $this->A = new Asar;
-    $this->TSM = new \Asar_TestServerManager(
+    $this->TSM = new TestServerManager(
       $this->A->getFrameworkTestsDataPath()
     );
     if (!$this->TSM->isCanConnectToTestServer()) {

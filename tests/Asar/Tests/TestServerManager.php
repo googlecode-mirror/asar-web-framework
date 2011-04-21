@@ -1,6 +1,8 @@
 <?php
 
-class Asar_TestServerManager {
+namespace Asar\Tests;
+
+class TestServerManager {
   
   private static $can_connect;
   private $test_data_path;
