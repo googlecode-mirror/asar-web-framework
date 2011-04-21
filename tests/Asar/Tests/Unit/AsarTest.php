@@ -27,11 +27,10 @@ class AsarTest extends TestCase {
   function gettingPathsData() {
     return array(
       array('getFrameworkPath', ''),
-      array('getFrameworkCorePath', '/lib/core'),
+      array('getFrameworkCorePath', '/lib/asar'),
       array('getFrameworkVendorPath', '/lib/vendor'),
       array('getFrameworkExtensionsPath', '/lib/extensions'),
       array('getFrameworkDevPath', '/lib/dev'),
-      array('getFrameworkDevTestingPath', '/lib/dev/testing'),
       array('getFrameworkTestsPath', '/tests'),
       array('getFrameworkTestsDataPath', '/tests/data'),
       array(

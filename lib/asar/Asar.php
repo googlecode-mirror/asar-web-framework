@@ -59,7 +59,7 @@ class Asar {
    * @return string full path to the core libraries
    */
   function getFrameworkCorePath() {
-    return $this->getPath('framework_core', '/lib/core');  
+    return $this->getPath('framework_core', '/lib/asar');  
   }
   
   /**
@@ -82,13 +82,6 @@ class Asar {
    */
   function getFrameworkDevPath() {
     return $this->getPath('framework_dev', '/lib/dev');
-  }
-  
-  /**
-   * @return string full path to the testing-related classes
-   */
-  function getFrameworkDevTestingPath() {
-    return $this->getPath('framework_dev_testing', '/lib/dev/testing');
   }
   
   /**

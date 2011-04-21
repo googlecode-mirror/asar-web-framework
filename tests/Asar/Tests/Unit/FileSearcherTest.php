@@ -6,15 +6,6 @@ require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 use \Asar\FileSearcher;
 
-if (!(\strpos(
-  get_include_path(), \Asar::getInstance()->getFrameworkDevTestingPath()
-) > -1)) {
-  set_include_path(
-    \Asar::getInstance()->getFrameworkDevTestingPath() . PATH_SEPARATOR .
-    get_include_path()
-  );
-}
-
 class FileSearcherTest extends \Asar\Tests\TestCase {
   
   private $tempdir = null;

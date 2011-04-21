@@ -4,15 +4,6 @@ namespace Asar\Tests\Unit;
 
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
-if (!(\strpos(
-  get_include_path(), \Asar::getInstance()->getFrameworkDevTestingPath()
-) > -1)) {
-  set_include_path(
-    \Asar::getInstance()->getFrameworkDevTestingPath() . PATH_SEPARATOR .
-    get_include_path()
-  );
-}
-
 use \Asar\FileIncludeManager;
 
 class FileIncludeManagerTest extends \Asar\Tests\TestCase {
