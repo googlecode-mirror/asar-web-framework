@@ -1,10 +1,16 @@
 NEXT:
+- Create a separate class for finding the directory path of an application
+  - e.g. ApplicationFinder
+- Complete documentation
+- Generate class diagram generated from PHP_UML
 - More test cases for request forwarding
 ALL:
 - Cascading Configurations: 
   / We have default configurations created by the framework
   / Each app can override these configurations
   - Resources can override these too
+- Make Request and Response objects immutable???
+  - we could have problems when controllers attempt to modify the response object
 - Do away with inheritance. Resource can be dumbbed-down and need only implement
   GET, POST, PUT, DELETE as necessary and just a required __construct interface
   where all the dependency needed is passed. The HTTP methods need only return
@@ -17,8 +23,7 @@ ALL:
 - When Resources need to use a representation of another Resource, they can use
   it through $this->useRepresentationFor('NameOfOwnerRepresentation');
 - Better dependency injection
-  - Phemto? http://phemto.sourceforge.net/quick-start.php
-  - Pimple? http://github.com/fabpot/Pimple
+  - Pimple http://github.com/fabpot/Pimple
 - Create different configurations from different execution modes
   - 'mode' => production for production environment
   - 'filters' => add Asar_MessageFilter_Development
@@ -32,7 +37,3 @@ ALL:
     valid methods for the requested resource.
 - Make bootstrap code use functional programming
 
-
-- Reimplement removal of internal headers to accommodate new single-level 
-  headers.
-- Make classes that use internal headers use new implementation

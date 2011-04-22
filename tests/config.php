@@ -1,23 +1,18 @@
 <?php
 ini_set('error_reporting', E_ALL | E_STRICT);
 
-require_once realpath(dirname(__FILE__) . '/../lib/core/Asar.php');
+$lib_path = realpath(__DIR__ . '/../lib/') . '/';
+require_once $lib_path . 'SplClassLoader.php';
 
-$__asar = Asar::getInstance();
-$__asar->getToolSet()->getIncludePathManager()->add(
-  $__asar->getFrameworkCorePath(),
-  $__asar->getFrameworkDevTestingPath(),
-  $__asar->getFrameworkExtensionsPath(),
-  $__asar->getFrameworkVendorPath()
-);
-
-require_once 'Asar/EnvironmentScope.php';
-require_once 'Asar/Injector.php';
+$classLoader = new SplClassLoader('Asar\Tests', __DIR__);
+$classLoader->register();
+$classLoader = new SplClassLoader('Asar', $lib_path . 'asar');
+$classLoader->register();
 
 if (!isset($_SESSION)) {
   $_SESSION = array();
 }
-$scope = new Asar_EnvironmentScope(
-  'Foo', $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
+$scope = new \Asar\EnvironmentScope(
+  $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
 );
-Asar_Injector::injectEnvironmentHelperBootstrap($scope)->run();
+\Asar\Injector::injectEnvironmentHelperBootstrap($scope)->run();

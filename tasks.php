@@ -1,5 +1,5 @@
 <?php
-class RemoveSvnEntries implements Asar_Utility_CLI_Interface {
+class RemoveSvnEntries implements \Asar\Utility\Cli\CliInterface {
   
   private $cwd;
   private $controller = null;
@@ -8,8 +8,12 @@ class RemoveSvnEntries implements Asar_Utility_CLI_Interface {
     $this->cwd = getcwd();
   }
   
-  function setController(Asar_Utility_CLI $controller) {
+  function setController(\Asar\Utility\Cli $controller) {
     $this->controller = $controller;
+  }
+  
+  function getTaskNamespace() {
+    return '';
   }
   
   function removeSvnDirs($path) {
@@ -50,5 +54,3 @@ class RemoveSvnEntries implements Asar_Utility_CLI_Interface {
   }
 }
 
-$cli->register(new RemoveSvnEntries);
-var_dump($cli);
