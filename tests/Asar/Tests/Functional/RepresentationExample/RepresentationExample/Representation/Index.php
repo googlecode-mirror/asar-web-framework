@@ -1,6 +1,8 @@
 <?php
 
-class RepresentationExample_Representation_Index extends \Asar\Representation {
+namespace Asar\Tests\Functional\RepresentationExample\RepresentationExample\Representation;
+
+class Index extends \Asar\Representation {
   
   function getHtml($data) {
     return 
@@ -22,7 +24,7 @@ class RepresentationExample_Representation_Index extends \Asar\Representation {
   function getXml($data) {
     $template = new \Asar\Template\Engines\PhpEngine;
     $template->setTemplateFile(
-      dirname(__FILE__) . DIRECTORY_SEPARATOR . 'index_xml_template.php'
+      __DIR__ . DIRECTORY_SEPARATOR . 'index_xml_template.php'
     );
     return $template->render($data);
   }

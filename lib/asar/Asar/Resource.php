@@ -145,9 +145,14 @@ class Resource
     return TRUE;
   }
   
+  /**
+   * @note Resource class names should start with only one instance of the 
+   * string '\Resource\' and that is after the application namespace.
+   * So an application name that has '\Resource\' in it will throw an error.
+   */
   private function getResourceNameAsArray() {
     $cname = get_class($this);
-    return explode('_', substr($cname, strpos($cname, '_Resource_') + 10));
+    return explode('\\', substr($cname, strpos($cname, '\Resource\\') + 10));
   }
   
   function getPath() {

@@ -1,5 +1,7 @@
 <?php
 
+namespace Asar\Tests\Functional\TemplatesExample\TemplatesExample;
+
 use \Asar\Template\TemplateInterface;
 
 /**
@@ -10,7 +12,7 @@ use \Asar\Template\TemplateInterface;
  * be used in your applications.
  *
  */
-class TemplatesExample_AtplTemplateEngine implements TemplateInterface {
+class AtplTemplateEngine implements TemplateInterface {
 
   private
     $file,

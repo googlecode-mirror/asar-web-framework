@@ -13,19 +13,21 @@ use \Asar\Template\TemplateInterface;
  */
 class TemplateRenderer {
   
-  private $factory, $renderer;
+  private $package_provider, $renderer;
   
   function __construct(
-    TemplatePackageProvider $factory, TemplateSimpleRenderer $renderer
+    TemplatePackageProvider $package_provider, TemplateSimpleRenderer $renderer
   ) {
-    $this->factory = $factory;
+    $this->package_provider = $package_provider;
     $this->renderer = $renderer;
   }
   
   function renderFor(
     $resource_name, ResponseInterface $response, RequestInterface $request
   ) {
-    $templates = $this->factory->getTemplatesFor($resource_name, $request);
+    $templates = $this->package_provider->getTemplatesFor(
+      $resource_name, $request
+    );
     if (!$templates['template'] instanceof TemplateInterface) {
       $response->setStatus(406);
     } else {

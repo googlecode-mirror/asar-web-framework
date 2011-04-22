@@ -14,7 +14,8 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->resource_lister  = $this->getMock(
-      'Asar\ResourceLister\ResourceListerInterface', array('getResourceListFor')
+      'Asar\ResourceLister\ResourceListerInterface',
+      array('getResourceListFor')
     );
     $this->resource_factory = $this->quickMock(
       'Asar\ResourceFactory', array('getResource')
@@ -26,11 +27,10 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
   
   function generateRandomClassName($prefix = 'Amock', $suffix = '') {
     if ($suffix)
-      $suffix = '_' . $suffix;
+      $suffix = '\\' . $suffix;
     do {
-      $randomClassName = $this->generateUnderscoredName(
-        $prefix . '_' . substr(md5(microtime()), 0, 8) . $suffix
-      );
+      $randomClassName = $prefix . '\\A' . substr(md5(microtime()), 0, 8) . 
+        $suffix;
     } while ( class_exists($randomClassName, FALSE) );
     return $randomClassName;
   }
@@ -50,14 +50,16 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
       ->will($this->returnValue($classes));
-    $expected_resource = $app_name . '_Resource_' . $resource_name;
+    $expected_resource = $app_name . '\Resource\\' . $resource_name;
     $this->resource_factory->expects($this->once())
       ->method('getResource')
       ->with($expected_resource);
     try {
       $this->router->route($app_name, $path, array());
-    } catch (Asar_Router_Exception $e) {
-      $this->fail();
+    } catch (\Asar\Router\Exception $e) {
+      $this->fail(
+        "Router was unable to match '$path' with '$expected_resource'."
+      );
     }
   }
   
@@ -66,40 +68,40 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
       array('/basic', 'Basic'),
       array('/page', 'Page'),
       array('/some-where', 'SomeWhere'),
-      array('/when/the-going/gets_tough', 'When_TheGoing_GetsTough'),
-      array('/blog/2010/8/25', 'Blog_RtYear_RtMonth_RtDay'),
+      array('/when/the-going/gets_tough', 'When\TheGoing\GetsTough'),
+      array('/blog/2010/8/25', 'Blog\RtYear\RtMonth\RtDay'),
       array(
         '/news/2010/8/25',
-        'News_RtYear_RtMonth_RtDay'
+        'News\RtYear\RtMonth\RtDay'
       ),
-      array('/articles/This-is-an-article-title', 'Articles_RtTitle'),
-      array('Articles_RtTitle', 'Articles_RtTitle'),
+      array('/articles/This-is-an-article-title', 'Articles\RtTitle'),
+      array('Articles\RtTitle', 'Articles\RtTitle'),
     );
   }
   
   private function createClassesBasedOnResourceName($app_name, $resource_name) {
-    $resource_levels = explode('_', $resource_name);
-    $test_resource = $app_name . '_Resource';
+    $resource_levels = explode('\\', $resource_name);
+    $test_resource = $app_name . '\Resource';
     $classes_used = array();
     foreach ($resource_levels as $level) {
-      $test_resource .= '_' . $level;
+      $test_resource .= '\\' . $level;
       $classes_used[] = $test_resource;
       if (!class_exists($test_resource)) {
-        eval ("class $test_resource {}");
+        $this->createClassDefinition($test_resource);
       }
     }
     return $classes_used;
   }
   
   /**
-   * @dataProvider dataReturnsRoutedResource2
+   * @dataProvider dataWildCardRoutingAndAListOfAvailableResources
    */
-  function testReturnsRoutedResource2(
+  function testWildCardRoutingAndAListOfAvailableResources(
     $path, $resource_names, $expected, $reverse = false
   ) {
     $app_name = $this->generateRandomClassName(get_class($this));
-    $resource_name1 = 'Blogs_RtTitle';
-    $resource_name2 = 'Blogs_Foo';
+    $resource_name1 = 'Blogs\RtTitle';
+    $resource_name2 = 'Blogs\Foo';
     $class_collection = array();
     foreach ($resource_names as $resource_name) {
       $class_collection[] = $this->createClassesBasedOnResourceName(
@@ -115,46 +117,49 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
       ->will($this->returnValue($classes));
-    $expected_resource = $app_name . '_Resource_' . $expected;
+    $expected_resource = $app_name . '\Resource\\' . $expected;
     $this->resource_factory->expects($this->once())
       ->method('getResource')
       ->with($expected_resource);
     try {
       $this->router->route($app_name, $path, array());
-    } catch (Asar_Router_Exception $e) {
-      $this->fail();
+    } catch (\Asar\Router\Exception $e) {
+      $this->fail(
+        "Router was unable to match '$path' with '$expected_resource' with ".
+        "list of expected resources $class_collection."
+      );
     }
   }
   
-  function dataReturnsRoutedResource2() {
+  function dataWildCardRoutingAndAListOfAvailableResources() {
     return array(
       array(
         '/blogs/This-is-a-blog-title',
-        array('Blogs_RtTitle', 'Blogs_Foo'),
-        'Blogs_RtTitle'
+        array('Blogs\RtTitle', 'Blogs\Foo'),
+        'Blogs\RtTitle'
       ),
       array(
         '/blogs/This-is-a-blog-title/edit',
-        array('Blogs_RtTitle', 'Blogs_Foo', 'Blogs_RtTitle_Edit'),
-        'Blogs_RtTitle_Edit'
+        array('Blogs\RtTitle', 'Blogs\Foo', 'Blogs\RtTitle\Edit'),
+        'Blogs\RtTitle\Edit'
       ),
       array(
         '/blogs/This-is-a-blog-title/edit',
-        array('Blogs_RtTitle', 'Blogs_Foo', 'Blogs_RtTitle_Edit'),
-        'Blogs_RtTitle_Edit', true
+        array('Blogs\RtTitle', 'Blogs\Foo', 'Blogs\RtTitle\Edit'),
+        'Blogs\RtTitle\Edit', true
       ),
       array(
         '/vlogs/Foo',
-        array('Vlogs_RtTitle', 'Vlogs_Foo'),
-        'Vlogs_Foo'
+        array('Vlogs\RtTitle', 'Vlogs\Foo'),
+        'Vlogs\Foo'
       ),
     );
   }
   
   function testRouterReturnsObjFromResourceFactory() {
     $app_name = $this->generateRandomClassName(get_class($this));
-    eval (sprintf("class %s {}", $app_name . '_Resource_Foo'));
-    $obj = $this->getMock('Asar_Resource');
+    $this->createClassDefinition($app_name . '\Resource\Foo');
+    $obj = $this->getMock('Asar\Resource');
     $this->resource_factory->expects($this->once())
       ->method('getResource')
       ->will($this->returnValue($obj));
@@ -171,10 +176,11 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
   function testRouterUsesMap($path, $resource_name) {
     $map = array($path => $resource_name);
     $app_name = $this->generateRandomClassName(get_class($this));
-    eval (sprintf("class %s {}", $app_name . '_Resource_' . $resource_name));
+    $this->createClassDefinition($app_name . '\Resource\\' . $resource_name);
+    //eval (sprintf("class %s {}", ));
     $this->resource_factory->expects($this->once())
       ->method('getResource')
-      ->with($app_name . '_Resource_' . $resource_name);
+      ->with($app_name . '\\Resource\\' . $resource_name);
     $this->router->route($app_name, $path, $map);
   }
   
@@ -182,7 +188,7 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
     return array(
       array('/', 'MyIndex'),
       array('/foo', 'FooResource'),
-      array('/foo/bar', 'The_Foo_Bar_Resource'),
+      array('/foo/bar', 'The\\Foo\\Bar\\Resource'),
     );
   }
   
@@ -190,7 +196,10 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
       ->will($this->returnValue(array()));
-    $this->setExpectedException('Asar\Router\Exception\ResourceNotFound');
+    $this->setExpectedException(
+      'Asar\Router\Exception\ResourceNotFound',
+      "The resource class definition for the path '/nowhere' was not found."
+    );
     $this->router->route('A_Name', '/nowhere', array());
   }
   
@@ -198,7 +207,10 @@ class DefaultRouterTest extends \Asar\Tests\TestCase {
     $this->resource_lister->expects($this->any())
       ->method('getResourceListFor')
       ->will($this->returnValue(array()));
-    $this->setExpectedException('Asar\Router\Exception\ResourceNotFound');
+    $this->setExpectedException(
+      'Asar\Router\Exception\ResourceNotFound',
+      "The resource class definition for the path 'Nowhere' was not found."
+    );
     $this->router->route('A_Name', 'Nowhere', array());
   }
   

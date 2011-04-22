@@ -19,13 +19,15 @@ class ApplicationFactoryTest extends \Asar\Tests\TestCase {
   
   
   function testGettingApplication() {
-    $this->config->expects($this->atLeastOnce())
+    $this->config->expects($this->any())
       ->method('getConfig')
       ->with('default_classes.config')
       ->will($this->returnValue('Asar\Config\DefaultConfig'));
     $this->assertInstanceOf(
-      'Asar_ApplicationFactoryTest_Application',
-      $this->F->getApplication('Asar_ApplicationFactoryTest')
+      'Asar\Tests\Unit\ApplicationFactoryTest\TestApp1\Application',
+      $this->F->getApplication(
+        'Asar\Tests\Unit\ApplicationFactoryTest\TestApp1'
+      )
     );
   }
   
@@ -36,11 +38,15 @@ class ApplicationFactoryTest extends \Asar\Tests\TestCase {
       ->will($this->returnValue('Asar\ApplicationBasic'));
     $this->assertNotSame(
       false,
-      $this->F->getApplication('Asar_ApplicationFactoryTest_Test2')
+      $this->F->getApplication(
+        'Asar\Tests\Unit\ApplicationFactoryTest\TestApp2'
+      )
     );
     $this->assertInstanceOf(
       'Asar\ApplicationBasic',
-      $this->F->getApplication('Asar_ApplicationFactoryTest_Test2')
+      $this->F->getApplication(
+        'Asar\Tests\Unit\ApplicationFactoryTest\TestApp2'
+      )
     );
   }
   
@@ -48,11 +54,10 @@ class ApplicationFactoryTest extends \Asar\Tests\TestCase {
 
 }
 
-namespace {
+namespace Asar\Tests\Unit\ApplicationFactoryTest\TestApp1 {
+  class Application extends \Asar\Application {}
+}
 
-class Asar_ApplicationFactoryTest_Application extends \Asar\Application {}
-
-class Asar_ApplicationFactoryTest_Test2_Config
-  extends \Asar\Config\DefaultConfig {}
-  
+namespace Asar\Tests\Unit\ApplicationFactoryTest\TestApp2 {
+  class Config extends \Asar\Config\DefaultConfig {}
 }

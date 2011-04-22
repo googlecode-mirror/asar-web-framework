@@ -21,8 +21,8 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
     $request = new Request;
     $this->locator->expects($this->once())
       ->method('locateFor')
-      ->with('A_Resource', $request);
-    $this->tlf->getTemplatesFor('A_Resource', $request);
+      ->with('A\Resource', $request);
+    $this->tlf->getTemplatesFor('A\Resource', $request);
   }
   
   private function locatorWillReturnValue($path) {
@@ -41,11 +41,11 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
   }
   
   function testReturnsArrayWithTemplateAsTemplateElement() {
-    $tpl = $this->getMock('Asar_Template_Interface');
+    $tpl = $this->getMock('Asar\Template\TemplateInterface');
     $this->factory->expects($this->at(0))
       ->method('createTemplate')
       ->will($this->returnValue($tpl));
-    $templates = $this->tlf->getTemplatesFor('A_Resource', new Request);
+    $templates = $this->tlf->getTemplatesFor('A\Resource', new Request);
     $this->assertInternalType('array', $templates);
     $this->assertEquals($tpl, $templates['template']);
   }
@@ -58,7 +58,7 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
     $this->locator->expects($this->once())
       ->method('locateLayoutFor')
       ->with('foo.xml.php');
-    $this->tlf->getTemplatesFor('A_Resource', $request);
+    $this->tlf->getTemplatesFor('A\Resource', $request);
   }
   
   function testGettingMimeType() {
@@ -69,7 +69,7 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
     $this->locator->expects($this->once())
       ->method('getMimeTypeFor')
       ->with('foo.xml.php');
-    $this->tlf->getTemplatesFor('A_Resource', $request);
+    $this->tlf->getTemplatesFor('A\Resource', $request);
   }
   
   function testFactoryUsesLayoutPathFromLocator() {
@@ -80,7 +80,7 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
     $this->factory->expects($this->at(1))
       ->method('createTemplate')
       ->with($layout_path);
-    $this->tlf->getTemplatesFor('A_Resource', new Request);
+    $this->tlf->getTemplatesFor('A\Resource', new Request);
   }
   
   function testReturnsArrayWithTemplateAsLayoutElement() {
@@ -88,7 +88,7 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
     $this->factory->expects($this->at(1))
       ->method('createTemplate')
       ->will($this->returnValue($tpl));
-    $templates = $this->tlf->getTemplatesFor('A_Resource', new Request);
+    $templates = $this->tlf->getTemplatesFor('A\Resource', new Request);
     $this->assertEquals($tpl, $templates['layout']);
   }
   
@@ -97,7 +97,7 @@ class TemplatePackageProviderTest extends \Asar\Tests\TestCase {
     $this->locator->expects($this->once())
       ->method('getMimeTypeFor')
       ->will($this->returnValue('text/html'));
-    $templates = $this->tlf->getTemplatesFor('A_Resource', $request);
+    $templates = $this->tlf->getTemplatesFor('A\Resource', $request);
     $this->assertEquals('text/html', $templates['mime-type']);
   }
   

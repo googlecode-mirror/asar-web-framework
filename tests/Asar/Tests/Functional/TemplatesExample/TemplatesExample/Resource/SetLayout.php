@@ -1,5 +1,8 @@
 <?php
-class TemplatesExample_Resource_SetLayout extends \Asar\Resource {
+
+namespace Asar\Tests\Functional\TemplatesExample\TemplatesExample\Resource;
+
+class SetLayout extends \Asar\Resource {
   
   public function GET() {
     return array(

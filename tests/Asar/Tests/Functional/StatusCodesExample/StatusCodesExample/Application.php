@@ -1,11 +1,13 @@
 <?php
 
-class StatusCodesExample_Application extends \Asar\Application {
+namespace Asar\Tests\Functional\StatusCodesExample\StatusCodesExample;
+
+class Application extends \Asar\Application {
   
   protected function setUp() {
     $this->setMap('/', 'Index');
     $this->setMap('/page', 'Page');
-    $this->setMap('/500', '500');
+    $this->setMap('/a500', 'A500');
   }
 
 }

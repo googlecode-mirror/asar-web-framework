@@ -46,21 +46,22 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
     return array(
       
       array(
-        'Churva_Resource_Index', array(),
+        'Churva\Resource\Index', array(),
         array('Representation/Index.GET.html.php'),
         array('text/html')
       ),
       
       array(
-        'Churva_Resource_Index', array(),
+        'Churva\Resource\Index', array(),
         array(
-          'Representation/Index.GET.html.php','Representation/Index.GET.xml.php'
+          'Representation/Index.GET.html.php',
+          'Representation/Index.GET.xml.php'
         ),
         array('text/html', 'application/xml')
       ),
       
       array(
-        'Churva_Resource_Index', array(),
+        'Churva\Resource\Index', array(),
         array(
           'Representation/Index.GET.xhtml.php',
           'Representation/Index.GET.html.php'
@@ -69,7 +70,7 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
       ),
       
       array(
-        'Churva_Resource_Index', array(),
+        'Churva\Resource\Index', array(),
         array(
           'Representation/Index/GET.xhtml.php',
           'Representation/Index/GET.html.php'
@@ -78,7 +79,7 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
       ),
       
       array(
-        'Churva_Resource_Index', array(),
+        'Churva\Resource\Index', array(),
         array(
           'Representation/Index.GET.xhtml.php',
           'Representation/Foo.GET.html.php',
@@ -88,7 +89,7 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
       ),
       
       array(
-        'Churva_Resource_Foo_Bar_Boo', array(),
+        'Churva\Resource\Foo\Bar\Boo', array(),
         array(
           'Representation/Foo/Bar/Boo.GET.xhtml.php',
           'Representation/Foo/Bar/Boo.GET.html.php',
@@ -122,29 +123,29 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
   function dataTemplateLocatorBasicInvocationSuccess() {
     return array(
       array(
-        'Churva_Resource_Index', array(), 'text/html',
+        'Churva\Resource\Index', array(), 'text/html',
         'Representation/Index.GET.html.php',
         array('Representation/Index.GET.html.php')
       ),
       array(
-        'Churva_Resource_Index', array('method' => 'POST'), 'text/html',
+        'Churva\Resource\Index', array('method' => 'POST'), 'text/html',
         'Representation/Index.POST.html.php',
         array('Representation/Index.POST.html.php')
       ),
       array(
-        'Churva_Resource_Index',
+        'Churva\Resource\Index',
         array('headers' => array('Accept' => 'application/xml')),
         'application/xml',
         'Representation/Index.GET.xml.php',
         array('Representation/Index.GET.xml.php')
       ),
       array(
-        'Churva_Resource_Index', array(), 'text/html',
+        'Churva\Resource\Index', array(), 'text/html',
         'Representation/Index.GET.html.haml',
         array('Representation/Index.GET.html.haml')
       ),
       array(
-        'Moonda_Resource_AResource_Go', array(), 'text/html',
+        'Moonda\Resource\AResource\Go', array(), 'text/html',
         'Representation/AResource/Go.GET.html.php',
         array('Representation/AResource/Go.GET.html.php')
       ),
@@ -153,7 +154,7 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
   
   function testTemplateLocatorReturnsFalseWhenNoTemplateIsFoundForResource() {
     $this->assertSame(
-      FALSE, $this->RT->locateFor('Some_Resource', new Request)
+      FALSE, $this->RT->locateFor('Some\Resource', new Request)
     );
   }
   
@@ -164,7 +165,7 @@ class TemplateLocatorTest extends \Asar\Tests\TestCase {
       ->will($this->returnValue(FALSE));
     $this->assertEquals(
       FALSE, $this->RT->locateFor(
-        'Moonda_Resource_AResource_Go', new Request
+        'Moonda\Resource\AResource_Go', new Request
       )
     );
   }

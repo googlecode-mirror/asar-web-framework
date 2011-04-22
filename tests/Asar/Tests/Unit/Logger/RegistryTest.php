@@ -50,27 +50,27 @@ class RegistryTest extends \Asar\Tests\TestCase {
     Registry::register('Namespace1', $this->log_file);
     $this->assertInstanceOf(
       'Asar\Logger\DefaultLogger',
-      Registry::getLogger(new \Namespace1_ClassName)
+      Registry::getLogger(new \Namespace1\ClassName)
     );
   }
   
   function testGettingALoggerCreatesTheLogFileForThatRegisteredNamespace() {
     Registry::register('Namespace1', $this->log_file);
-    $logger = Registry::getLogger(new \Namespace1_ClassName);
+    $logger = Registry::getLogger(new \Namespace1\ClassName);
     $this->assertEquals($this->log_file, $logger->getLogFile()->getFileName());
   }
   
   function testGetLoggerReturnsOnlyOneInstanceForThatSameObject() {
     Registry::register('Namespace1', $this->log_file);
-    $logger1 = Registry::getLogger(new \Namespace1_ClassName);
-    $logger2 = Registry::getLogger(new \Namespace1_ClassName);
+    $logger1 = Registry::getLogger(new \Namespace1\ClassName);
+    $logger2 = Registry::getLogger(new \Namespace1\ClassName);
     $this->assertSame($logger1, $logger2);
   }
   
   function testGetLoggerReturnsOnlyOneInstanceForThatSameNamespace() {
     Registry::register('Namespace1', $this->log_file);
-    $logger1 = Registry::getLogger(new \Namespace1_ClassName);
-    $logger2 = Registry::getLogger(new \Namespace1_ClassName2);
+    $logger1 = Registry::getLogger(new \Namespace1\ClassName);
+    $logger2 = Registry::getLogger(new \Namespace1\ClassName2);
     $this->assertSame($logger1, $logger2);
   }
   
@@ -78,14 +78,14 @@ class RegistryTest extends \Asar\Tests\TestCase {
     Registry::register('Namespace1', $this->log_file);
     $log_file2 = $this->tempdir . DIRECTORY_SEPARATOR . 'log2.log';
     Registry::register('Namespace2', $log_file2);
-    $logger1 = Registry::getLogger(new \Namespace1_ClassName);
-    $logger2 = Registry::getLogger(new \Namespace2_ClassName);
+    $logger1 = Registry::getLogger(new \Namespace1\ClassName);
+    $logger2 = Registry::getLogger(new \Namespace2\ClassName);
     $this->assertNotSame($logger1, $logger2);
   }
   
   function testGettingLoggerUsingStringAsIdentifier() {
     Registry::register('Namespace1', $this->log_file);
-    $logger1 = Registry::getLogger(new \Namespace1_ClassName);
+    $logger1 = Registry::getLogger(new \Namespace1\ClassName);
     $logger2 = Registry::getLogger('Namespace1');
     $this->assertSame($logger1, $logger2);
   }
@@ -97,6 +97,20 @@ class RegistryTest extends \Asar\Tests\TestCase {
       "the logger registry."
     );
     Registry::getLogger('SomeOtherNamespace');
+  }
+  
+  function testGettingLoggerForLoggerWithSubSPaces() {
+    Registry::register('Namespace2', $this->log_file);
+    $logger1 = Registry::getLogger(new \Namespace2\ClassName);
+    $logger2 = Registry::getLogger(new \Namespace2\SubNamespace\ClassName);
+    $this->assertSame($logger1, $logger2);
+  }
+  
+  function testGettingLoggerForLoggerWithSubSubSPaces() {
+    Registry::register('Namespace2\SubNamespace', $this->log_file);
+    $logger1 = Registry::getLogger(new \Namespace2\SubNamespace\ClassName);
+    $logger2 = Registry::getLogger(new \Namespace2\SubNamespace\SubSubNamespace\ClassName);
+    $this->assertSame($logger1, $logger2);
   }
   
   function testUnsettingARegisteredLogger() {
@@ -121,8 +135,19 @@ class RegistryTest extends \Asar\Tests\TestCase {
 
 }
 
-namespace {
-  class Namespace1_ClassName {}
-  class Namespace1_ClassName2 {}
-  class Namespace2_ClassName {}
+namespace Namespace1 {
+  class ClassName {}
+  class ClassName2 {}
+}
+
+namespace Namespace2 {
+  class ClassName {}
+}
+
+namespace Namespace2\SubNamespace {
+  class ClassName {}
+}
+
+namespace Namespace2\SubNamespace\SubSubNamespace {
+  class ClassName {}
 }

@@ -5,13 +5,13 @@ namespace Asar\Tests\Unit;
 require_once realpath(dirname(__FILE__). '/../../../config.php');
 
 use \Asar\ResourceLister;
-use \Asar\FileSearcher;
+use \Asar\Application\Finder as AppFinder;
 use \Asar\IncludePathManager;
 
 class ResourceListerTest extends \Asar\Tests\TestCase {
 
   function setUp() {
-    $this->resource_lister = new ResourceLister(new FileSearcher);
+    $this->resource_lister = new ResourceLister(new AppFinder);
     $this->tempdir = $this->getTempDir();
     $this->TFM = $this->getTFM();
     $this->IPM = new IncludePathManager;
@@ -25,9 +25,9 @@ class ResourceListerTest extends \Asar\Tests\TestCase {
   
   private function generateRandomClassName($prefix = 'Amock', $suffix = '') {
     if ($suffix)
-      $suffix = '_' . $suffix;
+      $suffix = '\\' . $suffix;
     do {
-      $randomClassName = $prefix . '_' . 
+      $randomClassName = $prefix . '\A' . 
       substr(md5(microtime()), 0, 8) . $suffix;
     } while ( class_exists($randomClassName, FALSE) );
     return $randomClassName;
@@ -36,10 +36,11 @@ class ResourceListerTest extends \Asar\Tests\TestCase {
   private function createResourceFiles($app_name, $resources) {
     $classes_used = array();
     foreach ($resources as $resource) {
-      $full_resource_name = $app_name . '_Resource_' . $resource;
+      $full_resource_name = $app_name . '\\Resource\\' . $resource;
       $classes_used[] = $full_resource_name;
+      $full_file_path = str_replace('\\', '/', $full_resource_name) . '.php';
       $this->TFM->newFile(
-        str_replace('_', '/', $full_resource_name) . '.php', 'foo'
+        $full_file_path, 'foo'
       );
     }
     return $classes_used;
@@ -47,12 +48,21 @@ class ResourceListerTest extends \Asar\Tests\TestCase {
   
   function testFirst() {
     $app_name = $this->generateRandomClassName(get_class($this));
+    $app_dir = str_replace('\\', '/', $app_name);
     // Create App Directory Structure and Files
-    $this->TFM->newDir($app_name);
+    $this->TFM->newDir($app_dir);
+    // Create App File
+    $this->TFM->newFile(
+      "$app_dir/Application.php", 
+      "<?php " . $this->createClassDefinitionStr(
+        $app_name . '\Application', '\Asar\Application'
+      )
+    );
+    include_once $this->TFM->getPath("$app_dir/Application.php");
     // With Resources
     $resources = array(
-      'Index', 'Foo', 'Foo_Bar', 'Foo_Baz', 'Parent', 'Parent_Child',
-      'Parent_Child_GrandChild'
+      'Index', 'Foo', 'Foo\Bar', 'Foo\Baz', 'Parent', 'Parent\Child',
+      'Parent\Child\GrandChild'
     );
     $expected_resources = $this->createResourceFiles($app_name, $resources);
     // Make sure we can see it

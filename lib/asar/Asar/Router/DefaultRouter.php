@@ -28,7 +28,7 @@ class DefaultRouter implements RouterInterface {
   
   function route($app_name, $path, $map) {
     if (is_array($map) && array_key_exists($path, $map)) {
-      $rname = $this->getResourceNamePrefix($app_name) . '_' . $map[$path];
+      $rname = $this->getResourceNamePrefix($app_name) . '\\' . $map[$path];
     } else {
       if (preg_match('/^\//', $path)) {
         $rname = $this->getNameFromPath($app_name, $path);
@@ -43,15 +43,21 @@ class DefaultRouter implements RouterInterface {
   }
   
   private function getResourceNamePrefix($app_name) {
-    return $app_name . '_Resource';
+    return $app_name . '\Resource';
   }
   
   private function getNameFromClassSuffix($app_name, $name) {
-    $rname = $this->getResourceNamePrefix($app_name) . '_' . $name;
+    $rname = $this->getResourceNamePrefix($app_name) . '\\' . $name;
     if (!class_exists($rname)) {
-      throw new ResourceNotFound;
+      $this->throwResourceNotFoundException($name);
     }
     return $rname;
+  }
+  
+  private function throwResourceNotFoundException($path) {
+    throw new ResourceNotFound(
+      "The resource class definition for the path '$path' was not found."
+    );
   }
   
   /**
@@ -60,11 +66,11 @@ class DefaultRouter implements RouterInterface {
   private function getNameFromPath($app_name, $path) {
     $rname = $this->getResourceNamePrefix($app_name);
     $prefixed_with = $this->resource_lister->getResourceListFor($app_name);
-    $count = substr_count($this->getResourceNamePrefix($app_name), '_');
+    $count = substr_count($this->getResourceNamePrefix($app_name), '\\');
     foreach ($this->getPathSubspaces($path) as $subspace) {
       $count++;
       $old_rname = $rname;
-      $rname = $rname . '_' . String::camelCase($subspace);
+      $rname = $rname . '\\' . String::camelCase($subspace);
       if (class_exists($rname)) {
         continue;
       }
@@ -72,17 +78,17 @@ class DefaultRouter implements RouterInterface {
         $old_rname, $prefixed_with, $rname, $count
       );
       if (!class_exists($rname)) {
-        throw new Exception\ResourceNotFound;
+        $this->throwResourceNotFoundException($path);
       }
     }
     return $rname;
   }
   
   private function getWildCardTypeRoute($old_rname, $prefix, $rname, $count) {
-    $prefix = $this->getClassesWithPrefix($old_rname . '_Rt', $prefix);
+    $prefix = $this->getClassesWithPrefix($old_rname . '\Rt', $prefix);
     if (!empty($prefix)) {
       foreach ($prefix as $class) {
-        if ($count === substr_count($class, '_')) {
+        if ($count === substr_count($class, '\\')) {
           $rname = $class;
         }
       }

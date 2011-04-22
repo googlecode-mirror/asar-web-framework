@@ -17,7 +17,8 @@ class Test extends \Asar\Tests\TestCase {
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
       new ApplicationScope(
-        'RepresentationExample', new DefaultConfig
+        'Asar\Tests\Functional\RepresentationExample\RepresentationExample',
+        new DefaultConfig
       )
     );
   }

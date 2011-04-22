@@ -1,6 +1,7 @@
 <?php
+namespace Asar\Tests\Functional\DirectResourceMapping\Example1\Resource;
 
-class Example1_Resource_What extends \Asar\Resource {
+class What extends \Asar\Resource {
   
   function setUp() {
     $this->config['use_templates'] = false;

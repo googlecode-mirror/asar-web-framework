@@ -1,6 +1,6 @@
 <?php
 
-namespace Asar\Tests\Functional\ResourceTraversingExample;
+namespace Asar\Tests\Functional\ResourceTraversing;
 
 require_once realpath(__DIR__ . '/../../../../') . '/config.php';
 
@@ -17,7 +17,10 @@ class Test extends \Asar\Tests\TestCase {
   function setUp() {
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope('ResourceTraversing', new DefaultConfig)
+      new ApplicationScope(
+        'Asar\Tests\Functional\ResourceTraversing\ResourceTraversing',
+        new DefaultConfig
+      )
     );
   }
   
@@ -40,10 +43,10 @@ class Test extends \Asar\Tests\TestCase {
     return array(
       array('/', '/ GET.'),
       array('/blog', '/blog GET.'),
-      array('/parent', '/parent GET.'),
-      array('/parent/child', '/parent/child GET.'),
-      array('/parent/child/grand-child', '/parent/child/grand-child GET.'),
-      array('/forward-to-child', '/parent/child GET.'),
+      array('/a-parent', '/a-parent GET.'),
+      array('/a-parent/child', '/a-parent/child GET.'),
+      array('/a-parent/child/grand-child', '/a-parent/child/grand-child GET.'),
+      array('/forward-to-child', '/a-parent/child GET.'),
       array('/blog/2010', '/blog/2010 GET.'),
       array('/blog/Churvaluvalu', null, 404),
       array('/blog/2010/09', '/blog/2010/09 GET.'),
@@ -57,7 +60,7 @@ class Test extends \Asar\Tests\TestCase {
     ));
     $this->assertEquals(302, $response->getStatus(), $response->getContent());
     $this->assertEquals(
-      'http://asar-test.local/parent/child/grand-child',
+      'http://asar-test.local/a-parent/child/grand-child',
       $response->getHeader('Location')
     );
   }

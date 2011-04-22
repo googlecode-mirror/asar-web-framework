@@ -20,6 +20,23 @@ class ResourceTest extends \Asar\Tests\TestCase {
     $_POST = $this->old_post_data;
   }
   
+  protected function createResourceClassDefinition(
+    $rname, $get_body = '', $setup_body = ''
+  ) {
+    $cname = $this->generateAppNameNew('\\' . $rname);
+    $body = "
+        function setUp() {
+          $setup_body
+        }
+        
+        function GET() {
+          $get_body
+        }
+    ";
+    $this->createClassDefinition($cname, '\Asar\Resource', $body);
+    return $cname;
+  }
+  
   function testResourceImplementsResourceInterface() {
     $this->assertInstanceOf('Asar\Resource\ResourceInterface', $this->R);
   }
@@ -233,7 +250,7 @@ class ResourceTest extends \Asar\Tests\TestCase {
   
   function testGetPermaPath() {
     $cname = $this->createResourceClassDefinition(
-      'GetPermaPath_Resource_Baz_Bar_Foo'
+      'GetPermaPath\Resource\Baz\Bar\Foo'
     );
     $R = new $cname;
     $this->assertEquals('/baz/bar/foo', $R->getPermaPath());
@@ -241,7 +258,7 @@ class ResourceTest extends \Asar\Tests\TestCase {
   
   function testGetPermaPath2() {
     $cname = $this->createResourceClassDefinition(
-      'GetPermaPath_Resource_RtBaz_RtBar_Foo'
+      'GetPermaPath\Resource\RtBaz\RtBar\Foo'
     );
     $R = new $cname;
     $this->assertEquals(
@@ -249,34 +266,16 @@ class ResourceTest extends \Asar\Tests\TestCase {
     );
   }
   
-  private function createResourceClassDefinition(
-    $rname, $get_body = '', $setup_body = ''
-  ) {
-    $cname = $this->generateAppName('_' . $rname);
-    eval("
-      class $cname extends \Asar\Resource {
-        function setUp() {
-          $setup_body
-        }
-        
-        function GET() {
-          $get_body
-        }
-      }
-    ");
-    return $cname;
-  }
-  
   function testForwardTo() {
     $cname = $this->createResourceClassDefinition(
-      'Forwarding', 'return $this->forwardTo("Some_Resource");'
+      'Forwarding', 'return $this->forwardTo("Some\Resource");'
     );
     $R = new $cname;
     $request = new Request(array('path'=>'/foo/bar'));
     try {
       $R->handleRequest($request);
     } catch (\Asar\Resource\Exception\ForwardRequest $e) {
-      $this->assertEquals('Some_Resource', $e->getMessage());
+      $this->assertEquals('Some\Resource', $e->getMessage());
       $payload = $e->getPayload();
       $this->assertEquals($request, $payload['request']);
       return TRUE;
@@ -288,14 +287,13 @@ class ResourceTest extends \Asar\Tests\TestCase {
    * @dataProvider dataPathComponents
    */
   function testPathComponents($rname, $expected, $path) {
-    $cname = $this->generateAppName('_Resource_' . $rname);
-    eval('
-      class '. $cname . ' extends \Asar\Resource {
-        function GET() {
-          return $this->getPathComponents();
-        }
+    $cname = $this->generateAppNameNew('\Resource\\' . $rname);
+    $body = '
+      function GET() {
+        return $this->getPathComponents();
       }
-    ');
+    ';
+    $this->createClassDefinition($cname, '\Asar\Resource', $body);
     $R = new $cname;
     $this->assertSame(
       $expected,
@@ -308,7 +306,7 @@ class ResourceTest extends \Asar\Tests\TestCase {
   function dataPathComponents() {
     return array(
       array(
-        'PathComponents_One_Two',
+        'PathComponents\One\Two',
         array(
           'path-components' => 'path-components',
           'one' => 'one',
@@ -317,7 +315,7 @@ class ResourceTest extends \Asar\Tests\TestCase {
         '/path-components/one/two'
       ),
       array(
-        'PathComponents_RtYear_RtMonth_Edit',
+        'PathComponents\RtYear\RtMonth\Edit',
         array(
           'path-components' => 'path-components',
           'year' => '2010',
@@ -354,19 +352,31 @@ class ResourceTest extends \Asar\Tests\TestCase {
   }
   
   function testPassesQualifyWithValueFromPathComponents() {
-    $rname = 'QualifyTest_RtTitle_Subpath';
+    $rname = 'QualifyTest\RtTitle\Subpath';
+    $rname = $this->generateAppNameNew('\Resource\\' . $rname);
     $path = '/qualify-test/foo-bar-yeah/subpath';
     $path_components = array(
       'qualify-test' => 'qualify-test',
       'title'        => 'foo-bar-yeah',
       'subpath'      => 'subpath'
     );
-    $this->mockResourceExpectsQualify(
-      $this->generateAppName('_Resource_' . $rname)
-    )->with($path_components);
-    $this->R->handleRequest(
-      new Request(array('path' => $path))
-    )->getContent();
+    $body = '
+      private $qualify_passed_arg;
+      function qualify($path) {
+        $this->qualify_passed_arg = $path;
+        return true;
+      }
+      
+      function GET() {
+        return $this->qualify_passed_arg;
+      }
+    ';
+    $this->createClassDefinition($rname, '\Asar\Resource', $body);
+    $R = new $rname;
+    $this->assertEquals(
+      $path_components,
+      $R->handleRequest(new Request(array('path' => $path)))->getContent()
+    );
   }
   
   /**
@@ -393,7 +403,7 @@ class ResourceTest extends \Asar\Tests\TestCase {
       array('http://www.foo.com/', 'basic', 302, 'http://www.foo.com/'),
       array('/a/relative/path', 'temporary', 307, '/a/relative/path'),
       array('/another/path', 'permanent', 301, '/another/path'),
-      array('A_Resource_Name', '', 302, 'A_Resource_Name'),
+      array('A\Resource\Name', '', 302, 'A\Resource\Name'),
     );
   }
   

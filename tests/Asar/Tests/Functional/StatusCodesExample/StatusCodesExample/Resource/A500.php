@@ -2,11 +2,9 @@
 
 namespace Asar\Tests\Functional\StatusCodesExample\StatusCodesExample\Resource;
 
-class Index extends \Asar\Resource {
-  
+class A500 extends \Asar\Resource {
   public function GET() {
-    $this->setConfig('use_templates', false);
-    return "This is a test.";
+    throw new \Exception('Something is wrong.');
   }
 }
 

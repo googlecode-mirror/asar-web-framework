@@ -1,4 +1,6 @@
 NEXT:
+- Create a separate class for finding the directory path of an application
+  - e.g. ApplicationFinder
 - Complete documentation
 - Generate class diagram generated from PHP_UML
 - More test cases for request forwarding

@@ -1,6 +1,8 @@
 <?php
 
-class ResourceTraversing_Resource_Index extends \Asar\Resource {
+namespace Asar\Tests\Functional\ResourceTraversing\ResourceTraversing\Resource;
+
+class Index extends \Asar\Resource {
   
   function GET() {
     return '/ GET.';

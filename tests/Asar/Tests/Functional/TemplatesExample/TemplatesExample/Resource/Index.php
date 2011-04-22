@@ -1,5 +1,8 @@
 <?php
-class TemplatesExample_Resource_Index extends \Asar\Resource {
+
+namespace Asar\Tests\Functional\TemplatesExample\TemplatesExample\Resource;
+
+class Index extends \Asar\Resource {
   
   public function GET() {
     return array('p' => 'This is the paragraph. Easy, no?');

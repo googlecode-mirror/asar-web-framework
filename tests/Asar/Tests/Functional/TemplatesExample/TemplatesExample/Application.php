@@ -1,6 +1,8 @@
 <?php
 
-class TemplatesExample_Application extends \Asar\Application {
+namespace Asar\Tests\Functional\TemplatesExample\TemplatesExample;
+
+class Application extends \Asar\Application {
 
   protected function setUp() {
     $this->setMap('/', 'Index');

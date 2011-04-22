@@ -152,7 +152,7 @@ class ApplicationInjector {
   }
   
   static function injectResourceLister(ApplicationScope $scope) {
-    return new ResourceLister(self::injectFileSearcher($scope));
+    return new ResourceLister(self::injectApplicationFinder($scope));
   }
   
   static function injectTemplateSimpleRenderer(ApplicationScope $scope) {
@@ -195,11 +195,16 @@ class ApplicationInjector {
   }
   
   static function injectAppPath(ApplicationScope $scope) {
-    return self::injectFileSearcher($scope)->find($scope->getAppName());
+    $p = self::injectApplicationFinder($scope)->find($scope->getAppName());
+    return $p;
+  }
+  
+  static function injectApplicationFinder(ApplicationScope $scope) {
+    return new Application\Finder;
   }
   
   static function getApplicationClass(ApplicationScope $scope) {
-    $test = $scope->getAppName() . '_Application';
+    $test = $scope->getAppName() . '\Application';
     if (class_exists($test)) {
       return $test;
     }
@@ -207,7 +212,7 @@ class ApplicationInjector {
   }
 
   static function getApplicationConfigClass(ApplicationScope $scope) {
-    $test = $scope->getAppName() . '_Config';
+    $test = $scope->getAppName() . '\Config';
     if (class_exists($test)) {
       return $test;
     }

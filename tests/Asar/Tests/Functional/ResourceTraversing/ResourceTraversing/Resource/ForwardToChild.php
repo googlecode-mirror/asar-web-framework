@@ -1,9 +1,11 @@
 <?php
 
-class ResourceTraversing_Resource_ForwardToChild extends \Asar\Resource {
+namespace Asar\Tests\Functional\ResourceTraversing\ResourceTraversing\Resource;
+
+class ForwardToChild extends \Asar\Resource {
   
   function GET() {
-    $this->forwardTo('Parent_Child');
+    $this->forwardTo('AParent\Child');
   }
     
 }

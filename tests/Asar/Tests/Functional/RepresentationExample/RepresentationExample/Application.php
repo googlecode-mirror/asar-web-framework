@@ -1,6 +1,8 @@
 <?php
 
-class RepresentationExample_Application extends \Asar\Application {
+namespace Asar\Tests\Functional\RepresentationExample\RepresentationExample;
+
+class Application extends \Asar\Application {
 
   protected function setUp() {
     

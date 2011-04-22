@@ -16,7 +16,10 @@ class Test extends \Asar\Tests\TestCase {
   public function setUp() {
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope('StatusCodesExample', new DefaultConfig)
+      new ApplicationScope(
+        'Asar\Tests\Functional\StatusCodesExample\StatusCodesExample',
+        new DefaultConfig
+      )
     );
   }
   
@@ -63,7 +66,7 @@ class Test extends \Asar\Tests\TestCase {
   }
   
   function testStatus405() {
-    $response = $this->client->DELETE($this->app, array('path' => '/405'));
+    $response = $this->client->DELETE($this->app, array('path' => '/a405'));
     $this->assertEquals(
       405, $response->getStatus(),
       'Application did not return a 405 Response Status when '.
@@ -110,7 +113,7 @@ class Test extends \Asar\Tests\TestCase {
   }
 
   public function testStatus500() {
-    $response = $this->client->GET($this->app, array('path' => '/500'));
+    $response = $this->client->GET($this->app, array('path' => '/a500'));
     $content = $response->getContent();
     $this->assertEquals(
       500, $response->getStatus(),

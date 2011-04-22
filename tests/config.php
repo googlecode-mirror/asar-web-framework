@@ -6,15 +6,8 @@ require_once $lib_path . 'SplClassLoader.php';
 
 $classLoader = new SplClassLoader('Asar\Tests', __DIR__);
 $classLoader->register();
-
 $classLoader = new SplClassLoader('Asar', $lib_path . 'asar');
 $classLoader->register();
-
-/*
- Temporarily include testing sources
-*/
-//require_once $lib_path . 'dev/testing/Asar/TestServerManager.php';
-
 
 if (!isset($_SESSION)) {
   $_SESSION = array();

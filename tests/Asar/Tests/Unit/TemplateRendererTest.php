@@ -34,12 +34,12 @@ class TemplateRendererTest extends \Asar\Tests\TestCase {
     $response = new Response;
     $this->tpp->expects($this->once())
       ->method('getTemplatesFor')
-      ->with('A_Resource', $request);
+      ->with('A\Resource', $request);
     $this->tppRetursTemplates();
-    $this->renderer->renderFor('A_Resource', $response, $request);
+    $this->renderer->renderFor('A\Resource', $response, $request);
   }
   
-  function testReturns406ResponseWhenLFactoryBadTemplate() {
+  function testReturns406ResponseWhenTemplatePProviderReturnsBadTemplate() {
     $arg = array(
       'template' => 'foo', 'layout' => 'bar'
     );
@@ -60,7 +60,7 @@ class TemplateRendererTest extends \Asar\Tests\TestCase {
     $this->tsr->expects($this->once())
       ->method('renderTemplate')
       ->with($tpl, $response->getContent(), $tpl);
-    $this->renderer->renderFor('A_Resource', $response, new Request);
+    $this->renderer->renderFor('A\Resource', $response, new Request);
   }
   
   function testSkipsRendererWhenLfactoryReturnsBadTemplate() {
@@ -71,7 +71,7 @@ class TemplateRendererTest extends \Asar\Tests\TestCase {
     $this->tppRetursTemplates($arg);
     $this->tsr->expects($this->never())
       ->method('renderTemplate');
-    $this->renderer->renderFor('A_Resource', $response, new Request);
+    $this->renderer->renderFor('A\Resource', $response, new Request);
   }
   
   function testReturnsResponseWithRenderedContentFromSimpleRenderer() {

@@ -2,10 +2,10 @@
 
 namespace Asar\Tests\Functional\ResourceTraversing\ResourceTraversing\Resource;
 
-class Blog extends \Asar\Resource {
+class AParent extends \Asar\Resource {
   
   function GET() {
-    return '/blog GET.';
+    return '/a-parent GET.';
   }
     
 }

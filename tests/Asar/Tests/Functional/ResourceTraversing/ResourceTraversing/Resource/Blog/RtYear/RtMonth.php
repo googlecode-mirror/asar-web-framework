@@ -1,6 +1,8 @@
 <?php
 
-class ResourceTraversing_Resource_Blog_RtYear_RtMonth extends \Asar\Resource {
+namespace Asar\Tests\Functional\ResourceTraversing\ResourceTraversing\Resource\Blog\RtYear;
+
+class RtMonth extends \Asar\Resource {
   
   function GET() {
     return $this->request->getPath() . ' GET.';

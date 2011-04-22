@@ -1,5 +1,8 @@
 <?php
-class TemplatesExample_Resource_Nolayout extends \Asar\Resource {
+
+namespace Asar\Tests\Functional\TemplatesExample\TemplatesExample\Resource;
+
+class Nolayout extends \Asar\Resource {
   public function GET() {
     return array(
       'h1' => 'This is the main heading.',

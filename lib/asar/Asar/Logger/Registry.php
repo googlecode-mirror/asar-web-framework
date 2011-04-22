@@ -56,8 +56,19 @@ class Registry {
     if (is_string($identifier)) {
       return $identifier;
     }
-    $class_name = explode('_', get_class($identifier));
-    return $class_name[0];
+    $class_name = explode('\\', get_class($identifier));
+    if (count($class_name) > 1) {
+      array_pop($class_name);
+    }
+    $namespace = '';
+    foreach ($class_name as $nspace) {
+      $namespace .= "\\$nspace";
+      $namespace = ltrim($namespace, '\\');
+      if (isset(self::$registry[$namespace])) {
+        return $namespace;
+      }
+    }
+    return $namespace;
   }
 
 }

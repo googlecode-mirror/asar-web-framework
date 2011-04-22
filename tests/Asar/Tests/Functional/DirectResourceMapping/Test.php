@@ -9,14 +9,17 @@ use \Asar\ApplicationScope;
 use \Asar\Config\DefaultConfig;
 use \Asar\Response;
 
-set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
+//set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
 
 class Test extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope('Example1', new DefaultConfig)
+      new ApplicationScope(
+        'Asar\Tests\Functional\DirectResourceMapping\Example1', 
+        new DefaultConfig
+      )
     );
   }
   
@@ -66,11 +69,13 @@ class Test extends \Asar\Tests\TestCase {
   
   function testGetAnUnknownResourceShouldReturnResposeWith404Status() {
     //TODO: Do more status code testing in a separate functional test
+    $response = $this->client->GET(
+      $this->app, array('path' => '/a-non-existent-resource')
+    );
     $this->assertEquals(
-      404, $this->client->GET(
-        $this->app, array('path' => '/non-existent-resource')
-      )->getStatus(),
-      'The status of the Response should be 404 for non-existent resource'
+      404, $response->getStatus(),
+      'The status of the Response should be 404 for non-existent resource' .
+      $response->getContent()
     );
   }
   

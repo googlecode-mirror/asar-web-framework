@@ -1,8 +1,8 @@
 <?php
 
-class ResourceTraversing_Resource_Blog_RtYear_RtMonth_RtTitle
-  extends \Asar\Resource
-{
+namespace Asar\Tests\Functional\ResourceTraversing\ResourceTraversing\Resource\Blog\RtYear\RtMonth;
+
+class RtTitle extends \Asar\Resource {
   
   function GET() {
     $path = $this->getPathComponents();
@@ -14,4 +14,6 @@ class ResourceTraversing_Resource_Blog_RtYear_RtMonth_RtTitle
       preg_match('/^[1-9][0-9]{3}$/' , $path['year']) &&
       preg_match('/^[0-1][0-9]$/' , $path['month']);
   }
+  
 }
+

@@ -1,6 +1,8 @@
 <?php
 
-class ResourceTraversing_Config extends \Asar\Config {
+namespace Asar\Tests\Functional\ResourceTraversing\ResourceTraversing;
+
+class Config extends \Asar\Config {
   
   protected $config = array(
     'use_templates' => false,

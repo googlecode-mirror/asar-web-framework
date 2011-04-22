@@ -140,17 +140,17 @@ class RepresentationTest extends \Asar\Tests\TestCase {
   }
   
   function testRepresentationRunsSetupCodeOnConstruction() {
-    $cname = $this->generateAppName('_RunSetup');
-    eval('
-      class '. $cname . ' extends \Asar\Representation {
-        protected function setUp() {
-          $_POST["foo"] = "bar";
-        }
-      }
-    ');
+    $cname = $this->generateAppNameNew('\RunSetup');
+    $this->createClassDefinition(
+      $cname, '\Asar\Representation',
+      'protected function setUp() {
+        $_POST["foo"] = "bar";
+      }'
+    );
     $R = new $cname($this->resource);
     $this->assertTrue(array_key_exists('foo', $_POST));
     $this->assertEquals('bar', $_POST['foo']);
+    unset($_POST['foo']); //cleanup
   }
   
   function testRepresentationIsConfig() {
@@ -175,14 +175,13 @@ class RepresentationTest extends \Asar\Tests\TestCase {
   }
   
   function testImportingConfigurationDoesNotOverrideInternalConfig() {
-    $classname = $this->generateAppName('_Configuration');
-    eval('
-      class ' . $classname . ' extends \Asar\Representation {
-        protected function setUp() {
-          $this->config["foo"] = "baz";
-        }
-      }
-    ');
+    $classname = $this->generateAppNameNew('\Configuration');
+    $this->createClassDefinition(
+      $classname, '\Asar\Representation',
+      'protected function setUp() {
+        $this->config["foo"] = "baz";
+      }'
+    );
     $R = new $classname($this->resource);
     $R->importConfig(new Config(array('foo' => 'bar', 'doo' => 'jar')));
     $this->assertEquals('jar', $R->getConfig('doo'));

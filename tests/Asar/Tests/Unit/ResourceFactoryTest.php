@@ -24,9 +24,9 @@ class ResourceFactoryTest extends \Asar\Tests\TestCase {
   
   static function generateRandomClassName($prefix = 'Amock', $suffix = '') {
     if ($suffix)
-      $suffix = '_' . $suffix;
+      $suffix = '\\' . $suffix;
     do {
-      $randomClassName = $prefix . '_' . 
+      $randomClassName = $prefix . '\A' . 
       substr(md5(microtime()), 0, 8) . $suffix;
     } while ( class_exists($randomClassName, FALSE) );
     return $randomClassName;
@@ -34,15 +34,14 @@ class ResourceFactoryTest extends \Asar\Tests\TestCase {
   
   function testGetResourceReturnsATemplaterObjectObject() {
     $class = self::generateRandomClassName(
-      $this->generateAppName(''), 'Resource_Foo'
+      $this->generateAppNameNew(''), 'Resource\Foo'
     );
-    eval("class $class extends \Asar\Resource {}");
+    $this->createClassDefinition($class, '\Asar\Resource');
     $this->assertInstanceOf('\Asar\Templater', $this->F->getResource($class));
   }
   
   private function buildResourceClass($resource_class) {
-    $resource_class = $this->generateUnderscoredName($resource_class);
-    eval("class $resource_class extends \Asar\Resource {}");
+    $this->createClassDefinition($resource_class, '\Asar\Resource');
   }
   
   /**
@@ -52,11 +51,10 @@ class ResourceFactoryTest extends \Asar\Tests\TestCase {
     $resource_class, $representation_class
   ) {
     $this->buildResourceClass($resource_class);
-    eval(
-      'class ' . $representation_class . ' extends \Asar\Representation {
-        function getResource() {
-          return $this->resource;
-        }
+    $this->createClassDefinition(
+      $representation_class, '\Asar\Representation',
+      'function getResource() {
+        return $this->resource;
       }'
     );
     $resource = $this->F->getResource($resource_class);
@@ -67,25 +65,36 @@ class ResourceFactoryTest extends \Asar\Tests\TestCase {
   function dataGetsResourceDecoratedByRepresentationObject() {
     return array(
       array(
-        $this->generateAppName('_DecorationTest_Resource_Foo'),
-        $this->generateAppName('_DecorationTest_Representation_Foo')
+        $this->generateAppName('\DecorationTest\Resource\Foo'),
+        $this->generateAppName('\DecorationTest\Representation\Foo')
       ),
       array(
         $this->generateAppName( 
-          '_DecorationTest_Resource_Resource_Foo_Resource_Bar'
+          '\DecorationTest\Resource\Resource\Foo\Resource\Bar'
         ),
         $this->generateAppName( 
-          '_DecorationTest_Representation_Resource_Foo_Resource_Bar'
+          '\DecorationTest\Representation\Resource\Foo\Resource\Bar'
         )
       ),
     );
   }
   
   function testPassesConfigToResource() {
-    $resource_class = $this->generateAppName('_DecorationTest_Resource_Jar');
+    $resource_class = $this->generateAppNameNew('\DecorationTest\Resource\Jar');
     $this->buildResourceClass($resource_class);
     $resource = $this->F->getResource($resource_class);
     $this->assertEquals('bar', $resource->getConfig('foo'));
+  }
+  
+  function testGetResourceThrowsExceptionWhenResourceClassIsNotDefined() {
+    $class = self::generateRandomClassName(
+      $this->generateAppNameNew(''), 'Resource\Undefined\Class'
+    );
+    $this->setExpectedException(
+      'Asar\ResourceFactory\Exception', 
+      "The resource class '$class' is not defined or could not be found."
+    );
+    $this->F->getResource($class);
   }
   
 

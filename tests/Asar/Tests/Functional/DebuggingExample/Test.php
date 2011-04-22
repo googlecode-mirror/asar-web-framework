@@ -16,7 +16,10 @@ class Test extends \Asar\Tests\TestCase {
   function setUp() {
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope('DebuggingExample', new DefaultConfig)
+      new ApplicationScope(
+        'Asar\Tests\Functional\DebuggingExample\DebuggingExample',
+        new DefaultConfig
+      )
     );
   }
   
@@ -102,7 +105,7 @@ class Test extends \Asar\Tests\TestCase {
       'id' => 'asarwf_dbgv_application'
     ));
     $this->assertEquals(
-      'DebuggingExample', $txt_content,
+      'Asar\Tests\Functional\DebuggingExample\DebuggingExample', $txt_content,
       'Unable to find application name value in debug info table.'
     );
   }
@@ -117,8 +120,8 @@ class Test extends \Asar\Tests\TestCase {
       'id' => 'asarwf_dbgv_resource'
     ));
     $this->assertEquals(
-      'DebuggingExample_Resource_Index', $txt_content,
-      'Unable to find resource name value in debug info table.'
+      'Asar\Tests\Functional\DebuggingExample\DebuggingExample\Resource\Index',
+      $txt_content, 'Unable to find resource name value in debug info table.'
     );
   }
   

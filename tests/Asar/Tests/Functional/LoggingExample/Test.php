@@ -18,7 +18,10 @@ class Test extends \Asar\Tests\TestCase {
     $this->log_file = $this->getTempDir() . DIRECTORY_SEPARATOR . 'example.log';
     $this->client = new Client;
     $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope('LoggingExample', new DefaultConfig)
+      new ApplicationScope(
+        'Asar\Tests\Functional\LoggingExample\LoggingExample',
+        new DefaultConfig
+      )
     );
   }
   
@@ -27,7 +30,7 @@ class Test extends \Asar\Tests\TestCase {
   }
   
   function testLoggingStoresLogFileInWhateverIsSetInConfig() {
-    $this->client->GET($this->app);
+    $response = $this->client->GET($this->app);
     $this->assertFileExists($this->log_file);
   }
   

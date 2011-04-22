@@ -1,4 +1,5 @@
 <?php
+namespace Asar\Tests\Functional\DirectResourceMapping\Example1;
 /**
  * Test Example1 Application Class
  * 
@@ -6,7 +7,7 @@
  * named 'Example1'. This test application is used only for integration
  * testing.
  */
-class Example1_Config extends \Asar\Config {
+class Config extends \Asar\Config {
   
   protected $config = array(
     'map' => array(

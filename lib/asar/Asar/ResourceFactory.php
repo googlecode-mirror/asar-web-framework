@@ -24,6 +24,12 @@ class ResourceFactory {
   // TODO: This can be better designed by using delegation
   // The factory need only be passed the factories
   function getResource($resource_classname) {
+    if (!class_exists($resource_classname)) {
+      throw new ResourceFactory\Exception(
+        "The resource class '$resource_classname' is not defined or could " .
+        "not be found."
+      );
+    }
     $rep_classname = $this->getRepresentationClassName($resource_classname);
     //var_dump($resource_classname);exit;
     if (class_exists($rep_classname)) {
@@ -43,9 +49,9 @@ class ResourceFactory {
   }
   
   function getRepresentationClassName($resource_classname) {
-    $pos = strpos($resource_classname, '_Resource_');
+    $pos = strpos($resource_classname, '\Resource\\');
     return substr_replace(
-      $resource_classname, '_Representation_', $pos, strlen('_Resource_')
+      $resource_classname, '\Representation\\', $pos, strlen('\Resource\\')
     );
   }
   

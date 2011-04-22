@@ -2,25 +2,25 @@
 namespace Asar;
 
 use \Asar\ResourceLister\ResourceListerInterface;
-use \Asar\FileSearcher;
+use \Asar\Application\Finder as AppFinder;
 /**
  * @package Asar
  * @subpackage core
  */
 class ResourceLister implements ResourceListerInterface {
   
-  private $file_searcher;
+  private $app_finder;
   
-  function __construct(FileSearcher $file_searcher) {
-    $this->file_searcher = $file_searcher;
+  function __construct(AppFinder $app_finder) {
+    $this->app_finder = $app_finder;
   }
   
   // TODO: Possibly make use of directory iterator instead
   function getResourceListFor($app_name) {
-    $app_dir = $this->file_searcher->find(str_replace('_', '/', $app_name));
+    $app_dir = $this->app_finder->find($app_name);
     $resource_dir = $app_dir . DIRECTORY_SEPARATOR . 'Resource';
     $resources = $this->collectResources(
-      $resource_dir, $app_name . '_Resource'
+      $resource_dir, $app_name . '\Resource'
     );
     return $resources;
   }
@@ -32,7 +32,7 @@ class ResourceLister implements ResourceListerInterface {
         continue;
       }
       if (preg_match('/.php$/', $file)) {
-        $class_name = $prefix . '_' . substr($file, 0, -4);
+        $class_name = $prefix . '\\' . substr($file, 0, -4);
         $resources[] = $class_name;
       }
       
@@ -41,7 +41,7 @@ class ResourceLister implements ResourceListerInterface {
           $resources, 
           $this->collectResources(
             $path . DIRECTORY_SEPARATOR . $file,
-            $prefix . '_' . $file
+            $prefix . '\\' . $file
           )
         );
       }

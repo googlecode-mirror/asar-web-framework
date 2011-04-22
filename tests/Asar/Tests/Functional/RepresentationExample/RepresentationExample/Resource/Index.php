@@ -1,6 +1,8 @@
 <?php
 
-class RepresentationExample_Resource_Index extends \Asar\Resource {
+namespace Asar\Tests\Functional\RepresentationExample\RepresentationExample\Resource;
+
+class Index extends \Asar\Resource {
   
   function GET() {
     return array(
