@@ -15,8 +15,6 @@ use \Asar\Request\RequestInterface;
 use \Asar\Utility\String;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Resource 
   implements ResourceInterface, ConfigInterface, PathDiscoverInterface

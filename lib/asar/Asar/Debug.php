@@ -3,8 +3,6 @@ namespace Asar;
 
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Debug implements \Iterator {
   

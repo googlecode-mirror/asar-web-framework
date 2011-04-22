@@ -5,8 +5,6 @@ require_once 'Asar/Toolset.php';
  * The Asar class. Useful for getting information about the framework
  * and its directories.
  *
- * @package Asar
- * @subpackage core
  */
 class Asar {
   

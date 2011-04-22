@@ -2,10 +2,7 @@
 namespace Asar\Configurable;
 
 /**
- * An interface that makes classes configurable
- *
- * @package Asar
- * @subpackage core
+ * An interface that allows classes to be configurable
  */
 interface ConfigurableInterface {
   function setConfig($key, $value);

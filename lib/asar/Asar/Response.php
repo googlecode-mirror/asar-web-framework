@@ -5,8 +5,6 @@ use \Asar\Message;
 use \Asar\Response\ResponseInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Response extends Message implements ResponseInterface {
   

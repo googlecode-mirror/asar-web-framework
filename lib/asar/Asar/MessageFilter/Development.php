@@ -11,8 +11,6 @@ use \Asar\DebugPrinter\DebugPrinterInterface;
 use \Asar\DebugPrinter\NullDebugPrinter;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Development
   implements RequestFilterInterface, ResponseFilterInterface

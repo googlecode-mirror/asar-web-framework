@@ -13,8 +13,6 @@ use \Asar\TemplateRenderer;
  */
 use \Asar\Templater\Exception as TemplaterException;
 /**
- * @package Asar
- * @subpackage core
  */
 class Templater
   implements ResourceInterface, ConfigInterface, PathDiscoverInterface

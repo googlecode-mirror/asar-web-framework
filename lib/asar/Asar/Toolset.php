@@ -2,8 +2,6 @@
 namespace Asar;
 
 /**
- * @package Asar
- * @subpackage core
  */
 require_once 'IncludePathManager.php';
 

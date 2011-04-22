@@ -3,8 +3,6 @@ namespace Asar;
 
 use \Asar\Request;
 /**
- * @package Asar
- * @subpackage core
  */
 class RequestFactory {
   

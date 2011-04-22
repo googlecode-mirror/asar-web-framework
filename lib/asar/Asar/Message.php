@@ -3,8 +3,6 @@ namespace Asar;
 
 use \Asar\Message\MessageInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class Message implements MessageInterface {
   

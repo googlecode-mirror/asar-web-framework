@@ -9,8 +9,6 @@ use \Asar\Debug;
 use \Asar\Utility\String;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class DefaultRouter implements RouterInterface {
   

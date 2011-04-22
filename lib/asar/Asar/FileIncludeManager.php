@@ -4,10 +4,7 @@ namespace Asar;
 use \Asar\FileIncludeManager\FileIncludeManagerInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
-
 class FileIncludeManager implements FileIncludeManagerInterface {
   
   private $required_once = array();

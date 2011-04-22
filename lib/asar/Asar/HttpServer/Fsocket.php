@@ -7,9 +7,6 @@ use \Asar\Response;
 
 /**
  * A wrapper class for making HTTP Requests
- *
- * @package Asar
- * @subpackage core
  */
 class Fsocket implements ResourceInterface {
   

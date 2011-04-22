@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\FileSearcher\FileSearcherInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class FileSearcher implements FileSearcherInterface {
   

@@ -4,8 +4,6 @@ use \Asar\Resource\ResourceInterface;
 use \Asar\Config\ConfigInterface;
 use \Asar\Request\RequestInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class Representation implements ResourceInterface, ConfigInterface
 {

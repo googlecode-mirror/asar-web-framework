@@ -3,8 +3,6 @@ namespace Asar\FileSearcher;
 
 /**
  * Provides an interfaces for searching a file given a path
- * @package Asar
- * @subpackage core
  */
 interface FileSearcherInterface {
   

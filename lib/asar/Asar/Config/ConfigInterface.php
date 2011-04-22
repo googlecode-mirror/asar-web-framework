@@ -3,9 +3,6 @@ namespace Asar\Config;
 
 /**
  * Provides a generic interface for configurations
- *
- * @package Asar
- * @subpackage core
  */
 interface ConfigInterface {
   

@@ -6,9 +6,6 @@ use \Asar\Config;
  * Development configuration. Sets some request and response filters useful
  * during development. This is set when config 'mode' is set to 'development'.
  * See the FDebuggingExample functional test for ideas on usage.
- *
- * @package Asar
- * @subpackage core
  */
 class Development extends Config {
   

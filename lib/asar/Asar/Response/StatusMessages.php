@@ -6,8 +6,6 @@ use \Asar\Response\ResponseInterface;
 use \Asar\Request\RequestInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class StatusMessages 
   implements StatusMessagesInterface {

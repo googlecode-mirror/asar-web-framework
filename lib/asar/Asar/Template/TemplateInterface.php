@@ -3,8 +3,6 @@ namespace Asar\Template;
 
 use Asar\Configurable\ConfigurableInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 interface TemplateInterface extends ConfigurableInterface {
   

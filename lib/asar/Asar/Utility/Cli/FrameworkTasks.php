@@ -10,8 +10,6 @@ use \Asar\FileHelper\Exception\FileAlreadyExists;
 use \Asar\FileHelper\Exception\DirectoryAlreadyExists;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class FrameworkTasks implements CliInterface {
   

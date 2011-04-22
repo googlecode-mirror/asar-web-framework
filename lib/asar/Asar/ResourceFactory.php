@@ -6,8 +6,6 @@ use Asar\Templater;
 use Asar\TemplateRenderer;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class ResourceFactory {
   

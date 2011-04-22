@@ -6,9 +6,6 @@ use Asar\Debug;
 
 /**
  * A Null DebugPrinter that doesn't do anything but return the content
- *
- * @package Asar
- * @subpackage core
  */
 class NullDebugPrinter implements DebugPrinterInterface {
   

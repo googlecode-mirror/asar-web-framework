@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\Debug;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class TemplateFactory {
   

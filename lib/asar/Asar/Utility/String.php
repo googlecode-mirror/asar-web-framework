@@ -2,8 +2,6 @@
 namespace Asar\Utility;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class String {
   static function dashCamelCase($string) {

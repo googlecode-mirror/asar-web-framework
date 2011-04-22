@@ -3,9 +3,6 @@ namespace Asar\ContentNegotiator;
 /**
  * Provides an interface for content negotiation like how HTTP servers negotiate
  * the Content-type and/or language through an HTTP Request accept header.
- *
- * @package Asar
- * @subpackage core
  */
 interface ContentNegotiatorInterface {
   

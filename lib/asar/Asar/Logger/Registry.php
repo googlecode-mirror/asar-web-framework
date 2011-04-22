@@ -10,8 +10,6 @@ use Asar\File;
  * Registers loggers that implement the Asar_Logger_Interface
  *
  * @todo Modify. This looks more like a factory than a logger
- * @package Asar
- * @subpackage core
  */
 class Registry {
 

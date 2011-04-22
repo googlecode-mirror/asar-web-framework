@@ -6,8 +6,6 @@ use \Asar\Client\Exception\UnknownServerType;
 use \Asar\Request;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Client {
 

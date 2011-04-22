@@ -5,8 +5,6 @@ use \Asar\Utility\Cli\Interpreter;
 use \Asar\Utility\Cli\Executor\ExecutorInterface;
 use \Asar\Utility\Cli\CliInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class Cli {
   

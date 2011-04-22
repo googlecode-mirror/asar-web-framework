@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\Message;
 use \Asar\Request\RequestInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class Request extends Message implements RequestInterface {
   

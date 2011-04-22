@@ -6,8 +6,6 @@ use \Asar\Utility\Cli\CliInterface;
 use \Asar\Utility\ClassFilePeek;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class TaskFileLoader {
   

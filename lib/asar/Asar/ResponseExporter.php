@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\Response;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class ResponseExporter {
   

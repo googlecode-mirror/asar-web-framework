@@ -6,9 +6,6 @@ use Asar\Debug;
 use Asar\Utility\String as StringUtility;
 /**
  * Debug printer that outputs the debug information in HTML format
- *
- * @package Asar
- * @subpackage core
  */
 class Html implements DebugPrinterInterface {
   

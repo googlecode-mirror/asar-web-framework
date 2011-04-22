@@ -10,8 +10,6 @@ use \Asar\Message\MessageInterface;
 use \Asar\Utility\String;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Standard
   implements RequestFilterInterface, ResponseFilterInterface

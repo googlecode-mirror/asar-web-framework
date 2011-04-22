@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\Template\TemplateInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class TemplateSimpleRenderer {
   

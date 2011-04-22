@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\Config\ConfigInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class ApplicationScope {
   

@@ -6,9 +6,6 @@ use \Asar\Utility\Cli\TaskFileLoader;
 
 /**
  * Environment Helper for setting up the CLI interface
- *
- * @package Asar
- * @subpackage core
  */
 class Cli {
 

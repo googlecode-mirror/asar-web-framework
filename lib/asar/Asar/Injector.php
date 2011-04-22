@@ -2,10 +2,6 @@
 
 namespace Asar;
 
-/**
- * @package Asar
- * @subpackage core
- */
 require 'ClassLoader.php';
 require 'FileSearcher.php';
 require 'FileIncludeManager.php';

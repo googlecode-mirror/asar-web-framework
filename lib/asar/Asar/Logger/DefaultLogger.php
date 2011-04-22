@@ -5,8 +5,6 @@ use Asar\Logger\LoggerInterface;
 use Asar\File;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class DefaultLogger implements LoggerInterface {
   

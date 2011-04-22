@@ -6,8 +6,6 @@ use \Asar\Debug;
 use \Asar\DebugPrinter\Html as HtmlDebugPrinter;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class MessageFilterFactory {
   

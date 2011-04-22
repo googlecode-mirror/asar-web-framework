@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\ContentNegotiator\ContentNegotiatorInterface;
 
 /**
- * @package Asar
- * @subpackage core
  * @todo TemplateLocator is tied closely to the default routing algorithm.
  * Think about how to decouple them.
  */

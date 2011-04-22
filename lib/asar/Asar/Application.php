@@ -14,8 +14,6 @@ use \Asar\Resource\Exception\ForwardRequest;
 use \Asar\Utility\String;
 use \Asar\PathDiscover\PathDiscoverInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class Application implements ResourceInterface {
   

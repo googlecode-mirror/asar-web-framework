@@ -3,8 +3,6 @@ namespace Asar;
 
 use \Asar\ContentNegotiator\ContentNegotiatorInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class ContentNegotiator implements ContentNegotiatorInterface {
   

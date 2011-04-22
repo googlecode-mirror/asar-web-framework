@@ -4,8 +4,6 @@ namespace Asar\Template\Engines;
 use \Asar\Template\TemplateInterface;
 use \Asar\Template\Exception\TemplateFileNotFound;
 /**
- * @package Asar
- * @subpackage core
  */
 class PhpEngine implements TemplateInterface {
   

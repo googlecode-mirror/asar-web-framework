@@ -3,9 +3,6 @@ namespace Asar\Config;
 
 /**
  * Default configuration values
- *
- * @package Asar
- * @subpackage core
  */
 class DefaultConfig extends \Asar\Config {
   

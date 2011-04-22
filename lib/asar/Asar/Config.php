@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\Config\Exception as ConfigException;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Config implements Config\ConfigInterface {
   

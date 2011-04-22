@@ -5,8 +5,6 @@ use \Asar\FileSearcher\FileSearcherInterface;
 use \Asar\FileIncludeManager\FileIncludeManagerInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class ClassLoader {
   

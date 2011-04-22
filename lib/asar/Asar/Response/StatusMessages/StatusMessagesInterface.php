@@ -5,8 +5,6 @@ use \Asar\Response\ResponseInterface;
 use \Asar\Request\RequestInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 interface StatusMessagesInterface {
   function getMessage(

@@ -5,9 +5,6 @@ use Asar\Debug;
 
 /**
  * Inserts debug information in a content with a suitable format
- *
- * @package Asar
- * @subpackage core
  */
 interface DebugPrinterInterface {
   

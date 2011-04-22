@@ -3,8 +3,6 @@ namespace Asar\Request;
 
 use \Asar\Message\MessageInterface;
 /**
- * @package Asar
- * @subpackage core
  * @todo Move Request to Message namespace
  */
 interface RequestInterface extends MessageInterface {

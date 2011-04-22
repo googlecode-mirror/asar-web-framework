@@ -6,8 +6,6 @@ use \Asar\ApplicationScope;
 use \Asar\ApplicationInjector;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class ApplicationFactory {
   

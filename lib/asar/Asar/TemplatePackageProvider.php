@@ -3,8 +3,6 @@ namespace Asar;
 
 use \Asar\Request\RequestInterface;
 /**
- * @package Asar
- * @subpackage core
  */
 class TemplatePackageProvider {
   

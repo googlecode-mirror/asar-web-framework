@@ -8,8 +8,6 @@ use \Asar\Utility\Cli\Exception\UndefinedTask;
 use \Asar\Utility\String;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class Executor implements ExecutorInterface {
   

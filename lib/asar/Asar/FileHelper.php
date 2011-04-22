@@ -6,8 +6,6 @@ use \Asar\FileHelper\Exception\FileAlreadyExists;
 use \Asar\FileHelper\Exception\DirectoryAlreadyExists;
 use \Asar\FileHelper\Exception\ParentDirectoryDoesNotExist;
 /**
- * @package Asar
- * @subpackage core
  */
 class FileHelper {
   

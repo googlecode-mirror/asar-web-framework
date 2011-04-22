@@ -3,8 +3,6 @@ namespace Asar\Logger;
 
 /**
  * Provides a generic interface for logging
- * @package Asar
- * @subpackage core
  */
 interface LoggerInterface {
   

@@ -9,9 +9,6 @@ use \Asar\ApplicationInjector;
 /**
  * Environment helper that sets up the web server environment. This is
  * what is mostly used in the front controller.
- *
- * @package Asar
- * @subpackage core
  */
 class Web {
 

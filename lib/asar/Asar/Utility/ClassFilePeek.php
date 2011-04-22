@@ -1,8 +1,6 @@
 <?php
 namespace Asar\Utility;
 /**
- * @package Asar
- * @subpackage core
  */
 class ClassFilePeek {
   

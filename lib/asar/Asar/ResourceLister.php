@@ -4,8 +4,6 @@ namespace Asar;
 use \Asar\ResourceLister\ResourceListerInterface;
 use \Asar\Application\Finder as AppFinder;
 /**
- * @package Asar
- * @subpackage core
  */
 class ResourceLister implements ResourceListerInterface {
   

@@ -8,8 +8,6 @@ use \Asar\Request\RequestInterface;
 use \Asar\Template\TemplateInterface;
 
 /**
- * @package Asar
- * @subpackage core
  */
 class TemplateRenderer {
   
