@@ -286,7 +286,9 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
     $tasks = $this->_testCreatingAFile(
       $this->constructPath('thedir', 'apps', 'FooApp', 'Config.php'),
       "<?php\n" .
-      "class FooApp_Config extends Asar_Config {\n" .
+      "namespace FooApp;\n" .
+      "\n" .
+      "class Config extends \Asar\Config {\n" .
       "\n" .
       "  // Add configuration directives here...\n" .
       "  protected \$config = array(\n" .
@@ -304,7 +306,7 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
   function testCreateResource(
     $project, $app, $url, $resource_name, $filepath, $contents = false
   ) {
-    $full_resource_name = $app . '_Resource_' . $resource_name;
+    $full_resource_name = $app . '\Resource\\' . $resource_name;
     if (!$contents) {
       $contents = 
         "  function GET() {\n".
@@ -321,10 +323,13 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
         $project, 'apps', $app, 'Resource', $filepath . '.php'
       );
     }
+    $splitname = $this->splitFullClassName($full_resource_name);
     $tasks = $this->_testCreatingAFile(
       $full_filepath,
       "<?php\n" .
-      "class $full_resource_name extends Asar_Resource {\n" .
+      "namespace {$splitname['namespace']};\n" .
+      "\n" .
+      "class {$splitname['class']} extends \Asar\Resource {\n" .
       "  \n" .
       $contents .
       "  \n" .
@@ -365,21 +370,21 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
         'project'       => 'foo',
         'app'           => 'BarApp',
         'url'           => '/foo/bar',
-        'resource_name' => 'Foo_Bar',
+        'resource_name' => 'Foo\Bar',
         'filepath'      => 'Foo/Bar'
       ),
       array(
         'project'       => 'foo',
         'app'           => 'BarApp',
         'url'           => '/foo/bar/baz',
-        'resource_name' => 'Foo_Bar_Baz',
+        'resource_name' => 'Foo\Bar\Baz',
         'filepath'      => 'Foo/Bar/Baz'
       ),
       array(
         'project'       => 'foo',
         'app'           => 'BarApp',
         'url'           => '/foo/{title}/baz',
-        'resource_name' => 'Foo_RtTitle_Baz',
+        'resource_name' => 'Foo\RtTitle\Baz',
         'filepath'      => 'Foo/RtTitle/Baz',
         'contents'      => 
           "  function GET() {\n" .
@@ -397,7 +402,7 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
         'project'       => 'foo',
         'app'           => 'BarApp',
         'url'           => '/{foo}/{title}/baz',
-        'resource_name' => 'RtFoo_RtTitle_Baz',
+        'resource_name' => 'RtFoo\RtTitle\Baz',
         'filepath'      => 'RtFoo/RtTitle/Baz',
         'contents'      => 
           "  function GET() {\n" .
@@ -422,7 +427,7 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
         'project'       => '.',
         'app'           => 'TestApp',
         'url'           => '/foo/bar',
-        'resource_name' => 'Foo_Bar',
+        'resource_name' => 'Foo\Bar',
         'filepath'      => 'Foo/Bar'
       )
     );

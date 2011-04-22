@@ -103,7 +103,9 @@ class FrameworkTasks implements CliInterface {
     $this->taskCreateFile(
       $this->constructPath($project, 'apps', $app, 'Config.php'),
       "<?php\n" .
-      "class {$app}_Config extends Asar_Config {\n" .
+      "namespace {$app};\n" .
+      "\n" .
+      "class Config extends \Asar\Config {\n" .
       "\n" .
       "  // Add configuration directives here...\n" .
       "  protected \$config = array(\n" .
@@ -195,20 +197,30 @@ class FrameworkTasks implements CliInterface {
       $levels = array_map(
         array($this, 'formatResourceNameFragment'), explode('/', ltrim($url, '/'))
       );
-      $name = implode('_', $levels);
+      $name = implode('\\', $levels);
       $this->createResourceDir($project, $app, $levels);
     }
-    $full_resource_name = $app . '_Resource_' . $name;
-    $fname = str_replace('_', '/', $name);
+    $full_resource_name = $app . '\Resource\\' . $name;
+    $splitname = $this->splitFullClassName($full_resource_name);
+    $fname = str_replace('\\', '/', $name);
     $this->createProjectFile(
       $project, $this->constructPath('apps', $app, 'Resource', $fname . '.php'),
       "<?php\n" .
-      "class $full_resource_name extends Asar_Resource {\n" .
+      "namespace {$splitname['namespace']};\n" .
+      "\n" .
+      "class {$splitname['class']} extends \Asar\Resource {\n" .
       "  \n" .
       $this->getResourceContents($url) .
       "  \n" .
       "}\n"
     );
+  }
+  
+  private function splitFullClassName($full_classname) {
+    $all = explode('\\', $full_classname);
+    $return['class'] = array_pop($all);
+    $return['namespace'] = implode('\\', $all);
+    return $return;
   }
   
   private function createResourceDir($project, $app, $levels) {
