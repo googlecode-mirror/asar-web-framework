@@ -1,15 +1,20 @@
 <?php
+namespace Asar;
+
+use \Asar\Application;
+use \Asar\Request\RequestInterface;
+
 /**
  */
-class Asar_ApplicationRunner {
+class ApplicationRunner {
 
   private $app;
 
-  function __construct(Asar_Application $app) {
+  function __construct(Application $app) {
     $this->app = $app;
   }
   
-  function run(Asar_Request_Interface $request) {
+  function run(RequestInterface $request) {
     return $this->app->handleRequest($request);
   }
   
