@@ -2,12 +2,6 @@
 
 namespace Asar;
 
-require 'ClassLoader.php';
-require 'FileSearcher.php';
-require 'FileIncludeManager.php';
-require 'EnvironmentHelper/Web.php';
-require 'EnvironmentHelper/Bootstrap.php';
-
 class Injector {
   
   private static $cli;
@@ -32,14 +26,6 @@ class Injector {
     return $env_scope->getAppName();
   }
   
-  static function injectEnvironmentHelperBootstrap(
-    EnvironmentScope $env_scope
-  ) {
-    return new EnvironmentHelper\Bootstrap(
-      self::injectClassLoader($env_scope)
-    );
-  }
-  
   static function injectEnvironmentHelperCli(EnvironmentScope $env_scope) {
     return new EnvironmentHelper\Cli(
       self::injectCli($env_scope),
@@ -50,10 +36,7 @@ class Injector {
   }
   
   static function injectClassLoader(EnvironmentScope $env_scope) {
-    return new ClassLoader(
-      self::injectFileSearcher($env_scope),
-      self::injectFileIncludeManager($env_scope)
-    );
+    return new ClassLoader;
   }
   
   static function injectRequestFactory(EnvironmentScope $env_scope) {

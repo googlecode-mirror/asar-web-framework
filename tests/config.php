@@ -2,11 +2,11 @@
 ini_set('error_reporting', E_ALL | E_STRICT);
 
 $lib_path = realpath(__DIR__ . '/../lib/') . '/';
-require_once $lib_path . 'SplClassLoader.php';
+require_once $lib_path . 'asar/Asar/ClassLoader.php';
 
-$classLoader = new SplClassLoader('Asar\Tests', __DIR__);
+$classLoader = new \Asar\ClassLoader('Asar\Tests', __DIR__);
 $classLoader->register();
-$classLoader = new SplClassLoader('Asar', $lib_path . 'asar');
+$classLoader = new \Asar\ClassLoader('Asar', $lib_path . 'asar');
 $classLoader->register();
 
 if (!isset($_SESSION)) {
@@ -15,4 +15,3 @@ if (!isset($_SESSION)) {
 $scope = new \Asar\EnvironmentScope(
   $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
 );
-\Asar\Injector::injectEnvironmentHelperBootstrap($scope)->run();
