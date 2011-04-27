@@ -13,7 +13,7 @@ class Injector {
   
   static function injectEnvironmentHelper(EnvironmentScope $env_scope) {
     return new EnvironmentHelper\Web(
-      self::injectConfigDefault($env_scope),
+      self::injectDefaultConfig($env_scope),
       self::injectRequestFactory($env_scope),
       self::injectResponseExporter($env_scope),
       self::injectServerVars($env_scope),
@@ -49,7 +49,7 @@ class Injector {
   
   static function injectApplicationFactory(EnvironmentScope $env_scope) {
     return new ApplicationFactory(
-      self::injectConfigDefault($env_scope)
+      self::injectDefaultConfig($env_scope)
     );
   }
   
@@ -125,8 +125,8 @@ class Injector {
     return new FileHelper;
   }
   
-  static function injectConfigDefault(EnvironmentScope $env_scope) {
-    return new Config_Default;
+  static function injectDefaultConfig(EnvironmentScope $env_scope) {
+    return new Config\DefaultConfig;
   }
   
   static function injectCliTaskFileLoader(EnvironmentScope $env_scope) {

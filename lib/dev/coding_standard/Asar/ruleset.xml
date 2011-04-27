@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="Asar">
+  <description>A custom coding standard for the Asar Web Framework.</description>
+  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
+  <rule ref="Generic.WhiteSpace.DisallowTabIndent" />
+  <rule ref="Generic.Files.LineLength" />
+  <rule ref="Generic.NamingConventions.ConstructorName" />
+  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
+  <rule ref="PEAR.ControlStructures.ControlSignature" />
+  <rule ref="PEAR.Files.LineEndings" />
+  <rule ref="PEAR.Functions.FunctionCallArgumentSpacing" />
+  <rule ref="PEAR.Functions.ValidDefaultValue" />
+  <rule ref="Squiz.Functions.GlobalFunction" />
+</ruleset>

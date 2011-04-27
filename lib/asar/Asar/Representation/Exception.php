@@ -1,4 +1,5 @@
 <?php
+namespace Asar\Representation;
 /**
  */
-class Asar_Representation_Exception extends Asar_Exception {}
+class Exception extends \Asar\Exception {}
