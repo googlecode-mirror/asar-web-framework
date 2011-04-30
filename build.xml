@@ -49,6 +49,7 @@
    <arg line="${source}
               xml
               codesize,design,naming,unusedcode
+              --ignore ${basedir}/lib/asar/Asar/Exception.php
               --reportfile ${basedir}/build/logs/pmd.xml" />
   </exec>
  </target>
