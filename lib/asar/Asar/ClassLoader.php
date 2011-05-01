@@ -38,8 +38,8 @@ class ClassLoader {
    * 
    * @param string $ns The namespace to use.
    */
-  function __construct($ns = null, $includePath = null) {
-    $this->_namespace = $ns;
+  function __construct($namespace = null, $includePath = null) {
+    $this->_namespace = $namespace;
     $this->_includePath = $includePath;
   }
 
@@ -108,10 +108,6 @@ class ClassLoader {
    * Uninstalls this class loader from the SPL autoloader stack.
    */
   function unregister() {
-    (
-      $this->_includePath !== null ? 
-        $this->_includePath . DIRECTORY_SEPARATOR : ''
-    ) . $fileName;
     spl_autoload_unregister(array($this, 'loadClass'));
   }
 
@@ -143,13 +139,11 @@ class ClassLoader {
         $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
       }
       $file = ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName;
-      $b = true;
       if (!file_exists($file)) {
         return false;
       }
       include_once $file;
-      //(@include_once $file) or $b = false;
-      return $b;
+      return true;
     }
   }
 }

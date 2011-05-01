@@ -22,20 +22,20 @@ class Config implements Config\ConfigInterface {
     if (is_string($key)) {
       $keys = explode('.', $key);
       for (
-        $i=0, $els = count($keys), $e = null, $arr = $this->config;
-        $i < $els; $i++
+        $i=0, $el_count = count($keys), $element = null, $arr = $this->config;
+        $i < $el_count; $i++
       ) { 
         if (isset($arr[$keys[$i]])) {
-          $a = $arr[$keys[$i]];
-          if (is_array($a)) {
-            $arr = $a;
+          $value = $arr[$keys[$i]];
+          if (is_array($value)) {
+            $arr = $value;
           }
-          if ($i == $els - 1) {
-            $e = $a;
+          if ($i == $el_count - 1) {
+            $element = $value;
           }
         }
       }
-      return $e;
+      return $element;
     }
     return $this->config;
   }

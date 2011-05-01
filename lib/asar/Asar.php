@@ -68,13 +68,6 @@ class Asar {
   }
   
   /**
-   * @return string full path to the extensions code
-   */
-  function getFrameworkExtensionsPath() {
-    return $this->getPath('framework_extensions', '/lib/extensions');  
-  }
-  
-  /**
    * @return string full path to the development-related codes used for
    *                testing and development
    */

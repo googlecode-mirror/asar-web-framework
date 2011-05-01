@@ -28,7 +28,9 @@ class PhpEngine implements TemplateInterface {
     return $this->file;
   }
   
-  // TODO: Is this even necessary?
+  /**
+   * @todo Is this even necessary?
+   */ 
   function setConfig($key, $value) {}
   
   function getLayoutVars() {

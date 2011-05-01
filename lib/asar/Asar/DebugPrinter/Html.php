@@ -9,7 +9,7 @@ use Asar\Utility\String as StringUtility;
  */
 class Html implements DebugPrinterInterface {
   
-  private $block_elements = array('div', 'table', 'tbody', 'tr');
+  //private $block_elements = array('div', 'table', 'tbody', 'tr');
   
   /**
    * Inserts the debug information in $debug as html snippet at the end of the

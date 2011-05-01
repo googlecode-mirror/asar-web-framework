@@ -193,8 +193,7 @@ class ApplicationInjector {
   }
   
   static function injectAppPath(ApplicationScope $scope) {
-    $p = self::injectApplicationFinder($scope)->find($scope->getAppName());
-    return $p;
+    return self::injectApplicationFinder($scope)->find($scope->getAppName());
   }
   
   static function injectApplicationFinder(ApplicationScope $scope) {

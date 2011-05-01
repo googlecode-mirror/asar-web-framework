@@ -29,7 +29,6 @@ class AsarTest extends TestCase {
       array('getFrameworkPath', ''),
       array('getFrameworkCorePath', '/lib/asar'),
       array('getFrameworkVendorPath', '/lib/vendor'),
-      array('getFrameworkExtensionsPath', '/lib/extensions'),
       array('getFrameworkDevPath', '/lib/dev'),
       array('getFrameworkTestsPath', '/tests'),
       array('getFrameworkTestsDataPath', '/tests/data'),
