@@ -404,6 +404,7 @@ class ResourceTest extends \Asar\Tests\TestCase {
       array('/a/relative/path', 'temporary', 307, '/a/relative/path'),
       array('/another/path', 'permanent', 301, '/another/path'),
       array('A\Resource\Name', '', 302, 'A\Resource\Name'),
+      array('/another/path', 'see', 303, '/another/path'),
     );
   }
   

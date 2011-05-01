@@ -30,6 +30,7 @@ class Resource
       'multiple'  => 300,
       'permanent' => 301,
       'basic'     => 302,
+      'see'       => 303,
       'temporary' => 307,
     );
   
