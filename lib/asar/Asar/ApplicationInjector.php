@@ -81,15 +81,19 @@ class ApplicationInjector {
   static function injectAppConfig(ApplicationScope $scope) {
     if (!$scope->isInCache('AppConfig')) {
       $app_config_class = self::getApplicationConfigClass($scope);
-      //throw new \Exception;
       $app_config = new $app_config_class;
       if ('development' == $app_config->getConfig('mode')) {
         $app_config->importConfig(self::injectConfigDevelopment($scope));
       }
       $app_config->importConfig(self::injectConfigDefault($scope));
+      $app_config->importConfig($scope->getConfig());
       $scope->addToCache('AppConfig', $app_config);
     }
     return $scope->getCache('AppConfig');
+  }
+  
+  static function injectStartupConfig(ApplicationScope $scope) {
+    return self::injectConfigDefault($scope);
   }
   
   static function injectConfigDefault(ApplicationScope $scope) {
@@ -205,7 +209,7 @@ class ApplicationInjector {
     if (class_exists($test)) {
       return $test;
     }
-    return $scope->getConfig()->getConfig('default_classes.application');
+    return self::injectStartupConfig($scope)->getConfig('default_classes.application');
   }
 
   static function getApplicationConfigClass(ApplicationScope $scope) {
@@ -213,7 +217,7 @@ class ApplicationInjector {
     if (class_exists($test)) {
       return $test;
     }
-    return $scope->getConfig()->getConfig('default_classes.config');
+    return self::injectStartupConfig($scope)->getConfig('default_classes.config');
   }
   
 }
