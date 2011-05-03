@@ -158,6 +158,9 @@ class Resource
     return $this->request->getPath();
   }
   
+  /**
+   * @todo This should probably delegate to the router...
+   */
   function getPermaPath($path_params = array()) {
     $touse = array();
     $path_template = $this->getPathTemplate();
@@ -168,9 +171,10 @@ class Resource
         $touse[] = $value;
       }
     }
-    return '/' . implode(
+    $permapath = '/' . implode(
       '/', array_map(array('Asar\Utility\String', 'dashLowerCase'), $touse)
     );
+    return $permapath == '/index' ? '/' : $permapath;
   }
   
   protected function getPathComponents() {
@@ -198,7 +202,7 @@ class Resource
         array('Asar\Utility\String', 'dashLowerCase'), $relevant
       );
       for ($i = 0, $size = count($keys); $i < $size; $i++) {
-        if ($this->strStartsWith($keys[$i], 'rt-')) {
+        if (String::startsWith($keys[$i], 'rt-')) {
           $this->path_template[substr($keys[$i], 3)] = null;
         } else {
           $this->path_template[$keys[$i]] = $keys[$i];
@@ -206,10 +210,6 @@ class Resource
       }
     }
     return $this->path_template;
-  }
-  
-  private function strStartsWith($str, $prefix) {
-    return strpos($str, $prefix) === 0;
   }
   
 }

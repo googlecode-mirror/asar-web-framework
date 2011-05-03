@@ -266,6 +266,14 @@ class ResourceTest extends \Asar\Tests\TestCase {
     );
   }
   
+  function testGetPermaPath3() {
+    $cname = $this->createResourceClassDefinition(
+      'GetPermaPath\Resource\Index'
+    );
+    $R = new $cname;
+    $this->assertEquals('/', $R->getPermaPath());
+  }
+  
   function testForwardTo() {
     $cname = $this->createResourceClassDefinition(
       'Forwarding', 'return $this->forwardTo("Some\Resource");'
