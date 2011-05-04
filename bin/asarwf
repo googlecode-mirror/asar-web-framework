@@ -10,9 +10,7 @@ $classLoader->register();
 if (!isset($_SESSION)) {
   $_SESSION = array();
 }
-$scope = new \Asar\EnvironmentScope(
-  $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd(), $argv
-);
-\Asar\Injector::injectEnvironmentHelperCli($scope)->run();
+$scope = new \Asar\Utility\Cli\EnvironmentScope(getcwd(), $argv);
+\Asar\Utility\Cli\Injector::injectEnvironmentHelperCli($scope)->run();
 ?>
 
