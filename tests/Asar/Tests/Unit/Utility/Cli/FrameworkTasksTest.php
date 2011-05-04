@@ -474,6 +474,10 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
       $this->constructPath('thedir', 'web', 'index.php'),
       "<?php\n" .
       "\$env_helper = require realpath(dirname(__FILE__) . '/../bootstrap.php');\n" .
+      "\$class_loader = new Asar\ClassLoader(\n" .
+      "    'TheApp', realpath(__DIR__ . '/../apps')\n" .
+      ");\n" .
+      "\$class_loader->register();\n" .
       "\$env_helper->runAppInProductionEnvironment('TheApp');\n"
     );
     $tasks->taskCreateFrontController('thedir', 'TheApp');

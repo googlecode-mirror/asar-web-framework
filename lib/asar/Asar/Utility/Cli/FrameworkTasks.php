@@ -115,6 +115,10 @@ class FrameworkTasks implements CliInterface {
       $this->constructPath($project, 'web', 'index.php'),
       "<?php\n" .
       "\$env_helper = require realpath(dirname(__FILE__) . '/../bootstrap.php');\n" .
+      "\$class_loader = new Asar\ClassLoader(\n" .
+      "    '$app', realpath(__DIR__ . '/../apps')\n" .
+      ");\n" .
+      "\$class_loader->register();\n" .
       "\$env_helper->runAppInProductionEnvironment('$app');\n"
     );
   }
