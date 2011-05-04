@@ -12,12 +12,10 @@ class EnvironmentScope {
     $files   = array(),
     $session = array(),
     $cookie  = array(),
-    $env     = array(),
-    $cwd,
-    $argv    = array();
+    $env     = array();
   
   function __construct(
-    $server, $get, $post, $files, $session, $cookie, $env, $cwd, $argv = array()
+    $server, $get, $post, $files, $session, $cookie, $env
   ) {
     $this->server  = $server;
     $this->get     = $get;
@@ -26,8 +24,6 @@ class EnvironmentScope {
     $this->session = $session;
     $this->cookie  = $cookie;
     $this->env     = $env;
-    $this->cwd     = $cwd;
-    $this->argv    = $argv;
   }
   
   function getServerVars() {
@@ -57,13 +53,4 @@ class EnvironmentScope {
   function getEnvVars() {
     return $this->env;
   }
-  
-  function getArgv() {
-    return $this->argv;
-  }
-  
-  function getCurrentWorkingDirectory() {
-    return $this->cwd;
-  }
-  
 }

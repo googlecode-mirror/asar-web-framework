@@ -71,14 +71,11 @@ class FrameworkTasks implements CliInterface {
       "// This runs the whole bootsrap process inside a function\n" .
       "// so we don't pollute the global scope.\n" .
       "function _bootstrap() {\n" .
-      "  // Prepares the include paths\n" .
+      "  // Register the Asar namespace to the classloader\n" .
       "  \$__asar = Asar::getInstance();\n" .
-      "  \$__asar->getToolSet()->getIncludePathManager()->add(\n" .
-      "    \$__asar->getFrameworkCorePath(),\n" .
-      "    realpath(dirname(__FILE__) . '/apps')\n" .
-      "  );\n" .
-      "  require_once 'Asar/EnvironmentScope.php';\n" .
-      "  require_once 'Asar/Injector.php';\n" .
+      "  require_once \$asar->getFrameworkCorePath() . '/Asar/ClassLoader.php';\n" .
+      "  \$class_loader = new Asar\ClassLoader('Asar', \$asar->getFrameworkCorePath());\n" .
+      "  \$class_loader->register();\n" .
       "  if (!isset(\$_SESSION)) {\n" .
       "    \$_SESSION = array();\n" .
       "  }\n" .
@@ -86,13 +83,10 @@ class FrameworkTasks implements CliInterface {
       "    \$argv = array();\n" .
       "  }\n" .
       "  // Load the environment variables\n" .
-      "  \$scope = new Asar_EnvironmentScope(\n" .
-      "    \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
+      "  \$scope = new Asar\EnvironmentScope(\n" .
+      "    \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV\n" .
       "  );\n" .
-      "  // Run initial bootstrap \n" .
-      "  // We load the class loader here\n" .
-      "  Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
-      "  return Asar_Injector::injectEnvironmentHelper(\$scope);\n" .
+      "  return Asar\Injector::injectEnvironmentHelper(\$scope);\n" .
       "}\n" .
       "\n" .
       "return _bootstrap();\n"
@@ -110,7 +104,7 @@ class FrameworkTasks implements CliInterface {
       "  // Add configuration directives here...\n" .
       "  protected \$config = array(\n" .
       "    // e.g.:\n" .
-      "    // 'use_templates' => false,\n" .
+      "    'use_templates' => false,\n" .
       "  );\n".
       "}\n"
     );
@@ -142,11 +136,11 @@ class FrameworkTasks implements CliInterface {
       "if (!isset(\$_SESSION)) {\n" .
       "  \$_SESSION = array();\n" .
       "}\n" .
-      "\$scope = new Asar_EnvironmentScope(\n" .
+      "\$scope = new Asar\EnvironmentScope(\n" .
       "  \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV, getcwd()\n" .
       ");\n" .
-      "Asar_Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
-      "Asar_Injector::injectEnvironmentHelper(\$scope)->runTestEnvironment();\n" .
+      "Asar\Injector::injectEnvironmentHelperBootstrap(\$scope)->run();\n" .
+      "Asar\Injector::injectEnvironmentHelper(\$scope)->runTestEnvironment();\n" .
       "\n"
     );
   }
