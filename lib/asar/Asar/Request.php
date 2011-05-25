@@ -46,6 +46,12 @@ class Request extends Message implements RequestInterface {
     return $this->params;
   }
   
+  function getParam($key) {
+    if (isset($this->params[$key])) {
+      return $this->params[$key];
+    }
+  }
+  
   function setContent($content) {
     $this->content = $content;
   }
@@ -56,7 +62,8 @@ class Request extends Message implements RequestInterface {
   
   function export() {
     $str = sprintf(
-      "%s %s HTTP/1.1\r\n", $this->getMethod(), $this->getPath()
+      "%s %s HTTP/1.1\r\n", $this->getMethod(),
+      $this->getPath() . $this->getParamsEncoded()
     );
     $headers = $this->getHeaders();
     $msg_body = '';
@@ -71,14 +78,16 @@ class Request extends Message implements RequestInterface {
     return $str . "\r\n" . $msg_body;
   }
   
-  private function createParamStr($params) {
-    if (!is_array($params))
-      return '';
-    $post_pairs = array();
-    foreach ($params as $key => $value) {
-      $post_pairs[] = rawurlencode($key) . '=' . rawurlencode($value);
+  private function getParamsEncoded() {
+    if (count($this->params)) {
+      return '?' . $this->createParamStr($this->params);
     }
-    return implode('&', $post_pairs);
+  }
+  
+  private function createParamStr($params) {
+    if (is_array($params)) {
+      return http_build_query($params, '', '&');
+    }
   }
 
 }

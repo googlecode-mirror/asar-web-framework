@@ -97,7 +97,19 @@ class RequestTest extends \Asar\Tests\TestCase {
     $R = new Request(array(
       'params' => array('foo' => 'bar')
     ));
-    $this->assertEquals(array('foo' => 'bar'), $R->getParams('foo'));
+    $this->assertEquals(array('foo' => 'bar'), $R->getParams());
+  }
+  
+  function testGettingASingleParameter() {
+    $R = new Request(array(
+      'params' => array('foo' => 'bar')
+    ));
+    $this->assertEquals('bar', $R->getParam('foo'));
+  }
+  
+  function testGettingASingleParameterDefaultsToNullForUndefinedValues() {
+    $R = new Request;
+    $this->assertSame(Null, $R->getParam('foo'));
   }
   
   function testExportRawHttpRequestString() {
@@ -179,4 +191,20 @@ class RequestTest extends \Asar\Tests\TestCase {
     );
     $this->assertStringEndsWith("\r\n\r\n", $str);
   }
+  
+  function testExportRequestWithParamsUrlEncodesParamValues() {
+    $R = new Request(array(
+      'path'    => '/handler',
+      'params' => array(
+        'foo' => 'bar', 'goo[]' => 'jazz', 'good' => 'bad='
+      )
+    ));
+    $expected = 'foo=bar&' . urlencode('goo[]') . '=jazz&good=bad' .
+      urlencode('=');
+    $str = $R->export();
+    $this->assertStringStartsWith(
+      "GET /handler?$expected HTTP/1.1\r\n", $str, $str
+    );
+  }
+  
 }
