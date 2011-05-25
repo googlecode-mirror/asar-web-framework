@@ -18,11 +18,6 @@ class FsocketTest extends \Asar\Tests\TestCase {
     $this->TSM = new TestServerManager(
       $this->A->getFrameworkTestsDataPath()
     );
-    if (!$this->TSM->isCanConnectToTestServer()) {
-      $this->markTestSkipped(
-        'Unable to connect to test server. Check server setup.'
-      );
-    }
     $this->TSM->clearTestServer();
     $this->TSM->setUp(array('fixture' => 'normal'));
     $this->host = 'http://asar-test.local';
@@ -39,6 +34,11 @@ class FsocketTest extends \Asar\Tests\TestCase {
   }
   
   function testFirstConnection() {
+    if (!$this->TSM->isCanConnectToTestServer()) {
+      $this->markTestSkipped(
+        'Unable to connect to test server. Check server setup.'
+      );
+    }
     $response = $this->server->handleRequest(new Request);
     $this->assertEquals(200, $response->getStatus());
     $this->assertContains('text/html', $response->getHeader('Content-Type'));
@@ -51,6 +51,16 @@ class FsocketTest extends \Asar\Tests\TestCase {
       ),
       $response->getContent()
     );
+  }
+  
+  function testSettingHostCleansHost() {
+    $server = new FsocketHttpServer('http://somewhere.com/');
+    $this->assertEquals('somewhere.com', $server->getHostName());
+  }
+  
+  function testSettingHostCleansHost2() {
+    $server = new FsocketHttpServer('somewhere.com');
+    $this->assertEquals('somewhere.com', $server->getHostName());
   }
   
 }

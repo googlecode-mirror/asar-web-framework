@@ -16,7 +16,7 @@ class Fsocket implements ResourceInterface {
    * @param string $host the web address (e.g. www.google.com)
    */
   function __construct($host) {
-    $this->host = $host;
+    $this->host = rtrim($host, '/');
   }
   
   /**
