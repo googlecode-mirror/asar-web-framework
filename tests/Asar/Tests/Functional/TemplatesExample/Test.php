@@ -166,7 +166,6 @@ class Test extends \Asar\Tests\TestCase {
       ),
       $content, 'Unable to set layout variable: ' . $content
     );
-    
   }
   
   public function testAlternativeTemplateLookup() {
@@ -246,6 +245,46 @@ class Test extends \Asar\Tests\TestCase {
       $response->getContent(),
       $response->getContent()
     );
+  }
+  
+  private function elementChildAtMatch(
+    $parent, $child_at, $tag, $attributes = array()
+  ) {
+    $child = $html->find($parent, 0)->children($child_at);
+    $nth = $child_at + 1;
+    $this->assertEquals(
+      $tag, $child->tag,
+      "The {$nth}th child of the $parent element must be a $tag " .
+      "element."
+    );
+    foreach ($attributes as $attribute => $value) {
+      $this->assertEquals(
+        $value, $child->$attribute,
+        "The $tag element's $attribute attribute must equal '$value'."
+      );
+    }
+  }
+  
+  public function testSettingJavascriptAndCss() {
+    $html = str_get_html(
+      $this->client->GET(
+        $this->app, array('path' => '/css-and-js')
+      )->getContent()
+    );
+    $this->assertEquals(
+      5, count($html->find('head', 0)->children()),
+      "The number of elements in the head must be 5."
+    );
+    $this->elementChildAtMatch('head', 2, 'link', array(
+      'rel' => 'stylesheet',
+      'href' => '/css/foo.css'
+    ));
+    $this->elementChildAtMatch('head', 3, 'script', array(
+      'src' => '/js/bar.js'
+    ));
+    $this->elementChildAtMatch('head', 4, 'script', array(
+      'src' => '/js/foo.js'
+    ));
   }
   
 }
