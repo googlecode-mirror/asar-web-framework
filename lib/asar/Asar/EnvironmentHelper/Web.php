@@ -43,11 +43,11 @@ class Web {
    *                         application class without the "_Application" suffix
    */
   function runAppInProductionEnvironment($app_name) {
-    $app_scope = new ApplicationScope(
+    $container = new ApplicationInjector(
       $app_name, $this->config
     );
     $this->response_exporter->exportResponse(
-      ApplicationInjector::injectApplicationRunner($app_scope)->run(
+      $container->ApplicationRunner->run(
         $this->request_factory->createRequest(
           $this->server_vars, $this->params, $this->post
         )
