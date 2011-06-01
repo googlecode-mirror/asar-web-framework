@@ -16,12 +16,11 @@ class Test extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->client = new Client;
-    $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope(
-        'Asar\Tests\Functional\ResourceTraversing\ResourceTraversing',
-        new DefaultConfig
-      )
+    $container = new ApplicationInjector(
+      'Asar\Tests\Functional\ResourceTraversing\ResourceTraversing',
+      new DefaultConfig
     );
+    $this->app = $container->Application;
   }
   
   /**

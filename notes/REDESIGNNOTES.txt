@@ -1,4 +1,6 @@
 NEXT:
+- Replace DIY DI container with Pimple
+- Create helper manager for managing helpers
 - Create tests for Fsocket when there is a problem connecting
 - Create test for PhpEngine for setting configuration
 - Create a separate class for finding the directory path of an application

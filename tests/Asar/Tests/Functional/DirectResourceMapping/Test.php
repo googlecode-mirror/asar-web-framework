@@ -15,12 +15,11 @@ class Test extends \Asar\Tests\TestCase {
   
   function setUp() {
     $this->client = new Client;
-    $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope(
-        'Asar\Tests\Functional\DirectResourceMapping\Example1', 
-        new DefaultConfig
-      )
+    $container = new ApplicationInjector(
+      'Asar\Tests\Functional\DirectResourceMapping\Example1', 
+      new DefaultConfig
     );
+    $this->app = $container->Application;
   }
   
   function testGetIndexShouldReturnAResponseObject() {

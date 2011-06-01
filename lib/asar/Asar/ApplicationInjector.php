@@ -1,223 +1,215 @@
 <?php
 namespace Asar;
 
+use \Asar\Config\ConfigInterface;
+
 /**
  */
-class ApplicationInjector {
-  
-  static function injectApplicationRunner(ApplicationScope $scope) {
-    return new ApplicationRunner(
-      self::injectApplication($scope)
-    );
-  }
-  
-  static function injectRequest(ApplicationScope $scope) {
-    return $scope->getRequest();
-  }
-  
-  static function injectApplication(ApplicationScope $scope) {
-    $app_full_name = self::getApplicationClass($scope);
-    self::registerLoggers($scope);
-    return new $app_full_name(
-      $scope->getAppName(),
-      self::injectRouter($scope),
-      self::injectStatusCodeMessages($scope),
-      self::injectAppConfig($scope)->getConfig('map'),
-      self::injectRequestFilters($scope),
-      self::injectResponseFilters($scope)
-    );
-  }
-  
-  static function registerLoggers(ApplicationScope $scope) {
-    if (self::injectLogFile($scope)) {
-      Logger\Registry::register(
-        $scope->getAppName(), self::injectLogFile($scope)
-      );
-    }
-  }
-  
-  static function injectLogFile(ApplicationScope $scope) {
-    return self::injectAppConfig($scope)->getConfig('log_file');
-  }
-  
-  static function injectRouter(ApplicationScope $scope) {
-    $router_class = self::injectAppConfig($scope)->getConfig(
-      'default_classes.router'
-    );
-    return new $router_class(
-      self::injectResourceFactory($scope),
-      self::injectResourceLister($scope),
-      self::injectDebug($scope)
-    );
-  }
-  
-  static function injectMessageFilterFactory(ApplicationScope $scope) {
-    if (!$scope->isInCache('MessageFilterFactory')) {
-      $scope->addToCache(
-        'MessageFilterFactory', new MessageFilterFactory(
-          self::injectAppConfig($scope), self::injectDebug($scope)
-        )
-      );
-    }
-    return $scope->getCache('MessageFilterFactory');
-  }
-  
-  static function injectResourceFactory(ApplicationScope $scope) {
-    return new ResourceFactory(
-      self::injectTemplatePackageProvider($scope),
-      self::injectTemplateSimpleRenderer($scope),
-      self::injectAppConfig($scope)
-    );
-  }
-  
-  static function injectStatusCodeMessages(ApplicationScope $scope) {
-    $status_messages = self::injectAppConfig($scope)->getConfig(
-      'default_classes.status_messages'
-    );
-    return new $status_messages;
-  }
-  
-  // TODO: Refactor this
-  static function injectAppConfig(ApplicationScope $scope) {
-    if (!$scope->isInCache('AppConfig')) {
-      $app_config_class = self::getApplicationConfigClass($scope);
-      $app_config = new $app_config_class;
-      if ('development' == $app_config->getConfig('mode')) {
-        $app_config->importConfig(self::injectConfigDevelopment($scope));
-      }
-      $app_config->importConfig(self::injectConfigDefault($scope));
-      $app_config->importConfig($scope->getConfig());
-      $scope->addToCache('AppConfig', $app_config);
-    }
-    return $scope->getCache('AppConfig');
-  }
-  
-  static function injectStartupConfig(ApplicationScope $scope) {
-    return self::injectConfigDefault($scope);
-  }
-  
-  static function injectConfigDefault(ApplicationScope $scope) {
-    return new Config\DefaultConfig;
-  }
-  
-  static function injectTemplatePackageProvider(ApplicationScope $scope) {
-    return new TemplatePackageProvider(
-      self::injectTemplateLocator($scope),
-      self::injectTemplateFactoryWithRegisteredEngines($scope)
-    );
-  }
-  
-  static function injectTemplateFactoryWithRegisteredEngines(ApplicationScope $scope) {
-    $template_factory = self::injectTemplateFactory($scope);
-    foreach (
-      self::injectRegisteredTemplateEngines($scope) as $filetype => $engine_class
-    ) {
-      call_user_func_array(
-        array($template_factory, 'registerTemplateEngine'),
-        array($filetype, $engine_class)
-      );
-    }
-    return $template_factory;
-  }
-  
-  static function injectRegisteredTemplateEngines(ApplicationScope $scope) {
-    return self::injectAppConfig($scope)->getConfig('template_engines');
-  }
-  
-  static function injectTemplateFactory(ApplicationScope $scope) {
-    if (!$scope->isInCache('TemplateFactory')) {
-      $scope->addToCache(
-        'TemplateFactory', new TemplateFactory(self::injectDebug($scope))
-      );
-    }
-    return $scope->getCache('TemplateFactory');
-  }
-  
-  static function injectConfigDevelopment(ApplicationScope $scope) {
-    return new Config\Development;
-  }
-  
-  static function injectTemplateLocator(ApplicationScope $scope) {
-    return new TemplateLocator(
-      self::injectContentNegotiator($scope),
-      self::injectAppPath($scope),
-      self::injectEngineExtensions($scope)
-    );
-  }
-  
-  static function injectEngineExtensions(ApplicationScope $scope) {
-    return array_keys(self::injectRegisteredTemplateEngines($scope));
-  }
-  
-  static function injectContentNegotiator(ApplicationScope $scope) {
-    return new ContentNegotiator;
-  }
-  
-  static function injectResourceLister(ApplicationScope $scope) {
-    return new ResourceLister(self::injectApplicationFinder($scope));
-  }
-  
-  static function injectTemplateSimpleRenderer(ApplicationScope $scope) {
-    return new TemplateSimpleRenderer;
-  }
-  
-  static function injectFileSearcher(ApplicationScope $scope) {
-    if (!$scope->isInCache('FileSearcher')) {
-      $scope->addToCache('FileSearcher', new FileSearcher);
-    }
-    return $scope->getCache('FileSearcher');
-  }
-  
-  static function injectDebug(ApplicationScope $scope) {
-    if (!$scope->isInCache('Debug')) {
-      $scope->addToCache('Debug', new Debug);
-    }
-    return $scope->getCache('Debug');
-  }
-  
-  static function injectRequestFilters(ApplicationScope $scope) {
-    return self::filterBuilder($scope, 'request_filters');
-  }
-  
-  static function injectResponseFilters(ApplicationScope $scope) {
-    return self::filterBuilder($scope, 'response_filters');
-  }
-  
-  static function filterBuilder(ApplicationScope $scope, $type) {
-    $filter_factory = self::injectMessageFilterFactory($scope);
-    foreach (
-      self::injectAppConfig($scope)->getConfig($type) as $key => $filter
-    ) {
-      if (!$scope->isInCache($filter)) {
-        $scope->addToCache($filter, $filter_factory->getFilter($filter));
-      }
-      $filters[$key] = $scope->getCache($filter);
-    }
-    return $filters;
-  }
-  
-  static function injectAppPath(ApplicationScope $scope) {
-    return self::injectApplicationFinder($scope)->find($scope->getAppName());
-  }
-  
-  static function injectApplicationFinder(ApplicationScope $scope) {
-    return new Application\Finder;
-  }
-  
-  static function getApplicationClass(ApplicationScope $scope) {
-    $test = $scope->getAppName() . '\Application';
-    if (class_exists($test)) {
-      return $test;
-    }
-    return self::injectStartupConfig($scope)->getConfig('default_classes.application');
-  }
+class ApplicationInjector extends \Pimple {
 
-  static function getApplicationConfigClass(ApplicationScope $scope) {
-    $test = $scope->getAppName() . '\Config';
-    if (class_exists($test)) {
-      return $test;
-    }
-    return self::injectStartupConfig($scope)->getConfig('default_classes.config');
+  function __construct($app_name, ConfigInterface $config) {
+    $this->app_name = $app_name;
+    $this->config   = $config;
+    $this->defineGraph();
+  }
+  
+  private function defineGraph() {
+    $this->ApplicationRunner = function(\Pimple $c) {
+      return new ApplicationRunner(
+        $c->Application
+      );
+    };
+    
+    $this->Request = function(\Pimple $c) {
+      return $c->getRequest();
+    };
+    
+    $this->Application = function(\Pimple $c) {
+      $app_full_name = $c->ApplicationClass;
+      $c->registerLoggers;
+      return new $app_full_name(
+        $c->app_name,
+        $c->Router,
+        $c->StatusCodeMessages,
+        $c->AppConfig->getConfig('map'),
+        $c->RequestFilters,
+        $c->ResponseFilters
+      );
+    };
+    
+    
+    $this->registerLoggers = function(\Pimple $c) {
+      if ($c->LogFile) {
+        Logger\Registry::register(
+          $c->app_name, $c->LogFile
+        );
+      }
+    };
+    
+    $this->LogFile = function(\Pimple $c) {
+      return $c->AppConfig->getConfig('log_file');
+    };
+    
+    $this->Router = function(\Pimple $c) {
+      $router_class = $c->AppConfig->getConfig(
+        'default_classes.router'
+      );
+      return new $router_class(
+        $c->ResourceFactory,
+        $c->ResourceLister,
+        $c->Debug
+      );
+    };
+    
+    $this->MessageFilterFactory = $this->asShared(
+      function(\Pimple $c) {
+        return new MessageFilterFactory($c->AppConfig, $c->Debug);
+      }
+    );
+    
+    $this->ResourceFactory = function(\Pimple $c) {
+      return new ResourceFactory(
+        $c->TemplatePackageProvider,
+        $c->TemplateSimpleRenderer,
+        $c->AppConfig
+      );
+    };
+    
+    $this->StatusCodeMessages = function(\Pimple $c) {
+      $status_messages = $c->AppConfig->getConfig(
+        'default_classes.status_messages'
+      );
+      return new $status_messages;
+    };
+    
+    // TODO: Refactor this
+    $this->AppConfig = $this->asShared(
+      function(\Pimple $c) {
+        $app_config_class = $c->ApplicationConfigClass;
+        $app_config = new $app_config_class;
+        if ('development' == $app_config->getConfig('mode')) {
+          $app_config->importConfig($c->ConfigDevelopment);
+        };
+        $app_config->importConfig($c->ConfigDefault);
+        $app_config->importConfig($c->config);
+        return $app_config;
+      }
+    );
+    
+    $this->StartupConfig = function(\Pimple $c) {
+      return $c->ConfigDefault;
+    };
+    
+    $this->ConfigDefault = function(\Pimple $c) {
+      return new Config\DefaultConfig;
+    };
+    
+    $this->TemplatePackageProvider = function(\Pimple $c) {
+      return new TemplatePackageProvider(
+        $c->TemplateLocator,
+        $c->TemplateFactoryWithRegisteredEngines
+      );
+    };
+    
+    $this->TemplateFactoryWithRegisteredEngines = function(\Pimple $c) {
+      $template_factory = $c->TemplateFactory;
+      foreach (
+        $c->RegisteredTemplateEngines as $filetype => $engine_class
+      ) {
+        call_user_func_array(
+          array($template_factory, 'registerTemplateEngine'),
+          array($filetype, $engine_class)
+        );
+      };
+      return $template_factory;
+    };
+    
+    $this->RegisteredTemplateEngines = function(\Pimple $c) {
+      return $c->AppConfig->getConfig('template_engines');
+    };
+    
+    $this->TemplateFactory = $this->asShared(function(\Pimple $c) {
+      return new TemplateFactory($c->Debug);
+    });
+    
+    $this->ConfigDevelopment = function(\Pimple $c) {
+      return new Config\Development;
+    };
+    
+    $this->TemplateLocator = function(\Pimple $c) {
+      return new TemplateLocator(
+        $c->ContentNegotiator,
+        $c->AppPath,
+        $c->EngineExtensions
+      );
+    };
+    
+    $this->EngineExtensions = function(\Pimple $c) {
+      return array_keys($c->RegisteredTemplateEngines);
+    };
+    
+    $this->ContentNegotiator = function(\Pimple $c) {
+      return new ContentNegotiator;
+    };
+    
+    $this->ResourceLister = function(\Pimple $c) {
+      return new ResourceLister($c->ApplicationFinder);
+    };
+    
+    $this->TemplateSimpleRenderer = function(\Pimple $c) {
+      return new TemplateSimpleRenderer;
+    };
+    
+    $this->FileSearcher = $this->asShared(function(\Pimple $c) {
+      return new FileSearcher;
+    });
+    
+    $this->Debug = $this->asShared(function(\Pimple $c) {
+      return new Debug;
+    });
+    
+    $this->RequestFilters = function(\Pimple $c) {
+      return $c->filterBuilder($c, 'request_filters');
+    };
+    
+    $this->ResponseFilters = function(\Pimple $c) {
+      return $c->filterBuilder($c, 'response_filters');
+    };
+        
+    $this->AppPath = function(\Pimple $c) {
+      return $c->ApplicationFinder->find($c->app_name);
+    };
+    
+    $this->ApplicationFinder = function(\Pimple $c) {
+      return new Application\Finder;
+    };
+    
+    $this->ApplicationClass = function(\Pimple $c) {
+      $test = $c->app_name . '\Application';
+      if (class_exists($test)) {
+        return $test;
+      };
+      return $c->StartupConfig->getConfig('default_classes.application');
+    };
+
+    $this->ApplicationConfigClass = function(\Pimple $c) {
+      $test = $c->app_name . '\Config';
+      if (class_exists($test)) {
+        return $test;
+      };
+      return $c->StartupConfig->getConfig('default_classes.config');
+    };
+  }
+  
+  function filterBuilder(\Pimple $c, $type) {
+    $filter_factory = $c->MessageFilterFactory;
+    $filters = array();
+    foreach (
+      $c->AppConfig->getConfig($type) as $key => $filter
+    ) {
+      $filters[$key] = $filter_factory->getFilter($filter);
+    };
+    return $filters;
   }
   
 }

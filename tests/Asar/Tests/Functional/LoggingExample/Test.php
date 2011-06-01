@@ -17,12 +17,11 @@ class Test extends \Asar\Tests\TestCase {
     $this->clearTestTempDirectory();
     $this->log_file = $this->getTempDir() . DIRECTORY_SEPARATOR . 'example.log';
     $this->client = new Client;
-    $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope(
-        'Asar\Tests\Functional\LoggingExample\LoggingExample',
-        new DefaultConfig
-      )
+    $container = new ApplicationInjector(
+      'Asar\Tests\Functional\LoggingExample\LoggingExample',
+      new DefaultConfig
     );
+    $this->app = $container->Application;
   }
   
   function tearDown() {

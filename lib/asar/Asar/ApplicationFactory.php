@@ -17,9 +17,10 @@ class ApplicationFactory {
   }
   
   function getApplication($app_name) {
-    $app_scope = new ApplicationScope(
+    $container = new ApplicationInjector(
       $app_name, $this->config
     );
-    return ApplicationInjector::injectApplication($app_scope);
+    //return ApplicationInjector::injectApplication($app_scope);
+    return $container->Application;
   }
 }

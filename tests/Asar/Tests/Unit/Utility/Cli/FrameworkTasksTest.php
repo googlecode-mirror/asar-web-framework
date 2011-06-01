@@ -447,21 +447,20 @@ class FrameworkTasksTest extends \Asar\Tests\TestCase {
       "// so we don't pollute the global scope.\n" .
       "function _bootstrap() {\n" .
       "  // Register the Asar namespace to the classloader\n" .
-      "  \$__asar = Asar::getInstance();\n" .
+      "  \$asar = Asar::getInstance();\n" .
       "  require_once \$asar->getFrameworkCorePath() . '/Asar/ClassLoader.php';\n" .
       "  \$class_loader = new Asar\ClassLoader('Asar', \$asar->getFrameworkCorePath());\n" .
+      "  \$class_loader->register();\n" .
+      "  \$class_loader = new Asar\ClassLoader('Pimple', \$asar->getFrameworkVendorPath() . '/Pimple/lib');\n" .
       "  \$class_loader->register();\n" .
       "  if (!isset(\$_SESSION)) {\n" .
       "    \$_SESSION = array();\n" .
       "  }\n" .
-      "  if (!isset(\$argv)) {\n" .
-      "    \$argv = array();\n" .
-      "  }\n" .
       "  // Load the environment variables\n" .
-      "  \$scope = new Asar\EnvironmentScope(\n" .
+      "  \$container = new Asar\Injector(\n" .
       "    \$_SERVER, \$_GET, \$_POST, \$_FILES, \$_SESSION, \$_COOKIE, \$_ENV\n" .
       "  );\n" .
-      "  return Asar\Injector::injectEnvironmentHelper(\$scope);\n" .
+      "  return \$container->EnvironmentHelper;\n" .
       "}\n" .
       "\n" .
       "return _bootstrap();\n"

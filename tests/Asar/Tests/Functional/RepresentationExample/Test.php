@@ -15,12 +15,11 @@ class Test extends \Asar\Tests\TestCase {
 
   public function setUp() {
     $this->client = new Client;
-    $this->app = ApplicationInjector::injectApplication(
-      new ApplicationScope(
-        'Asar\Tests\Functional\RepresentationExample\RepresentationExample',
-        new DefaultConfig
-      )
+    $container = new ApplicationInjector(
+      'Asar\Tests\Functional\RepresentationExample\RepresentationExample',
+      new DefaultConfig
     );
+    $this->app = $container->Application;
   }
   
   public function testIndexAndItsDefaultTemplate() {

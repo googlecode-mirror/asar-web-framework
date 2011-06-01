@@ -13,10 +13,13 @@ $classLoader = new \Asar\ClassLoader('Asar\Tests', __DIR__);
 $classLoader->register();
 $classLoader = new \Asar\ClassLoader('Asar', $lib_path . 'asar');
 $classLoader->register();
+$class_loader = new Asar\ClassLoader('Pimple', $lib_path . 'vendor/Pimple/lib');
+$class_loader->register();
 
 if (!isset($_SESSION)) {
   $_SESSION = array();
 }
+/*
 $scope = new \Asar\EnvironmentScope(
   $_SERVER, $_GET, $_POST, $_FILES, $_SESSION, $_COOKIE, $_ENV, getcwd()
-);
+);*/

@@ -2,70 +2,68 @@
 
 namespace Asar;
 
-class Injector {
+class Injector extends \Pimple {
   
-  private static $cli;
-  
-  static function injectApplicationRunner(EnvironmentScope $env_scope) {
-    return new ApplicationRunner(
-    );
+  function __construct(
+    $server = array(), $get = array(), $post = array(), $files = array(), 
+    $session = array(), $cookie = array(), $env = array()
+  ) {
+    $this->server  = $server;
+    $this->get     = $get;
+    $this->post    = $post;
+    $this->files   = $files;
+    $this->session = $session;
+    $this->cookie  = $cookie;
+    $this->env     = $env;
+    $this->defineGraph();
   }
   
-  static function injectEnvironmentHelper(EnvironmentScope $env_scope) {
-    return new EnvironmentHelper\Web(
-      self::injectDefaultConfig($env_scope),
-      self::injectRequestFactory($env_scope),
-      self::injectResponseExporter($env_scope),
-      self::injectServerVars($env_scope),
-      self::injectGetVars($env_scope),
-      self::injectPostVars($env_scope)
-    );
-  }
+  private function defineGraph() {
   
-  static function injectApplicationName(EnvironmentScope $env_scope) {
-    return $env_scope->getAppName();
-  }
-  
-  static function injectClassLoader(EnvironmentScope $env_scope) {
-    return new ClassLoader;
-  }
-  
-  static function injectRequestFactory(EnvironmentScope $env_scope) {
-    return new RequestFactory;
-  }
-  
-  static function injectResponseExporter(EnvironmentScope $env_scope) {
-    return new ResponseExporter;
-  }
-  
-  static function injectApplicationFactory(EnvironmentScope $env_scope) {
-    return new ApplicationFactory(
-      self::injectDefaultConfig($env_scope)
-    );
-  }
-  
-  static function injectServerVars(EnvironmentScope $env_scope) {
-    return $env_scope->getServerVars();
-  }
-  
-  static function injectGetVars(EnvironmentScope $env_scope) {
-    return $env_scope->getGetVars();
-  }
-  
-  static function injectPostVars(EnvironmentScope $env_scope) {
-    return $env_scope->getPostVars();
-  }
-  
-  static function injectFileSearcher(EnvironmentScope $env_scope) {
-    return new FileSearcher;
-  }
-  
-  static function injectFileIncludeManager(EnvironmentScope $env_scope) {
-    return new FileIncludeManager;
-  }
-  
-  static function injectDefaultConfig(EnvironmentScope $env_scope) {
-    return new Config\DefaultConfig;
+    $this->ApplicationRunner = function(\Pimple $c) {
+      return new ApplicationRunner;
+    };
+    
+    $this->EnvironmentHelper = function(\Pimple $c) {
+      return new EnvironmentHelper\Web(
+        $c->DefaultConfig,
+        $c->RequestFactory,
+        $c->ResponseExporter,
+        $c->server,
+        $c->get,
+        $c->post
+      );
+    };
+    
+    $this->ClassLoader = function(\Pimple $c) {
+      return new ClassLoader;
+    };
+    
+    $this->RequestFactory = function(\Pimple $c) {
+      return new RequestFactory;
+    };
+    
+    $this->ResponseExporter = function(\Pimple $c) {
+      return new ResponseExporter;
+    };
+    
+    $this->ApplicationFactory = function(\Pimple $c) {
+      return new ApplicationFactory(
+        $c->DefaultConfig
+      );
+    };
+    
+    $this->FileSearcher = function(\Pimple $c) {
+      return new FileSearcher;
+    };
+    
+    $this->FileIncludeManager = function(\Pimple $c) {
+      return new FileIncludeManager;
+    };
+    
+    $this->DefaultConfig = function(\Pimple $c) {
+      return new Config\DefaultConfig;
+    };
   }
   
 }
