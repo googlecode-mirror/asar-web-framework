@@ -1,0 +1,5 @@
+Asar Web Framework is a ~~[Restful](http://en.wikipedia.org/wiki/Representational_State_Transfer) [MVC-based](http://en.wikipedia.org/wiki/Model_View_Controller)~~ [Resource-Oriented](http://en.wikipedia.org/wiki/Resource_oriented_architecture) web framework.
+
+Asar is being created mostly for educational purposes and as an experiment in creating a ~~Restful MVC-based~~ Resource-Oriented web framework. It is not meant to replace the many mature php frameworks available. As this is experimental, it is not meant to be used on a production environment. This project's author takes inspiration from many web frameworks mainly [Solar Framework](http://solarphp.com/), [Konstrukt](http://konstrukt.dk/), and [Ruby on Rails](http://www.rubyonrails.org).
+
+  * Read the [Blog](http://asar-web-framework.blogspot.com/)
